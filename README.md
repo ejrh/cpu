@@ -1,34 +1,46 @@
-Each instruction is 4 4-bit nibbles:
+CPU - A primitive but hopefully self-educational CPU in Verilog
+===============================================================
+
+The aim of project is to teach myself some Verilog.  A CPU is a rather large
+challenge, but I know it is one that is often featured in computer science
+classes.
+
+Architecture
+------------
+
+The CPU is generally 16-bit: that is the width of registers, the size of each
+instruction word (and size of instruction memory locations), and the size of
+data memory locations.
+
+An instruction word is four 4-bit nibbles:
 
 OpCode Reg1 BigVal
 OpCode Reg1 Reg2 SmallVal
 OpCode Reg1 Reg2 Reg3
 
-16 16-bit registers
+There are sixteen 16-bit registers, named by the four bits in each of Reg1, Reg2, or Reg3.
 
 Stages:
 
 IF   Instruction Fetch
 RL   Register Load
-ML   Memory Load
-MS   Memory Store
+ML   Memory/Port Load
+MS   Memory/Port Store
 RS   Register Store
-PL   Port Load
-PS   Port Store
 AL   ALU Operation
 IA   Instruction Adjust
 
 Operations:
 
-0   Skip       - - -
-1   Load       T S SV   Register Load, Memory Load, Register Store
-2   Store      S T SV   Register Load, Memory Store
-3   Load Imm   T BV     Register Load, Register Store
-4   Port In    T S SV   Register Load, Port Load, Register Store
-5   Port Out   S T SV   Register Load, Port Store
-6   Jump       - BV     Register Load, Instruction Adjust
-7   Branch     T BV     Register Load, Instruction Adjust
-8-F ALU Op     T S1 S2  Register Load, ALU Op, Register Store
+0   Skip       - - -    IF, IA
+1   Load       T S SV   IF, RL, ML, RS, IA
+2   Store      S T SV   IF, RL, MS, IA
+3   Load Imm   T BV     IF, RL, RS, IA
+4   Port In    T S SV   IF, RL, ML, RS, IA
+5   Port Out   S T SV   IF, RL, MS, IA
+6   Jump       - BV     IF, IA
+7   Branch     T BV     IF, RL, IA
+8-F ALU Op     T S1 S2  IF, RL, AL, RS, IA
 
 ALU Operations:
 
