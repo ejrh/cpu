@@ -1,0 +1,14 @@
+0000 // FIBONACCI EXAMPLE
+13FF // Set Limit = 255
+1100 // Set A = 0
+1201 // Set B = 1
+D200 // Start of loop: Output B
+8432 // Check if Limit < B
+A004 // If so, exit loop
+5612 // Set C = A + B
+5012 // Set A = B
+5026 // Set B = C
+9FF9 // Jump to start of loop
+E000 // Halt
+
+@FF // End of instruction memory
