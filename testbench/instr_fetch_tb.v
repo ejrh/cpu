@@ -1,30 +1,34 @@
 module test;
 
-  parameter NIB_WIDTH = 4;
-  parameter BYTE_WIDTH = 8;
-  parameter WORD_WIDTH = 16;
-  parameter MEM_SIZE = 256;
+    `include "parameters.v"
 
-  reg [WORD_WIDTH-1:0] pointer;
-  
-  initial begin
-    pointer = 0;
-  end
+    reg [WORD_WIDTH-1:0] pointer;
 
-  wire [NIB_WIDTH-1 : 0] instr, reg1, reg2, reg3;
-  
-  instr_fetch fetcher1(instr, reg1, reg2, reg3, pointer, clk);
-  
-  reg clk = 0;
-  always #5 clk = !clk;
-  
-  always @(posedge clk) begin
-    pointer <= pointer + 1;
-  end
+    initial begin
+        pointer = 0;
+    end
 
-  initial begin
-    $monitor("At time %t, instr = %d, reg1 = %d, reg2 = %d, reg3 = %d",
-              $time, instr, reg1, reg2, reg3);
-    #100 $stop;
-  end
+    wire [WORD_WIDTH-1 : 0] instr;
+    instr_fetch fetcher(instr, pointer, clk);
+    
+    wire [NIB_WIDTH-1:0] opcode, reg1, reg2, reg3;
+    wire isaluop;
+    wire [2:0] aluop;
+    wire [BYTE_WIDTH-1:0] bigval;
+    wire [NIB_WIDTH-1:0] smallval;
+    instr_decode decoder(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
+
+    reg clk = 0;
+    always #5 clk = !clk;
+
+    always @(posedge clk) begin
+        pointer <= pointer + 1;
+    end
+
+    initial begin
+        $monitor("At time %t, instr = %x, opcode = %x, isaluop = %x, aluop = %x, reg1 = %x, reg2 = %x, reg3 = %x, bigval = %d, smallval = %d",
+                $time, instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
+        #100 $stop;
+    end
+
 endmodule

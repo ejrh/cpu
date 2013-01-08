@@ -17,7 +17,6 @@ module instr_fetch(instr, pointer, clk);
 
     always @(posedge clk) begin
         instr <= out;
-        $display("Instr = %d", instr);
     end
 
 endmodule
