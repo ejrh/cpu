@@ -12,7 +12,8 @@ The CPU is generally 16-bit: that is the width of registers, the size of each
 instruction word (and size of instruction memory locations), and the size of
 data memory locations.
 
-An instruction word is four 4-bit nibbles:
+An instruction word is four 4-bit nibbles, which may be treated as register
+names or values (including big values).  The three forms of instruction are:
 
     OpCode Reg1 BigVal
     OpCode Reg1 Reg2 SmallVal
@@ -37,6 +38,8 @@ Operations:
   * `SV` is a small value
   * `BV` is a big value
 
+This table shows the opcode, name, parameters, and stages for each operation.
+
     0   Skip       - - -     IF, IA
     1   Load       T S SV    IF, RL, ML, RS, IA
     2   Store      S T SV    IF, RL, MS, IA
@@ -48,6 +51,8 @@ Operations:
     8-F ALU Op     T S1 S2   IF, RL, AL, RS, IA
 
 ALU Operations:
+
+This table shows the ALU operations, with opcode and ALU op (the low 3 bits of the opcode).
 
     8   0   Add
     9   1   Subtract
