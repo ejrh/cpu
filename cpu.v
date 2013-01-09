@@ -2,16 +2,16 @@ module cpu;
 
     `include "parameters.v"
 
-    reg [WORD_WIDTH-1:0] pointer;
-
-    initial begin
-        pointer = 0;
-    end
+    wire do_fetch, do_next;
+    reg do_reset;
     
-    wire do_fetch, do_regload;
+    wire [WORD_WIDTH-1:0] pointer;
+    wire [WORD_WIDTH-1:0] pointer_val = 1;
+    
+    instr_pointer instr_pointer(pointer, pointer_val, do_next, do_reset);
 
     wire [WORD_WIDTH-1 : 0] instr;
-    instr_fetch fetcher(instr, pointer, clk);
+    instr_fetch fetcher(instr, pointer, do_fetch);
     
     wire [NIB_WIDTH-1 : 0] opcode, reg1, reg2, reg3;
     wire isaluop;
@@ -35,63 +35,12 @@ module cpu;
     reg portget, portset;
     wire [0:WORD_WIDTH-1] portout;
     ports ports1(portaddr, portval, portget, portset, portout);
-
-    always @(posedge clk) begin
-        regnum <= reg1;
-        regval1 <= regout;
-        regnum <= reg2;
-        regval2 <= regout;
-        regnum <= reg3;
-        regval3 <= regout;
-
-        regset <= 0;
-
-        $display("%d,%d,%d", regnum, regout, regval1);
-        case (opcode)
-            /* Skip */
-            OP_NOP: ;
-
-            /* Load from memory */
-            OP_LOAD: ;
-
-            /* Store to memory */
-            OP_STORE: ;
-
-            /* Load low immediate */
-            OP_LOADIMM: begin
-                regval <= (regval1 & 16'hFF00) | (reg2 << 4) | reg3;
-                regnum <= reg1;
-                regset <= 1;
-            end
-
-            /* Read port */
-            OP_IN: begin
-                portaddr <= regval2 + smallval;
-                portget <= 1;
-                computed_value <= portout;
-            end
-
-            /* Write port */
-            OP_OUT: begin
-                portaddr <= regval2 + smallval;
-                portvalue <= regval1;
-                portset <= 1;
-            end
-
-            /* Jump relative */
-            OP_JMP: ;
-
-            /* Branch relative */
-            OP_BR: ;
-            
-            /* Arithmetic. */
-            default: begin
-                //op, in1, in2, out)-
-            end
-            
-        endcase
-
-        pointer <= pointer + 1;
+    
+    control control(opcode, isaluop, clk, do_fetch, do_next);
+    
+    initial begin
+        #1 do_reset <= 1;
+        #1 do_reset <= 0;
     end
 
 endmodule

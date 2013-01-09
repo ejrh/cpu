@@ -1,13 +1,16 @@
-module control(opcode, clk);
+module control(opcode, isaluop, clk, do_fetch, do_next);
 
     /* Control module. */
   
-  `include "parameters.v"
+    `include "parameters.v"
   
-    input wire [NIB_WIDTH:0] opcode;
+    input wire [NIB_WIDTH-1:0] opcode;
+    input wire isaluop;
     input wire clk;
     
-    reg [2:0] state;
+    output wire do_fetch, do_next;
+    
+    reg [2:0] state = 3'h0;
     
     always @(posedge clk)
         case (state)
@@ -30,7 +33,7 @@ module control(opcode, clk);
                         state <= STATE_STORE;
                     OP_LOADIMM:
                         begin
-                            computed_val = (regval1 << 8) | big_val;
+                            //computed_val = (regval1 << 8) | big_val;
                             state <= STATE_REGSTORE;
                         end
                     OP_IN:
@@ -58,7 +61,7 @@ module control(opcode, clk);
                 
             STATE_LOAD: begin
                 //do load from mem or port
-                state <= REGSTORE;
+                state <= STATE_REGSTORE;
             end
                 
             STATE_STORE: begin
@@ -68,8 +71,14 @@ module control(opcode, clk);
                 
             STATE_NEXT: begin
                 //update pointer
+                //do_next = 1;
                 state <= STATE_FETCH;
             end
         endcase
+    
+    assign do_fetch = (state == STATE_FETCH);
+    assign do_next = (state == STATE_NEXT);
+
+    initial $monitor("state = %d, opcode = %d", state, opcode);
 
 endmodule
