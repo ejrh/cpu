@@ -7,7 +7,7 @@ module instr_pointer(out, adj, update_clk, reset_clk);
 
     `include "parameters.v"
 
-    output reg [WORD_WIDTH-1:0] out;
+    output reg [WORD_WIDTH-1:0] out = 0;
     input wire [WORD_WIDTH-1:0] adj;
     input wire update_clk, reset_clk;
 

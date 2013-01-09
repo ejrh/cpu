@@ -6,9 +6,9 @@ module cpu;
     reg do_reset;
     
     wire [WORD_WIDTH-1:0] pointer;
-    wire [WORD_WIDTH-1:0] pointer_val = 1;
+    wire [WORD_WIDTH-1:0] pointer_adj;
     
-    instr_pointer instr_pointer(pointer, pointer_val, do_next, do_reset);
+    instr_pointer instr_pointer(pointer, pointer_adj, do_next, do_reset);
 
     wire [WORD_WIDTH-1 : 0] instr;
     instr_fetch fetcher(instr, pointer, do_fetch);
@@ -29,7 +29,7 @@ module cpu;
     reg clk = 0;
     always #5 clk = !clk;
 
-    reg [WORD_WIDTH-1 : 0] regval1, regval2, regval3;
+    reg [WORD_WIDTH-1 : 0] reg1val, reg2val, reg3val;
 
     reg [0:WORD_WIDTH-1] portaddr, portval;
     reg portget, portset;
@@ -37,6 +37,9 @@ module cpu;
     ports ports1(portaddr, portval, portget, portset, portout);
     
     control control(opcode, isaluop, clk, do_fetch, do_next);
+    
+    assign mux_adj = (opcode == OP_JMP) /* || (opcode == OP_BR && reg1val != 0) */ ;
+    assign pointer_adj = mux_adj ? { 8'hFF, bigval } : 1;
     
     initial begin
         #1 do_reset <= 1;
