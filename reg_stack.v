@@ -8,12 +8,12 @@ module reg_stack(num1, num2, setnum, setval, get_clk, set_clk, out1, out2);
 
     `include "parameters.v"
 
-    input wire [NIB_WIDTH-1:0] num1, num2, setnum;
-    input wire [WORD_WIDTH-1:0] setval;
+    input wire [NIB_SIZE-1:0] num1, num2, setnum;
+    input wire [WORD_SIZE-1:0] setval;
     input wire get_clk, set_clk;
-    output wire [WORD_WIDTH-1:0] out1, out2;
+    output wire [WORD_SIZE-1:0] out1, out2;
 
-    reg [WORD_WIDTH-1:0] data [0:REG_STACK_SIZE-1];
+    reg [WORD_SIZE-1:0] data [0:REG_STACK_SIZE-1];
 
     assign out1 = data[num1];
     assign out2 = data[num2];
@@ -27,7 +27,7 @@ module reg_stack(num1, num2, setnum, setval, get_clk, set_clk, out1, out2);
         data[setnum] <= setval;
     end
 
-    reg [NIB_WIDTH:0] i;
+    reg [NIB_SIZE:0] i;
 
     initial begin
         for (i = 0; i < REG_STACK_SIZE; i = i+1) begin

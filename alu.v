@@ -3,9 +3,9 @@ module alu(op, in1, in2, clk, out);
     `include "parameters.v"
 
     input wire [2:0] op;
-    input wire [WORD_WIDTH-1:0] in1, in2;
+    input wire [WORD_SIZE-1:0] in1, in2;
     input wire clk;
-    output reg [WORD_WIDTH-1:0] out;
+    output reg [WORD_SIZE-1:0] out;
 
     always @(posedge clk) begin
         case (op)

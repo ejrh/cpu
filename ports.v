@@ -2,9 +2,9 @@ module ports(portaddr, portval, portget, portset, portout);
 
     `include "parameters.v"
 
-    input wire [WORD_WIDTH-1:0] portaddr, portval;
+    input wire [WORD_SIZE-1:0] portaddr, portval;
     input wire portget, portset;
-    output reg [WORD_WIDTH-1:0] portout;
+    output reg [WORD_SIZE-1:0] portout;
 
     always @(portget) begin
         $display("Input from port %d", portaddr);

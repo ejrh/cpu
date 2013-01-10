@@ -2,20 +2,20 @@ module test;
 
     `include "parameters.v"
 
-    reg [WORD_WIDTH-1:0] pointer;
+    reg [WORD_SIZE-1:0] pointer;
 
     initial begin
         pointer = 0;
     end
 
-    wire [WORD_WIDTH-1 : 0] instr;
+    wire [WORD_SIZE-1 : 0] instr;
     instr_fetch fetcher(instr, pointer, clk);
     
-    wire [NIB_WIDTH-1:0] opcode, reg1, reg2, reg3;
+    wire [NIB_SIZE-1:0] opcode, reg1, reg2, reg3;
     wire isaluop;
     wire [2:0] aluop;
-    wire [BYTE_WIDTH-1:0] bigval;
-    wire [NIB_WIDTH-1:0] smallval;
+    wire [BYTE_SIZE-1:0] bigval;
+    wire [NIB_SIZE-1:0] smallval;
     instr_decode decoder(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
 
     reg clk = 0;

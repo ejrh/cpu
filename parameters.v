@@ -1,6 +1,6 @@
-parameter NIB_WIDTH = 4;
-parameter BYTE_WIDTH = 8;
-parameter WORD_WIDTH = 16;
+parameter NIB_SIZE = 4;
+parameter BYTE_SIZE = 8;
+parameter WORD_SIZE = 16;
 parameter MEM_SIZE = 256;
 
 parameter REG_STACK_SIZE = 16;

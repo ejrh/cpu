@@ -5,23 +5,23 @@ module cpu;
     wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
     reg do_reset;
     
-    wire [WORD_WIDTH-1:0] pointer;
-    wire [WORD_WIDTH-1:0] pointer_adj;
+    wire [WORD_SIZE-1:0] pointer;
+    wire [WORD_SIZE-1:0] pointer_adj;
     
     instr_pointer instr_pointer(pointer, pointer_adj, do_next, do_reset);
 
-    wire [WORD_WIDTH-1 : 0] instr;
+    wire [WORD_SIZE-1 : 0] instr;
     instr_fetch fetcher(instr, pointer, do_fetch);
     
-    wire [NIB_WIDTH-1 : 0] opcode, reg1, reg2, reg3;
+    wire [NIB_SIZE-1 : 0] opcode, reg1, reg2, reg3;
     wire isaluop;
     wire [2 : 0] aluop;
-    wire [BYTE_WIDTH-1:0] bigval;
-    wire [NIB_WIDTH-1:0] smallval;
+    wire [BYTE_SIZE-1:0] bigval;
+    wire [NIB_SIZE-1:0] smallval;
     instr_decode decoder(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
 
-    wire [WORD_WIDTH-1 : 0] storeval, regval1, regval2;
-    wire [NIB_WIDTH-1 : 0] getnum1, getnum2, storenum;
+    wire [WORD_SIZE-1 : 0] storeval, regval1, regval2;
+    wire [NIB_SIZE-1 : 0] getnum1, getnum2, storenum;
     reg_stack stack(getnum1, getnum2, storenum, storeval, do_regload, do_regstore, regval1, regval2);
     
     assign getnum1 = reg2;
@@ -29,8 +29,8 @@ module cpu;
     assign storenum = reg1;
     assign storeval = (opcode == OP_LOADLO) ? bigval : aluout;
     
-    wire [WORD_WIDTH-1 : 0] aluin1, aluin2;
-    wire [WORD_WIDTH-1 : 0] aluout;
+    wire [WORD_SIZE-1 : 0] aluin1, aluin2;
+    wire [WORD_SIZE-1 : 0] aluout;
     alu alu(aluop, aluin1, aluin2, do_aluop, aluout);
     
     assign aluin1 = regval1;
@@ -39,11 +39,11 @@ module cpu;
     reg clk = 0;
     always #5 clk = !clk;
 
-    reg [WORD_WIDTH-1 : 0] reg1val, reg2val, reg3val;
+    reg [WORD_SIZE-1 : 0] reg1val, reg2val, reg3val;
 
-    wire [0:WORD_WIDTH-1] portaddr, portval;
+    wire [0:WORD_SIZE-1] portaddr, portval;
     wire portget, portset;
-    wire [0:WORD_WIDTH-1] portout;
+    wire [0:WORD_SIZE-1] portout;
     ports ports1(portaddr, portval, portget, portset, portout);
     
     assign portaddr = regval1 + smallval;

@@ -3,9 +3,9 @@ module test;
     `include "parameters.v"
   
     wire [0:2] op;
-    wire [0:WORD_WIDTH-1] in1, in2;
-    wire [0:WORD_WIDTH-1] expected;
-    wire [0:WORD_WIDTH-1] out;
+    wire [0:WORD_SIZE-1] in1, in2;
+    wire [0:WORD_SIZE-1] expected;
+    wire [0:WORD_SIZE-1] out;
   
     alu alu1(op, in1, in2, clk, out);
   
@@ -15,7 +15,7 @@ module test;
     wire [7:0] total = 8;
     reg [7:0] num = 0;
     
-    wire [0:2 + WORD_WIDTH*3] data [0:7];
+    wire [0:2 + WORD_SIZE*3] data [0:7];
     assign data[0] = { ALU_ADD,   16'd5,  16'd7,  16'd12 };
     assign data[1] = { ALU_SUB,   16'd15, 16'd4,  16'd11 };
     assign data[2] = { ALU_MUL,   16'd4,  16'd9,  16'd36 };

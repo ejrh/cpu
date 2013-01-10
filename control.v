@@ -4,7 +4,7 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload,
   
     `include "parameters.v"
   
-    input wire [NIB_WIDTH-1:0] opcode;
+    input wire [NIB_SIZE-1:0] opcode;
     input wire isaluop;
     input wire clk;
     
