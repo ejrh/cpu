@@ -16,6 +16,7 @@ module instr_fetch(instr, pointer, clk);
     instr_memory memory(out, pointer);
 
     always @(posedge clk) begin
+        $display("ip = %d, instr = %x", pointer, out);
         instr <= out;
     end
 

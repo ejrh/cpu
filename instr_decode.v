@@ -17,6 +17,8 @@ module instr_decode(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, sma
     assign {opcode, reg1, reg2, reg3} = instr;
     assign smallval = reg3;
     assign bigval = {reg2, reg3};
-    assign {isaluop, aluop} = opcode;
+    wire not_isaluop;
+    assign {not_isaluop, aluop} = opcode;
+    assign isaluop = !not_isaluop;
 
 endmodule

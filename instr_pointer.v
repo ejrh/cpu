@@ -19,5 +19,4 @@ module instr_pointer(out, adj, update_clk, reset_clk);
         out <= 0;
     end
 
-    initial $monitor("ip = %d", out);
 endmodule

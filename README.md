@@ -25,10 +25,10 @@ Stages:
 
     IF   Instruction Fetch
     RL   Register Load
+    AL   ALU Operation
     ML   Memory/Port Load
     MS   Memory/Port Store
     RS   Register Store
-    AL   ALU Operation
     IA   Instruction Adjust
 
 Operations:
@@ -40,25 +40,25 @@ Operations:
 
 This table shows the opcode, name, parameters, and stages for each operation.
 
-    0   Skip       - - -     IF, IA
-    1   Load       T S SV    IF, RL, ML, RS, IA
-    2   Store      S T SV    IF, RL, MS, IA
-    3   Load Imm   T BV      IF, RL, RS, IA
-    4   Port In    T S SV    IF, RL, ML, RS, IA
-    5   Port Out   S T SV    IF, RL, MS, IA
-    6   Jump       - BV      IF, IA
-    7   Branch     T BV      IF, RL, IA
-    8-F ALU Op     T S1 S2   IF, RL, AL, RS, IA
+    0-7   ALU Op      T S1 S2   IF, RL, AL, RS, IA
+    8     Load        T S SV    IF, RL, ML, RS, IA
+    9     Store       S T SV    IF, RL, MS, IA
+    A     Port In     T S SV    IF, RL, ML, RS, IA
+    B     Port Out    S T SV    IF, RL, MS, IA
+    C     Jump        - BV      IF, IA
+    D     Branch      T BV      IF, RL, IA
+    E     Load Low    T BV      IF, RL, RS, IA
+    F     Load High   T BV      IF, RL, RS, IA
 
 ALU Operations:
 
 This table shows the ALU operations, with opcode and ALU op (the low 3 bits of the opcode).
 
-    8   0   Add
-    9   1   Subtract
-    A   2   Multiply
-    B   3   Set Less Than
-    C   4   And
-    D   5   Or
-    E   6   XOR
-    F   7   Shift
+    0   Add
+    1   Subtract
+    2   Multiply
+    3   Set Less Than
+    4   And
+    5   Or
+    6   XOR
+    7   Shift

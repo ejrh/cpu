@@ -25,14 +25,14 @@ class InstrStruct(object):
     pass
 
 
-OP_NOP = 0
-OP_LOAD = 1
-OP_STORE = 2
-OP_LOADIMM = 3
-OP_IN = 4
-OP_OUT = 5
-OP_JMP = 6
-OP_BR = 7
+OP_LOAD = 8
+OP_STORE = 9
+OP_IN = 10
+OP_OUT = 11
+OP_JMP = 12
+OP_BR = 13
+OP_LOADLO = 14
+OP_LOADHI = 15
 
 ALU_ADD = 0
 ALU_SUB = 1
@@ -46,9 +46,9 @@ ALU_SHIFT = 7
 STATE_FETCH = 0
 STATE_REGLOAD = 1
 STATE_ALUOP = 2
-STATE_REGSTORE = 3
-STATE_LOAD = 4
-STATE_STORE = 5
+STATE_LOAD = 3
+STATE_STORE = 4
+STATE_REGSTORE = 5
 STATE_NEXT = 6
 
 
@@ -81,7 +81,7 @@ class Machine(object):
         ins = InstrStruct()
         ins.instr = instr
         ins.opcode = instr >> 12;
-        ins.isaluop = ins.opcode >= 8;
+        ins.isaluop = ins.opcode < 8;
         ins.aluop = ins.opcode & 0x7;
         ins.reg1 = (instr >> 8) & 0xF;
         ins.reg2 = (instr >> 4) & 0xF;
@@ -94,10 +94,7 @@ class Machine(object):
         if self.state == STATE_FETCH:
             instr = self.instruction_memory[self.pointer]
             self.ins = self.decode_instr(instr)
-            if self.ins.opcode != OP_NOP:
-                self.state = STATE_REGLOAD
-            else:
-                self.state = STATE_NEXT
+            self.state = STATE_REGLOAD
         elif self.state == STATE_REGLOAD:
             self.regval1 = self.registers[self.ins.reg1] 
             self.regval2 = self.registers[self.ins.reg2]
@@ -108,7 +105,7 @@ class Machine(object):
                 self.state = STATE_LOAD
             elif self.ins.opcode == OP_STORE or self.ins.opcode == OP_OUT:
                 self.state = STATE_STORE
-            elif self.ins.opcode == OP_LOADIMM:
+            elif self.ins.opcode == OP_LOADLO or self.ins.opcode == OP_LOADHI:
                 self.state = STATE_REGSTORE
             elif self.ins.opcode == OP_JMP or self.ins.opcode == OP_BR:
                 self.state = STATE_NEXT
@@ -119,8 +116,10 @@ class Machine(object):
             target = self.ins.reg1
             if self.ins.isaluop:
                 val = self.aluout
-            else:
-                val = self.ins.bigval
+            elif self.ins.opcode == OP_LOADLO:
+                val = (self.regval1 & 0xFF00) | self.ins.bigval
+            elif self.ins.opcode == OP_LOADHI:
+                val = (self.regval1 & 0x00FF) | (self.ins.bigval << 8)
             self.registers[target] = val
             self.state = STATE_NEXT
         elif self.state == STATE_LOAD:

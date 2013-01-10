@@ -12,14 +12,13 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
     
     reg [2:0] state = 3'h0;
     
-    always @(posedge clk)
+    always @(posedge clk) begin
+        $display("state = %d, opcode = %d", state, opcode);
+
         case (state)
             STATE_FETCH: begin
                 //do fetch
-                if (opcode != OP_NOP)
-                    state <= STATE_REGLOAD;
-                else
-                    state <= STATE_NEXT;
+                state <= STATE_REGLOAD;
             end
             
             STATE_REGLOAD: begin
@@ -31,7 +30,12 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
                         state <= STATE_LOAD;
                     OP_STORE:
                         state <= STATE_STORE;
-                    OP_LOADIMM:
+                    OP_LOADLO:
+                        begin
+                            //computed_val = (regval1 << 8) | big_val;
+                            state <= STATE_REGSTORE;
+                        end
+                    OP_LOADHI:
                         begin
                             //computed_val = (regval1 << 8) | big_val;
                             state <= STATE_REGSTORE;
@@ -75,10 +79,9 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
                 state <= STATE_FETCH;
             end
         endcase
+    end
     
     assign do_fetch = (state == STATE_FETCH);
     assign do_next = (state == STATE_NEXT);
-
-    initial $monitor("state = %d, opcode = %d", state, opcode);
 
 endmodule
