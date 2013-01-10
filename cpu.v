@@ -2,7 +2,7 @@ module cpu;
 
     `include "parameters.v"
 
-    wire do_fetch, do_next;
+    wire do_fetch, do_regload, do_aluop, do_regstore, do_next;
     reg do_reset;
     
     wire [WORD_WIDTH-1:0] pointer;
@@ -20,11 +20,21 @@ module cpu;
     wire [NIB_WIDTH-1:0] smallval;
     instr_decode decoder(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
 
-    wire [WORD_WIDTH-1 : 0] regout;
-    reg [WORD_WIDTH-1 : 0] regval;
-    reg [NIB_WIDTH-1 : 0] regnum;
-    reg regset;
-    reg_stack stack(regout, regnum, regval, regset);
+    wire [WORD_WIDTH-1 : 0] storeval, regval1, regval2;
+    wire [NIB_WIDTH-1 : 0] getnum1, getnum2, storenum;
+    reg_stack stack(getnum1, getnum2, storenum, storeval, do_regload, do_regstore, regval1, regval2);
+    
+    assign getnum1 = reg2;
+    assign getnum2 = reg3;
+    assign storenum = reg1;
+    assign storeval = (opcode == OP_LOADLO) ? bigval : aluout;
+    
+    wire [WORD_WIDTH-1 : 0] aluin1, aluin2;
+    wire [WORD_WIDTH-1 : 0] aluout;
+    alu alu(aluop, aluin1, aluin2, do_aluop, aluout);
+    
+    assign aluin1 = regval1;
+    assign aluin2 = regval2;
 
     reg clk = 0;
     always #5 clk = !clk;
@@ -36,7 +46,7 @@ module cpu;
     wire [0:WORD_WIDTH-1] portout;
     ports ports1(portaddr, portval, portget, portset, portout);
     
-    control control(opcode, isaluop, clk, do_fetch, do_next);
+    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore, do_next);
     
     assign mux_adj = (opcode == OP_JMP) /* || (opcode == OP_BR && reg1val != 0) */ ;
     assign pointer_adj = mux_adj ? { 8'hFF, bigval } : 1;

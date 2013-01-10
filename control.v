@@ -1,4 +1,4 @@
-module control(opcode, isaluop, clk, do_fetch, do_next);
+module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore, do_next);
 
     /* Control module. */
   
@@ -8,7 +8,7 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
     input wire isaluop;
     input wire clk;
     
-    output wire do_fetch, do_next;
+    output wire do_fetch, do_regload, do_aluop, do_regstore, do_next;
     
     reg [2:0] state = 3'h0;
     
@@ -17,12 +17,10 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
 
         case (state)
             STATE_FETCH: begin
-                //do fetch
                 state <= STATE_REGLOAD;
             end
             
             STATE_REGLOAD: begin
-                //do loads
                 if (isaluop)
                     state <= STATE_ALUOP;
                 else case (opcode)
@@ -32,56 +30,47 @@ module control(opcode, isaluop, clk, do_fetch, do_next);
                         state <= STATE_STORE;
                     OP_LOADLO:
                         begin
-                            //computed_val = (regval1 << 8) | big_val;
-                            state <= STATE_REGSTORE;
-                        end
                     OP_LOADHI:
-                        begin
-                            //computed_val = (regval1 << 8) | big_val;
                             state <= STATE_REGSTORE;
-                        end
                     OP_IN:
                         state <= STATE_LOAD;
                     OP_OUT:
                         state <= STATE_STORE;
                     OP_JMP:
-                        //update pointer
                         state <= STATE_NEXT;
                     OP_BR:
-                        //update pointer
                         state <= STATE_NEXT;
                 endcase
             end
                 
             STATE_ALUOP: begin
-                //do op
                 state <= STATE_REGSTORE;
             end
                 
             STATE_REGSTORE: begin
-                //do store
                 state <= STATE_NEXT;
             end
                 
             STATE_LOAD: begin
-                //do load from mem or port
                 state <= STATE_REGSTORE;
             end
                 
             STATE_STORE: begin
-                //do store to mem or port
                 state <= STATE_NEXT;
             end
                 
             STATE_NEXT: begin
-                //update pointer
-                //do_next = 1;
                 state <= STATE_FETCH;
             end
         endcase
     end
     
     assign do_fetch = (state == STATE_FETCH);
+    assign do_regload = (state == STATE_REGLOAD);
+    assign do_aluop  = (state == STATE_ALUOP);
+    //do_memload
+    //do_memstore
+    assign do_regstore = (state == STATE_REGSTORE);
     assign do_next = (state == STATE_NEXT);
 
 endmodule
