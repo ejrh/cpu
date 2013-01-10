@@ -6,8 +6,8 @@
 B432 // Check if Limit < B
 7405 // If so, exit loop
 8512 // Set C = A + B
-8012 // Set A = B
-8025 // Set B = C
+8102 // Set A = B
+8205 // Set B = C
 60FA // Jump to start of loop
 5000 // Halt
 
