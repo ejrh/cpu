@@ -1,4 +1,4 @@
-module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore, do_next);
+module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next);
 
     /* Control module. */
   
@@ -8,7 +8,7 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore
     input wire isaluop;
     input wire clk;
     
-    output wire do_fetch, do_regload, do_aluop, do_regstore, do_next;
+    output wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
     
     reg [2:0] state = 3'h0;
     
@@ -29,9 +29,9 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore
                     OP_STORE:
                         state <= STATE_STORE;
                     OP_LOADLO:
-                        begin
+                        state <= STATE_REGSTORE;
                     OP_LOADHI:
-                            state <= STATE_REGSTORE;
+                        state <= STATE_REGSTORE;
                     OP_IN:
                         state <= STATE_LOAD;
                     OP_OUT:
@@ -67,9 +67,9 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore
     
     assign do_fetch = (state == STATE_FETCH);
     assign do_regload = (state == STATE_REGLOAD);
-    assign do_aluop  = (state == STATE_ALUOP);
-    //do_memload
-    //do_memstore
+    assign do_aluop = (state == STATE_ALUOP);
+    assign do_memload = (state == STATE_LOAD);
+    assign do_memstore = (state == STATE_STORE);
     assign do_regstore = (state == STATE_REGSTORE);
     assign do_next = (state == STATE_NEXT);
 

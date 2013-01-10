@@ -2,7 +2,7 @@ module cpu;
 
     `include "parameters.v"
 
-    wire do_fetch, do_regload, do_aluop, do_regstore, do_next;
+    wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
     reg do_reset;
     
     wire [WORD_WIDTH-1:0] pointer;
@@ -41,12 +41,17 @@ module cpu;
 
     reg [WORD_WIDTH-1 : 0] reg1val, reg2val, reg3val;
 
-    reg [0:WORD_WIDTH-1] portaddr, portval;
-    reg portget, portset;
+    wire [0:WORD_WIDTH-1] portaddr, portval;
+    wire portget, portset;
     wire [0:WORD_WIDTH-1] portout;
     ports ports1(portaddr, portval, portget, portset, portout);
     
-    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_regstore, do_next);
+    assign portaddr = regval1 + smallval;
+    assign portval = regval2;
+    assign portget = do_memload & (opcode == OP_IN);
+    assign portset = do_memstore & (opcode == OP_OUT);
+    
+    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next);
     
     assign mux_adj = (opcode == OP_JMP) /* || (opcode == OP_BR && reg1val != 0) */ ;
     assign pointer_adj = mux_adj ? { 8'hFF, bigval } : 1;
