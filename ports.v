@@ -6,11 +6,11 @@ module ports(portaddr, portval, portget, portset, portout);
     input wire portget, portset;
     output reg [WORD_SIZE-1:0] portout;
 
-    always @(portget) begin
+    always @(posedge portget) begin
         $display("Input from port %d", portaddr);
     end
 
-    always @(portset) begin
+    always @(posedge portset) begin
         $display("Output %d on port %d", portval, portaddr);
         if (portaddr == 0) begin
             $display("Machine halting");
