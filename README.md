@@ -62,3 +62,34 @@ This table shows the ALU operations, with opcode and ALU op (the low 3 bits of t
     5   Or
     6   XOR
     7   Shift
+
+
+Features and limitations
+------------------------
+
+Ports can be used for input/output to arbitrary hardware.  In simulation or
+interpretation, writing to port 0 will halt the machine.  A port will be used
+to write to the seven segment display, and ports will be connected to other
+inputs/outputs on the machine.
+
+Control flow consists of JMP and BR commands, to relative offsets.  No access
+to the instruction pointer, and no way to jump to a register.  The program
+cannot know where it is located in memory, and can only transfer control to
+specified locations.  This means general subroutines cannot be used, since
+the subroutine has no way to return control to the caller.
+
+No read or write access to instruction memory.  Program is loaded at reset.
+
+Instructions take different numbers of clocks cycles to execute.  Some parts
+of execution are unnecessarily done in series rather than parallel.
+
+
+Programs
+--------
+
+interp.py is an interpreter, which executes programs written for the CPU.  It
+follows approximately the same design, with the same stages for each
+instruction.
+
+asm.py will be a simple assembler, so that programs can be written in a more
+human-friendly form rather than in pure machine code.
