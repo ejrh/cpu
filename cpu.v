@@ -24,10 +24,13 @@ module cpu;
     wire [NIB_SIZE-1 : 0] getnum1, getnum2, storenum;
     reg_stack stack(getnum1, getnum2, storenum, storeval, do_regload, do_regstore, regval1, regval2);
     
-    assign getnum1 = reg2;
-    assign getnum2 = reg3;
+    wire get_sel;
+    assign get_sel = (opcode == OP_STORE | opcode == OP_OUT
+            | opcode == OP_BR | opcode == OP_LOADLO | opcode == OP_LOADHI);
+    assign getnum1 = get_sel ? reg1 : reg2;
+    assign getnum2 = get_sel ? reg2 : reg3;
     assign storenum = reg1;
-    assign storeval = (opcode == OP_LOADLO) ? bigval : aluout;
+    assign storeval = (opcode == OP_LOADLO) ? bigval : (opcode == OP_LOADHI) ? bigval << 8 : aluout;
     
     wire [WORD_SIZE-1 : 0] aluin1, aluin2;
     wire [WORD_SIZE-1 : 0] aluout;
@@ -46,8 +49,8 @@ module cpu;
     wire [0:WORD_SIZE-1] portout;
     ports ports1(portaddr, portval, portget, portset, portout);
     
-    assign portaddr = regval1 + smallval;
-    assign portval = regval2;
+    assign portaddr = regval2 + smallval;
+    assign portval = regval1;
     assign portget = do_memload & (opcode == OP_IN);
     assign portset = do_memstore & (opcode == OP_OUT);
     

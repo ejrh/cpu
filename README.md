@@ -50,6 +50,12 @@ This table shows the opcode, name, parameters, and stages for each operation.
     E     Load Low    T BV      IF, RL, RS, IA
     F     Load High   T BV      IF, RL, RS, IA
 
+The register stack can load two registers at once.  For most instructions
+these will be in the R2 and R3 positions.  For some it will be R1 and R2:
+Store, Port Out, Branch, Load Low, Load High.
+
+The register stack can save a register; this will always be taken from R1.
+
 ALU Operations:
 
 This table shows the ALU operations, with opcode and ALU op (the low 3 bits of the opcode).
