@@ -1,9 +1,11 @@
-module cpu;
+module cpu(clk, do_reset);
 
     `include "parameters.v"
+    
+    input wire clk;
+    input wire do_reset;
 
     wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
-    reg do_reset;
     
     wire [WORD_SIZE-1:0] pointer;
     wire [WORD_SIZE-1:0] pointer_adj;
@@ -39,9 +41,6 @@ module cpu;
     assign aluin1 = regval1;
     assign aluin2 = regval2;
 
-    reg clk = 0;
-    always #5 clk = !clk;
-
     reg [WORD_SIZE-1 : 0] reg1val, reg2val, reg3val;
 
     wire [0:WORD_SIZE-1] portaddr, portval;
@@ -59,10 +58,5 @@ module cpu;
     assign mux_adj = (opcode == OP_JMP) | (opcode == OP_BR & regval1 != 0);
     wire bigval_neg = bigval[BYTE_SIZE-1];
     assign pointer_adj = mux_adj ? (bigval_neg ? bigval - 256 : bigval) : 1;
-    
-    initial begin
-        #1 do_reset <= 1;
-        #1 do_reset <= 0;
-    end
 
 endmodule
