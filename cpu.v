@@ -32,7 +32,9 @@ module cpu(clk, do_reset);
     assign getnum1 = get_sel ? reg1 : reg2;
     assign getnum2 = get_sel ? reg2 : reg3;
     assign storenum = reg1;
-    assign storeval = (opcode == OP_LOADLO) ? bigval : (opcode == OP_LOADHI) ? bigval << 8 : aluout;
+    assign storeval = (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
+            : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
+            : aluout;
     
     wire [WORD_SIZE-1 : 0] aluin1, aluin2;
     wire [WORD_SIZE-1 : 0] aluout;
