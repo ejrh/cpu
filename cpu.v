@@ -56,8 +56,9 @@ module cpu;
     
     control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next);
     
-    assign mux_adj = (opcode == OP_JMP) /* || (opcode == OP_BR && reg1val != 0) */ ;
-    assign pointer_adj = mux_adj ? { 8'hFF, bigval } : 1;
+    assign mux_adj = (opcode == OP_JMP) | (opcode == OP_BR & regval1 != 0);
+    wire bigval_neg = bigval[BYTE_SIZE-1];
+    assign pointer_adj = mux_adj ? (bigval_neg ? bigval - 256 : bigval) : 1;
     
     initial begin
         #1 do_reset <= 1;
