@@ -1,4 +1,4 @@
-module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next);
+module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, state);
 
     /* Control module. */
   
@@ -10,7 +10,7 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload,
     
     output wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
     
-    reg [2:0] state = 3'h0;
+    output reg [2:0] state = 3'h0;
     
     always @(posedge clk) begin
         $display("state = %d, opcode = %d", state, opcode);

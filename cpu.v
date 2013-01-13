@@ -1,4 +1,5 @@
-module cpu(clk, do_reset);
+module cpu(clk, do_reset,
+        portaddr, portval, portget, portset, portout, state, opcode);
 
     `include "parameters.v"
     
@@ -15,13 +16,14 @@ module cpu(clk, do_reset);
     wire [WORD_SIZE-1 : 0] instr;
     instr_fetch fetcher(instr, pointer, do_fetch);
     
-    wire [NIB_SIZE-1 : 0] opcode, reg1, reg2, reg3;
+    output wire [NIB_SIZE-1 : 0] opcode;
+    wire [NIB_SIZE-1 : 0] reg1, reg2, reg3;
     wire isaluop;
     wire [2 : 0] aluop;
     wire [BYTE_SIZE-1:0] bigval;
     wire [NIB_SIZE-1:0] smallval;
     instr_decode decoder(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, smallval);
-
+ 
     wire [WORD_SIZE-1 : 0] storeval, regval1, regval2;
     wire [NIB_SIZE-1 : 0] getnum1, getnum2, storenum;
     reg_stack stack(getnum1, getnum2, storenum, storeval, do_regload, do_regstore, regval1, regval2);
@@ -32,33 +34,32 @@ module cpu(clk, do_reset);
     assign getnum1 = get_sel ? reg1 : reg2;
     assign getnum2 = get_sel ? reg2 : reg3;
     assign storenum = reg1;
-    assign storeval = (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
-            : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
-            : aluout;
     
     wire [WORD_SIZE-1 : 0] aluin1, aluin2;
     wire [WORD_SIZE-1 : 0] aluout;
     alu alu(aluop, aluin1, aluin2, do_aluop, aluout);
+
+    assign storeval = (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
+            : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
+            : aluout;
     
     assign aluin1 = regval1;
     assign aluin2 = regval2;
 
-    reg [WORD_SIZE-1 : 0] reg1val, reg2val, reg3val;
-
-    wire [0:WORD_SIZE-1] portaddr, portval;
-    wire portget, portset;
-    wire [0:WORD_SIZE-1] portout;
-    ports ports1(portaddr, portval, portget, portset, portout);
+    output wire [WORD_SIZE-1:0] portaddr, portval;
+    output wire portget, portset;
+    input wire [WORD_SIZE-1:0] portout;
     
     assign portaddr = regval2 + smallval;
     assign portval = regval1;
     assign portget = do_memload & (opcode == OP_IN);
     assign portset = do_memstore & (opcode == OP_OUT);
     
-    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next);
+    output wire [2:0] state;
+    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, state);
     
     assign mux_adj = (opcode == OP_JMP) | (opcode == OP_BR & regval1 != 0);
     wire bigval_neg = bigval[BYTE_SIZE-1];
     assign pointer_adj = mux_adj ? (bigval_neg ? bigval - 256 : bigval) : 1;
-
+ 
 endmodule
