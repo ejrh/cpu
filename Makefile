@@ -10,3 +10,6 @@ alu_tb:
 
 instr_fetch_tb:
 	$(IV) -o instr_fetch_tb.vvp testbench/instr_fetch_tb.v instr_fetch.v instr_decode.v instr_memory.v
+
+bcd_tb:
+	$(IV) -o bcd_tb.vvp testbench/bcd_tb.v bcd.v
