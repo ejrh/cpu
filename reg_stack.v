@@ -11,15 +11,13 @@ module reg_stack(num1, num2, setnum, setval, get_clk, set_clk, out1, out2);
     input wire [NIB_SIZE-1:0] num1, num2, setnum;
     input wire [WORD_SIZE-1:0] setval;
     input wire get_clk, set_clk;
-    output wire [WORD_SIZE-1:0] out1, out2;
+    output reg [WORD_SIZE-1:0] out1, out2;
 
     reg [WORD_SIZE-1:0] data [0:REG_STACK_SIZE-1];
 
-    assign out1 = data[num1];
-    assign out2 = data[num2];
-
     always @(posedge get_clk) begin
-        //do something
+        out1 <= data[num1];
+        out2 <= data[num2];
     end
     
     always @(posedge set_clk) begin
