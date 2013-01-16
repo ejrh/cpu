@@ -1,4 +1,4 @@
-module instr_pointer(out, adj, update_clk, reset_clk);
+module instr_pointer(out, adj, clk, update_enable, reset_enable);
 
     /* Instruction pointer
      *
@@ -9,13 +9,16 @@ module instr_pointer(out, adj, update_clk, reset_clk);
 
     output reg [WORD_SIZE-1:0] out = 0;
     input wire signed [WORD_SIZE-1:0] adj;
-    input wire update_clk, reset_clk;
+    input wire clk, update_enable, reset_enable;
 
-    always @(posedge update_clk or posedge reset_clk) begin
-        if (reset_clk)
+    always @(posedge clk) begin
+        if (reset_enable) begin
+            $display("reset");
             out <= 0;
-        else
+        end else if (update_enable) begin
+            $display("adj = %d", adj);
             out <= out + adj;
+        end
     end
 
 endmodule

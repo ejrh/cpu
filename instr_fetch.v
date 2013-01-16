@@ -1,4 +1,4 @@
-module instr_fetch(instr, pointer, clk);
+module instr_fetch(instr, pointer, clk, fetch_enable);
 
     /* Instruction fetcher
      *
@@ -11,13 +11,15 @@ module instr_fetch(instr, pointer, clk);
     wire [WORD_SIZE-1:0] out;
     output reg [WORD_SIZE-1:0] instr;
     input wire [WORD_SIZE-1:0] pointer;
-    input wire clk;
+    input wire clk, fetch_enable;
 
     instr_memory memory(out, pointer);
 
     always @(posedge clk) begin
-        $display("ip = %d, instr = %x", pointer, out);
-        instr <= out;
+        if (fetch_enable) begin
+            $display("ip = %d, instr = %x", pointer, out);
+            instr <= out;
+        end
     end
 
 endmodule

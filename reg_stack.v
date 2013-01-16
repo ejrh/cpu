@@ -1,4 +1,4 @@
-module reg_stack(num1, num2, setnum, setval, get_clk, set_clk, out1, out2);
+module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, out1, out2);
 
     /* Register stack
      *
@@ -10,21 +10,21 @@ module reg_stack(num1, num2, setnum, setval, get_clk, set_clk, out1, out2);
 
     input wire [NIB_SIZE-1:0] num1, num2, setnum;
     input wire [WORD_SIZE-1:0] setval;
-    input wire get_clk, set_clk;
+    input wire clk, get_enable, set_enable;
     output reg [WORD_SIZE-1:0] out1, out2;
 
     reg [WORD_SIZE-1:0] data [0:REG_STACK_SIZE-1];
 
-    always @(posedge get_clk) begin
-        out1 <= data[num1];
-        out2 <= data[num2];
+    always @(posedge clk) begin
+        if (set_enable) begin
+            $display("reg %d set to %d", setnum, setval);
+            data[setnum] <= setval;
+        end if (get_enable) begin
+            out1 <= data[num1];
+            out2 <= data[num2];
+        end
     end
     
-    always @(posedge set_clk) begin
-        $display("reg %d set to %d", setnum, setval);
-        data[setnum] <= setval;
-    end
-
     reg [NIB_SIZE:0] i;
 
     initial begin

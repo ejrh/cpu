@@ -9,6 +9,9 @@ module main;
     reg clk = 0;
     always #5 clk = !clk;
     
+    always @(negedge clk)
+        $display("-----");
+    
     wire do_reset = 0;
 
     wire [WORD_SIZE-1:0] portaddr, portval;
@@ -19,6 +22,6 @@ module main;
     wire [3:0] opcode;
     cpu cpu(clk, do_reset, portaddr, portval, portget, portset, portout, state, opcode);
     
-    ports ports(portaddr, portval, portget, portset, portout);
+    ports ports(portaddr, portval, clk, portget, portset, portout);
  
 endmodule

@@ -11,10 +11,10 @@ module cpu(clk, do_reset,
     wire [WORD_SIZE-1:0] pointer;
     wire [WORD_SIZE-1:0] pointer_adj;
     
-    instr_pointer instr_pointer(pointer, pointer_adj, do_next, do_reset);
+    instr_pointer instr_pointer(pointer, pointer_adj, clk, do_next, do_reset);
 
     wire [WORD_SIZE-1 : 0] instr;
-    instr_fetch fetcher(instr, pointer, do_fetch);
+    instr_fetch fetcher(instr, pointer, clk, do_fetch);
     
     output wire [NIB_SIZE-1 : 0] opcode;
     wire [NIB_SIZE-1 : 0] reg1, reg2, reg3;
@@ -26,7 +26,7 @@ module cpu(clk, do_reset,
  
     wire [WORD_SIZE-1 : 0] storeval, regval1, regval2;
     wire [NIB_SIZE-1 : 0] getnum1, getnum2, storenum;
-    reg_stack stack(getnum1, getnum2, storenum, storeval, do_regload, do_regstore, regval1, regval2);
+    reg_stack stack(getnum1, getnum2, storenum, storeval, clk, do_regload, do_regstore, regval1, regval2);
     
     wire get_sel;
     assign get_sel = (opcode == OP_STORE | opcode == OP_OUT
@@ -37,7 +37,7 @@ module cpu(clk, do_reset,
     
     wire [WORD_SIZE-1 : 0] aluin1, aluin2;
     wire [WORD_SIZE-1 : 0] aluout;
-    alu alu(aluop, aluin1, aluin2, do_aluop, aluout);
+    alu alu(aluop, aluin1, aluin2, clk, do_aluop, aluout);
 
     assign storeval = (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
             : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
