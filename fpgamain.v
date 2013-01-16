@@ -31,9 +31,11 @@ module main(
 
     assign show_sel = sw[0];
 
-    always @(posedge portset) begin
-        if (portaddr[0] == show_sel)
-            show_val <= portval;
+    always @(posedge slowclk[SLOWDOWN]) begin
+        if (portset) begin
+            if (portaddr[0] == show_sel)
+                show_val <= portval;
+        end
     end
 
     assign led[7:4] = opcode;

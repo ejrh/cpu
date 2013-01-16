@@ -17,7 +17,7 @@ module instr_fetch(instr, pointer, clk, fetch_enable);
 
     always @(posedge clk) begin
         if (fetch_enable) begin
-            $display("ip = %d, instr = %x", pointer, out);
+            $display("ip = %d, instr = %h", pointer, out);
             instr <= out;
         end
     end

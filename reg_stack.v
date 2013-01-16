@@ -23,6 +23,8 @@ module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, reset_
 
     reg [WORD_SIZE-1:0] data [0:REG_STACK_SIZE-1];
 
+    reg [NIB_SIZE:0] i;
+
     always @(posedge clk) begin
         if (reset_enable) begin
             for (i = 0; i < REG_STACK_SIZE; i = i+1) begin
@@ -36,7 +38,5 @@ module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, reset_
             data[setnum] <= setval;
         end
     end
-
-    reg [NIB_SIZE:0] i;
 
 endmodule
