@@ -2,7 +2,8 @@ module instr_decode(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, sma
 
     /* Instruction decoder
      *
-     * This module decodes an instruction.
+     * This module decodes an instruction.  It contains combinational logic only
+     * and does not need a clock.
      */
 
     `include "parameters.v"

@@ -1,12 +1,10 @@
-module cpu(clk, do_reset,
+module cpu(clk,
         portaddr, portval, portget, portset, portout, state, opcode);
 
     `include "parameters.v"
     
     input wire clk;
-    input wire do_reset;
-
-    wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next;
+    wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, do_reset;
     
     wire [WORD_SIZE-1:0] pointer;
     wire [WORD_SIZE-1:0] pointer_adj;
@@ -26,7 +24,7 @@ module cpu(clk, do_reset,
  
     wire [WORD_SIZE-1 : 0] storeval, regval1, regval2;
     wire [NIB_SIZE-1 : 0] getnum1, getnum2, storenum;
-    reg_stack stack(getnum1, getnum2, storenum, storeval, clk, do_regload, do_regstore, regval1, regval2);
+    reg_stack stack(getnum1, getnum2, storenum, storeval, clk, do_regload, do_regstore, do_reset, regval1, regval2);
     
     wire get_sel;
     assign get_sel = (opcode == OP_STORE | opcode == OP_OUT
@@ -56,7 +54,7 @@ module cpu(clk, do_reset,
     assign portset = do_memstore & (opcode == OP_OUT);
     
     output wire [2:0] state;
-    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, state);
+    control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, do_reset, state);
     
     assign mux_adj = (opcode == OP_JMP) | (opcode == OP_BR & regval1 != 0);
     wire bigval_neg = bigval[BYTE_SIZE-1];
