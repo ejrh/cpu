@@ -2,11 +2,14 @@
 
 module ssd_driver(
     input clk,
-    input [15:0] val,
+    input [15:0] inval,
     output reg [3:0] an,
     output reg [6:0] seg,
     output dp
     );
+    
+    wire [15:0] val;
+    convert_to_bcd convert_to_bcd(inval, val);
 
     //NOTE With the seven segment display, 1 indicates off...
     
