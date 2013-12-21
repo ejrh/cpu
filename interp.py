@@ -15,9 +15,12 @@ def load_hex(filename):
         v = m.group(1)
         if v == '':
             continue
-        data.append(int(v, 16))
+        while len(v) > 0:
+            data.append(int(v[:4], 16))
+            v = v[4:]
     f.close()
     
+    #print 'Loaded program [%s]' % (','.join('%04x' % x for x in data))
     return data
 
 
@@ -54,10 +57,10 @@ STATE_NEXT = 6
 
 class Machine(object):
     
-    def __init__(self, program=DEFAULT_PROGRAM):
+    def __init__(self, program):
         self.instruction_memory_size = 256
         self.num_registers = 16
-        self.program = DEFAULT_PROGRAM
+        self.program = program
 
     def reset(self):
         self.load_program()
@@ -95,6 +98,7 @@ class Machine(object):
             instr = self.instruction_memory[self.pointer]
             self.ins = self.decode_instr(instr)
             self.state = STATE_REGLOAD
+            #print 'Fetched %04x' % self.ins.instr
         elif self.state == STATE_REGLOAD:
             self.regval1 = self.registers[self.ins.reg1] 
             self.regval2 = self.registers[self.ins.reg2]
@@ -121,6 +125,7 @@ class Machine(object):
             elif self.ins.opcode == OP_LOADHI:
                 val = (self.regval1 & 0x00FF) | (self.ins.bigval << 8)
             self.registers[target] = val
+            #print 'Stored %04x in register %d' % (val, target)
             self.state = STATE_NEXT
         elif self.state == STATE_LOAD:
             portaddr = self.regval2 + self.ins.smallval
@@ -166,7 +171,11 @@ class Machine(object):
 
 
 def main():
-    machine = Machine()
+    try:
+        filename = sys.argv[1]
+    except:
+        filename = DEFAULT_PROGRAM
+    machine = Machine(filename)
     machine.reset()
     
     while machine.running:
