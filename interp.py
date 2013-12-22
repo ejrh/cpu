@@ -59,6 +59,7 @@ class Machine(object):
     
     def __init__(self, program):
         self.instruction_memory_size = 256
+        self.data_memory_size = 1024
         self.num_registers = 16
         self.program = program
 
@@ -66,6 +67,7 @@ class Machine(object):
         self.load_program()
         self.reset_registers()
         self.reset_pointer()
+        self.reset_memory()
         self.state = STATE_FETCH
         self.running = True
 
@@ -79,6 +81,9 @@ class Machine(object):
     
     def reset_pointer(self):
         self.pointer = 0
+    
+    def reset_memory(self):
+        self.data_memory = [0] * self.data_memory_size
     
     def decode_instr(self, instr):
         ins = InstrStruct()
@@ -120,6 +125,8 @@ class Machine(object):
             target = self.ins.reg1
             if self.ins.isaluop:
                 val = self.aluout
+            elif self.ins.opcode == OP_LOAD:
+                val = self.regval1
             elif self.ins.opcode == OP_LOADLO:
                 val = (self.regval1 & 0xFF00) | self.ins.bigval
             elif self.ins.opcode == OP_LOADHI:
@@ -128,15 +135,22 @@ class Machine(object):
             #print 'Stored %04x in register %d' % (val, target)
             self.state = STATE_NEXT
         elif self.state == STATE_LOAD:
-            portaddr = self.regval2 + self.ins.smallval
-            print 'Attempt to read from port %d'
+            addr = self.regval2 + self.ins.smallval
+            if self.ins.opcode == OP_LOAD:
+                self.regval1 = self.data_memory[addr]
+            else:
+                print 'Attempt to read from port %d' % addr
+                #TODO
             self.state = STATE_REGSTORE
         elif self.state == STATE_STORE:
-            portaddr = self.regval2 + self.ins.smallval
-            print 'Out to port %d: %d' % (portaddr, self.regval1)
-            if portaddr == 0:
-                print 'Machine halts'
-                self.running = False
+            addr = self.regval2 + self.ins.smallval
+            if self.ins.opcode == OP_STORE:
+                self.data_memory[addr] = self.regval1
+            else:
+                print 'Out to port %d: %d' % (addr, self.regval1)
+                if addr == 0:
+                    print 'Machine halts'
+                    self.running = False
             self.state = STATE_NEXT
         elif self.state == STATE_NEXT:
             if self.ins.opcode == OP_JMP or (self.ins.opcode == OP_BR and self.regval1 != 0):
