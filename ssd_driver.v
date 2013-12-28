@@ -25,6 +25,10 @@ module ssd_driver(
         cnt <= cnt + 1;
     end
     
+    always @(inval) begin
+        $display("ssd inval = %d", inval);
+    end
+    
     always @(*) begin
         case (dis)
             2'b00: begin

@@ -12,14 +12,21 @@ module main;
     always @(negedge clk)
         $display("-----");
     
-    wire [WORD_SIZE-1:0] portaddr, portval;
-    wire portget, portset;
-    wire [WORD_SIZE-1:0] portout;
-
-    wire [2:0] state;
-    wire [3:0] opcode;
-    cpu cpu(clk, portaddr, portval, portget, portset, portout, state, opcode);
+    wire [7:0] sw;
+    assign sw = 8'b00000001;
     
-    ports ports(portaddr, portval, clk, portget, portset, portout);
+    wire [3:0] btn;
+    assign btn = 4'b0000;
+    
+    wire [7:0] led;
+    wire [3:0] an;
+    wire dp;
+    wire [6:0] seg;
+    
+    machine machine(clk, sw, btn, led, an, dp, seg);
+    
+    always @(led) begin
+        //$display("led %b", led);
+    end
  
 endmodule
