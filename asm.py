@@ -38,8 +38,8 @@ instr_defs = {
     'lhigh b,r': 'k15 r2 b1',
     
     'mov r,r': 'k0 r2 k0 r1',
-    'mov s,r': 'k14 r2 b1',
-    'mov b,r': 'k14 r2 b1',
+    'mov s,r': 'k14 r2 b1 k15 r2 k0 k0',
+    'mov b,r': 'k14 r2 b1 k15 r2 k0 k0',
     'mov x,r': 'k14 r2 l1 k15 r2 h1',
     'out r,s': 'k11 r1 k0 s2',
 }
