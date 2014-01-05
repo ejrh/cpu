@@ -44,10 +44,6 @@ instr_defs = {
     'out r,s': 'k11 r1 k0 s2',
 }
 
-opcode_defs = [
-    'add r2, r3, r1',
-]
-
 comment_pattern = re.compile(r'\s*;.*')
 arg_separator_pattern = re.compile(r'(?:\s|,)+')
 line_pattern = re.compile(r'^\s* ((?P<label> [A-Za-z_][A-Za-z_0-9]*)\s*::?)? \s* ((?P<instr> [A-Za-z_][A-Za-z_0-9]*) (?P<args> ( (\s|,)+ ([$]r\d+|\d+|[A-Za-z_][A-Za-z_0-9]*) )*))?\s*$', re.VERBOSE)
