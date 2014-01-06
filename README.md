@@ -105,30 +105,31 @@ Instructions take different numbers of clocks cycles to execute.  Some parts
 of execution are unnecessarily done in series rather than parallel.
 
 
-Supporting programs
--------------------
+Supporting tools
+----------------
 
 interp.py is an interpreter, which executes programs written for the CPU.  It
 follows approximately the same design, with the same stages for each
 instruction.
 
-asm.py will be a simple assembler, so that programs can be written in a more
-human-friendly form rather than in pure machine code.
+asm.py is a simple assembler.  The programs in `programs` can be assembled into
+machine code files that will run in the interpreter and on the CPU.
 
 
 Future plans
 ------------
 
-The CPU has only been tested in the simulator.  Changes may be required to get it
-running on the FPGA.  Related to this is that many parts of it are inefficient in
+Many parts of the CPU are inefficient in
 terms of required logic.  For instance, it decides how to load registers based on
 whether the instruction is one of 5 arbitrary 4-bit codes; whereas a more efficient
 design would decide based on whether a single bit in the instruction was set.
 
 Ports are not generally wired to hardware yet.  The seven segment display driver is
-not complete.
+not complete.  Ideally, it would support modes for displaying hexadecimal values,
+the present decimal values, and individual segment control.
 
-Memory is not implemented yet.  Access to memory may require more than one clock cycle,
+Memory is not implemented yet in the CPU (but it is in the interpreter).
+Access to memory may require more than one clock cycle,
 so additional stages for memory operations may be added.
 
 Instruction memory is currently in registers.  It should be in actual memory.
