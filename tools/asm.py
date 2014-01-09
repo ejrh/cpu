@@ -205,7 +205,6 @@ class Assembler(object):
         return '\n'.join(self.program_lines)
     
 def main():
-    filename = sys.argv[1]
     usage = """usage: %prog PATH [-c] INPUT"""
     desc = """Assemble a program for the CPU"""
     parser = OptionParser(usage=usage, description=desc)
@@ -214,6 +213,8 @@ def main():
                       help="enable annotation comments")
 
     options, args = parser.parse_args()
+    if len(args) == 0:
+        parser.error("No input files specified.")
     
     asm = Assembler(options)
     for filename in args:
