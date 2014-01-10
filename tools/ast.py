@@ -1,5 +1,11 @@
 class SyntaxItem(object):
 
+    def get_location(self):
+        try:
+            return self.location
+        except AttributeError:
+            return 'unknown'
+    
     def __repr__(self):
         return self.__class__.__name__ + '(' + ', '.join(repr(x) for x in self.get_parts()) + ')'
     
