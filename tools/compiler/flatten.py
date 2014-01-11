@@ -21,7 +21,7 @@ class Flatten(Visitor):
         return prev_node
         
     def visit_Statement(self, stmt, cfg, entry, exit):
-        stmt_node = StatementNode(stmt.expression)
+        stmt_node = cfg.add(StatementNode(stmt.expression))
         cfg.connect(entry, stmt_node)
         return stmt_node
 

@@ -25,9 +25,13 @@ class Statement(Node):
 
 class CFG(object):
     def __init__(self):
-        self.nodes = {}
-        self.entry = Entry()
-        self.exit = Exit()
+        self.nodes = set()
+        self.entry = self.add(Entry())
+        self.exit = self.add(Exit())
+    
+    def add(self, node):
+        self.nodes.add(node)
+        return node
     
     def connect(self, from_node, to_node, edge=None):
         if edge is None:
@@ -36,5 +40,15 @@ class CFG(object):
         to_node.in_edges[from_node] = edge
         return edge
 
-    def has_connection(self, from_node, to_node):
-        return to_node in from_node.out_edges and from_node in to_node.in_edges
+    def has_path(self, *nodes):
+        first, rest = nodes[0], nodes[1:]
+        if first not in self.nodes:
+            return False
+        if len(rest) == 0:
+            return True
+        for next in first.out_edges.keys():
+            if next == rest[0]:
+                if self.has_path(*rest):
+                    return True
+        
+        return False
