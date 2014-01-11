@@ -17,6 +17,12 @@ def make_arg_decl(s, loc, toks):
 def make_block(s, loc, toks):
     return [Block(*toks)]
 
+def make_statement(s, loc, toks):
+    stmt = toks[0]
+    if isinstance(stmt, VariableDecl):
+        return [stmt]
+    return [Statement(stmt)]
+
 def make_function_call(s, loc, toks):
     return [FunctionCall(*toks)]
 
@@ -40,7 +46,7 @@ arg_decl_list = Forward().setParseAction(make_list)
 arg_decl = Forward().setParseAction(make_arg_decl)
 block = Forward().setParseAction(make_block)
 statement_list = Forward().setParseAction(make_list)
-statement = Forward()
+statement = Forward().setParseAction(make_statement)
 expression = Forward()
 function_call = Forward().setParseAction(make_function_call)
 arg_list = Forward().setParseAction(make_list)

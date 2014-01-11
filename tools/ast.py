@@ -47,6 +47,13 @@ class Block(SyntaxItem):
     def get_parts(self):
         return self.statements
 
+class Statement(SyntaxItem):
+    def __init__(self, expression):
+        self.expression = expression
+    
+    def get_parts(self):
+        return [self.expression]
+
 class FunctionCall(SyntaxItem):
     def __init__(self, name, args):
         self.name, self.args = name, args

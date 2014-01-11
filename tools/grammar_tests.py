@@ -54,7 +54,7 @@ class BlockTests(GrammarTests):
         
     def testFunctionCallWithOneArgument(self):
         input = """{ f(x); }"""
-        expected = Block([FunctionCall('f', ['x'])])
+        expected = Block([Statement(FunctionCall('f', ['x']))])
         self.assertSuccess(input, expected)
 
 if __name__ == '__main__':

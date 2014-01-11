@@ -5,8 +5,7 @@ class Visitor(object):
             visit_method = getattr(self, 'visit_' + cls_name)
         except AttributeError:
             visit_method = self.visit_parts
-        if visit_method is not None:
-            visit_method(target, **kwargs)
+        return visit_method(target, **kwargs)
     
     def visit_list(self, target, **kwargs):
         for x in target:
