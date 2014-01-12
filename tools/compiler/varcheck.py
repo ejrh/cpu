@@ -59,6 +59,12 @@ class VarCheck(Visitor):
     def visit_Block(self, block, table):
         self.make_scope(block, table)
 
+    def visit_Name(self, name, table):
+        decl = table.lookup(name.name)
+        if decl is None:
+            self.errors.error(name.get_location(), """Undeclared name '%s'""" % name.name)
+        name.declaration = decl
+
     def make_scope(self, target, table):
         st = SymbolTable(table)
         target.symbol_table = st

@@ -60,12 +60,14 @@ class SymbolTableTests(unittest.TestCase):
     
 class VarCheckTests(unittest.TestCase):
 
-    def assertSuccess(self, input):
+    def assertSuccess(self, input, expected_errors=0, expected_warnings=0):
         errors = Errors()
         vc = VarCheck(input, errors)
-        self.assertEquals(errors.num_errors, 0)
-        self.assertEquals(errors.num_warnings, 0)
-    
+        self.assertEquals(errors.num_errors, expected_errors)
+        self.assertEquals(errors.num_warnings, expected_warnings)
+
+class VarCheckSymbolTableTests(VarCheckTests):
+
     def testEmpty(self):
         program = Program([])
         self.assertSuccess(program)
@@ -102,6 +104,56 @@ class VarCheckTests(unittest.TestCase):
         self.assertEquals(st.get_all_names(), set(['f', 'x']))
         self.assertEquals(st.parent.parent, program.symbol_table)
 
+class VarCheckVariableTests(VarCheckTests):
+
+    def testGlobalVariable(self):
+        d = VariableDecl(int_type, 'x')
+        n = Name('x')
+        block = Block([Statement(n)])
+        program = Program([d, FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        self.assertEquals(n.declaration, d)
+    
+    def testLocalVariable(self):
+        d = VariableDecl(int_type, 'x')
+        n = Name('x')
+        block = Block([d, Statement(n)])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        self.assertEquals(n.declaration, d)
+    
+    def testFunctionCall(self):
+        g = FunctionDecl(int_type, 'g', [], Block([]))
+        n = Name('g')
+        block = Block([Statement(n)])
+        program = Program([g, FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        self.assertEquals(n.declaration, g)
+    
+    def testUndeclaredVariable(self):
+        d = VariableDecl(int_type, 'x')
+        n = Name('y')
+        block = Block([d, Statement(n)])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program, expected_errors=1)
+    
+    def testUndeclaredFunction(self):
+        n = Name('g')
+        block = Block([Statement(FunctionCall(n, []))])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program, expected_errors=1)
+    
+    def testForwardFunctionCall(self):
+        g = FunctionDecl(int_type, 'g', [], Block([]))
+        n = Name('g')
+        block = Block([Statement(n)])
+        program = Program([FunctionDecl(int_type, 'f', [], block), g])
+        self.assertSuccess(program, expected_errors=1)
+        
+        self.assertEquals(n.declaration, None)
+
 if __name__ == '__main__':
     unittest.main()
-        

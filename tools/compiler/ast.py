@@ -61,6 +61,13 @@ class FunctionCall(SyntaxItem):
     def get_parts(self):
         return self.name, self.args
 
+class Name(SyntaxItem):
+    def __init__(self, name):
+        self.name = name
+    
+    def get_parts(self):
+        return [self.name]
+
 class Type(SyntaxItem):
     def __init__(self, name):
         self.name = name
