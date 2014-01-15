@@ -9,7 +9,7 @@ class Flatten(Visitor):
         self.visit(ast)
         
     def visit_FunctionDecl(self, func):
-        cfg = CFG()
+        cfg = CFG(func.name)
         func.cfg = cfg
         prev_node = self.visit(func.body, cfg=cfg, entry=cfg.entry, exit=cfg.exit)
         cfg.connect(prev_node, cfg.exit)
