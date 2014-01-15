@@ -13,24 +13,35 @@ class Node(object):
         return other in self.in_edges
 
 class Entry(Node):
-    pass
+    def __init__(self, name):
+        super(Entry, self).__init__()
+        
+        self.name = name
 
 class Exit(Node):
-    pass
+    def __init__(self, name):
+        super(Exit, self).__init__()
+        
+        self.name = name
 
 class Statement(Node):
     def __init__(self, expr):
         super(Statement, self).__init__()
         self.expression = expr
 
+next_id = 0
+
 class CFG(object):
-    def __init__(self):
+    def __init__(self, name):
         self.nodes = set()
-        self.entry = self.add(Entry())
-        self.exit = self.add(Exit())
+        self.entry = self.add(Entry(name))
+        self.exit = self.add(Exit(name + '_exit'))
     
     def add(self, node):
         self.nodes.add(node)
+        global next_id
+        node.id = next_id
+        next_id += 1
         return node
     
     def connect(self, from_node, to_node, edge=None):
