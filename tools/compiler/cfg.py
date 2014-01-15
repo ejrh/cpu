@@ -1,3 +1,5 @@
+from tree import Tree
+
 class Edge(object):
     pass
 
@@ -9,7 +11,7 @@ def get_next_id():
     next_id += 1
     return id
 
-class Node(object):
+class Node(Tree):
     def __init__(self):
         self.in_edges = {}
         self.out_edges = {}
@@ -21,29 +23,41 @@ class Node(object):
     def connects_from(self, other):
         return other in self.in_edges
     
-    def __repr__(self):
+    def graph_repr(self):
         class_name = self.__class__.__name__
-        return class_name + '<' + str(self.id) + "; " + ','.join(str(x.id) for x in self.out_edges) + '>'
+        return repr(self) + '<' + str(self.id) + "; " + ','.join(str(x.id) for x in self.out_edges) + '>'
 
 class Pass(Node):
     pass
+    
+    def get_parts(self):
+        return []
 
 class Entry(Node):
     def __init__(self, name):
         super(Entry, self).__init__()
         
         self.name = name
+    
+    def get_parts(self):
+        return [self.name]
 
 class Exit(Node):
     def __init__(self, name):
         super(Exit, self).__init__()
         
         self.name = name
+    
+    def get_parts(self):
+        return [self.name]
 
 class Operation(Node):
     def __init__(self, expr):
         super(Operation, self).__init__()
         self.expression = expr
+    
+    def get_parts(self):
+        return [self.expression]
 
 class CFG(object):
     def __init__(self, name):
@@ -64,16 +78,29 @@ class CFG(object):
 
     def has_path(self, *nodes):
         first, rest = nodes[0], nodes[1:]
-        if first not in self.nodes:
+        
+        n = self.find_node(first)
+        if n is None:
             return False
+        
         if len(rest) == 0:
             return True
+        
         for next in first.out_edges.keys():
             if next == rest[0]:
-                if self.has_path(*rest):
+                new_rest = [next] + list(rest[1:])
+                if self.has_path(*new_rest):
                     return True
         
         return False
     
+    def find_node(self, node):
+        if node in self.nodes:
+            return node
+        for n in self.nodes:
+            if n == node:
+                return n
+        return None
+    
     def __repr__(self):
-        return 'CFG<' + ','.join(repr(x) for x in self.nodes) + '>'
+        return 'CFG<' + ','.join(x.graph_repr() for x in self.nodes) + '>'

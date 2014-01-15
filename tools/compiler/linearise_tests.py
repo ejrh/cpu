@@ -1,6 +1,6 @@
 from ast import *
-from cfg import CFG, Operation
-from linearise import Linearise, Label, Jump, Branch, delinearise
+from cfg import CFG, Operation, Pass
+from linearise import Linearise, Label, Jump, Branch, Instruction, delinearise
 from errors import Errors
 import unittest
 
@@ -43,11 +43,21 @@ class DelineariseTests(unittest.TestCase):
         self.assertEquals(cfg.exit.name, 'f$exit')
         self.assertTrue(cfg.has_path(cfg.entry, cfg.exit))
     
+    def testSingleLine(self):
+        lines = [Label('f'), Instruction(42), Label('f$exit')]
+        cfg = delinearise(lines)
+        self.assertTrue(cfg.has_path(cfg.entry, Operation(42), cfg.exit), msg=cfg)
+    
     def testJump(self):
         lines = [Label('f'), Jump('f'), Label('f$exit')]
         cfg = delinearise(lines)
         self.assertTrue(cfg.has_path(cfg.entry, cfg.entry), msg=cfg)
         self.assertFalse(cfg.has_path(cfg.entry, cfg.exit), msg=cfg)
+
+    def testForwardJump(self):
+        lines = [Label('f'), Jump('f2'), Label('f2'), Label('f$exit')]
+        cfg = delinearise(lines)
+        self.assertTrue(cfg.has_path(cfg.entry, Pass(), cfg.exit), msg=cfg)
 
 if __name__ == '__main__':
     unittest.main()

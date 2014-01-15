@@ -30,6 +30,14 @@ class Branch(Line):
     def get_parts(self):
         return [self.expression, self.target]
 
+class Instruction(Line):
+    def __init__(self, expression):
+        super(Instruction, self).__init__()
+        self.expression = expression
+    
+    def get_parts(self):
+        return [self.expression]
+
 class Linearise(Visitor):
     def __init__(self, program, errors):
         self.errors = errors
@@ -116,7 +124,7 @@ def delinearise(lines):
                 target_node = labels[ln.target]
             cfg.connect(node, target_node)
         else:
-            node = cfg.add(ln)
+            node = cfg.add(Operation(ln.expression))
     
         if prev is not None:
             cfg.connect(prev, node)
@@ -125,5 +133,6 @@ def delinearise(lines):
         else:
             prev = None
         
-    cfg.connect(prev, cfg.exit)
+    if prev != cfg.exit:
+        cfg.connect(prev, cfg.exit)
     return cfg
