@@ -1,7 +1,6 @@
-from cfg import CFG
-from cfg import Statement as StatementNode
 from ast import *
-from linearise import Linearise
+from cfg import CFG, Operation
+from linearise import Linearise, Label, Jump, Branch, delinearise
 from errors import Errors
 import unittest
 
@@ -21,19 +20,34 @@ class LineariseTests(unittest.TestCase):
         function.cfg = cfg
         program = Program([function])
         linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, ['f::', 'f_exit::'])
+        self.assertEquals(linearise.lines, [Label('f'), Label('f$exit')])
     
     def testOneStatement(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
         cfg = CFG('f')
-        stmt = cfg.add(StatementNode(42))
+        stmt = cfg.add(Operation(42))
         cfg.connect(cfg.entry, stmt)
         cfg.connect(stmt, cfg.exit)
         function.cfg = cfg
         program = Program([function])
         linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, ['f::', stmt, 'f_exit::'])
+        self.assertEquals(linearise.lines, [Label('f'), stmt, Label('f$exit')])
 
+
+class DelineariseTests(unittest.TestCase):
+    
+    def testSimple(self):
+        lines = [Label('f'), Label('f$exit')]
+        cfg = delinearise(lines)
+        self.assertEquals(cfg.entry.name, 'f')
+        self.assertEquals(cfg.exit.name, 'f$exit')
+        self.assertTrue(cfg.has_path(cfg.entry, cfg.exit))
+    
+    def testJump(self):
+        lines = [Label('f'), Jump('f'), Label('f$exit')]
+        cfg = delinearise(lines)
+        self.assertTrue(cfg.has_path(cfg.entry, cfg.entry), msg=cfg)
+        self.assertFalse(cfg.has_path(cfg.entry, cfg.exit), msg=cfg)
 
 if __name__ == '__main__':
     unittest.main()

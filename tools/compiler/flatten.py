@@ -1,6 +1,5 @@
 from ast import *
-from cfg import CFG
-from cfg import Statement as StatementNode
+from cfg import CFG, Operation
 from visitor import Visitor
 
 class Flatten(Visitor):
@@ -21,7 +20,7 @@ class Flatten(Visitor):
         return prev_node
         
     def visit_Statement(self, stmt, cfg, entry, exit):
-        stmt_node = cfg.add(StatementNode(stmt.expression))
+        stmt_node = cfg.add(Operation(stmt.expression))
         cfg.connect(entry, stmt_node)
         return stmt_node
 

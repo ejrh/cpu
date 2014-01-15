@@ -1,16 +1,32 @@
 class Edge(object):
     pass
 
+next_id = 0
+
+def get_next_id():
+    global next_id
+    id = next_id
+    next_id += 1
+    return id
+
 class Node(object):
     def __init__(self):
         self.in_edges = {}
         self.out_edges = {}
+        self.id = get_next_id()
     
     def connects_to(self, other):
         return other in self.out_edges
     
     def connects_from(self, other):
         return other in self.in_edges
+    
+    def __repr__(self):
+        class_name = self.__class__.__name__
+        return class_name + '<' + str(self.id) + "; " + ','.join(str(x.id) for x in self.out_edges) + '>'
+
+class Pass(Node):
+    pass
 
 class Entry(Node):
     def __init__(self, name):
@@ -24,24 +40,19 @@ class Exit(Node):
         
         self.name = name
 
-class Statement(Node):
+class Operation(Node):
     def __init__(self, expr):
-        super(Statement, self).__init__()
+        super(Operation, self).__init__()
         self.expression = expr
-
-next_id = 0
 
 class CFG(object):
     def __init__(self, name):
         self.nodes = set()
         self.entry = self.add(Entry(name))
-        self.exit = self.add(Exit(name + '_exit'))
+        self.exit = self.add(Exit(name + '$exit'))
     
     def add(self, node):
         self.nodes.add(node)
-        global next_id
-        node.id = next_id
-        next_id += 1
         return node
     
     def connect(self, from_node, to_node, edge=None):
@@ -63,3 +74,6 @@ class CFG(object):
                     return True
         
         return False
+    
+    def __repr__(self):
+        return 'CFG<' + ','.join(repr(x) for x in self.nodes) + '>'

@@ -1,5 +1,34 @@
+from tree import Tree
 from cfg import *
 from visitor import Visitor
+
+class Line(Tree):
+    pass
+
+class Label(Line):
+    def __init__(self, name):
+        super(Label, self).__init__()
+        self.name = name
+    
+    def get_parts(self):
+        return [self.name]
+
+class Jump(Line):
+    def __init__(self, target):
+        super(Jump, self).__init__()
+        self.target = target
+    
+    def get_parts(self):
+        return [self.target]
+
+class Branch(Line):
+    def __init__(self, expression, target):
+        super(Branch, self).__init__()
+        self.expression = expression
+        self.target = target
+    
+    def get_parts(self):
+        return [self.expression, self.target]
 
 class Linearise(Visitor):
     def __init__(self, program, errors):
@@ -41,15 +70,60 @@ class Linearise(Visitor):
     
     def process_node(self, node):
         if isinstance(node, Entry):
-            self.add_line(node.name + '::')
+            self.add_line(Label(node.name))
         elif isinstance(node, Exit):
-            self.add_line(node.name + '::')
+            self.add_line(Label(node.name))
         else:
             self.add_line(node)
         self.done_nodes.add(node)
     
     def emit_label(self, node):
-        self.add_line(str(node.id) + ':')
+        self.add_line(Label(node.id))
 
     def add_line(self, line):
         self.lines.append(line)
+
+
+def delinearise(lines):
+    cfg = None
+    labels = {}
+    prev = None
+    for ln in lines:
+        if cfg is None:
+            cfg = CFG(ln.name)
+            node = cfg.entry
+            labels[ln.name] = node
+            labels[cfg.exit.name] = cfg.exit
+        elif isinstance(ln, Label):
+            if ln.name not in labels:
+                node = cfg.add(Pass())
+                labels[ln.name] = node
+            else:
+                node = labels[ln.name]
+        elif isinstance(ln, Jump):
+            if ln.target not in labels:
+                target_node = cfg.add(Pass())
+                labels[ln.target] = target_node
+            else:
+                target_node = labels[ln.target]
+            cfg.connect(node, target_node)
+        elif isinstance(ln, Branch):
+            node = cfg.add(ln)
+            if ln.target not in labels:
+                target_node = cfg.add(Pass())
+                labels[ln.target] = target_node
+            else:
+                target_node = labels[ln.target]
+            cfg.connect(node, target_node)
+        else:
+            node = cfg.add(ln)
+    
+        if prev is not None:
+            cfg.connect(prev, node)
+        if not isinstance(ln, Jump):
+            prev = node
+        else:
+            prev = None
+        
+    cfg.connect(prev, cfg.exit)
+    return cfg
