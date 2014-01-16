@@ -26,8 +26,15 @@ def make_statement(s, loc, toks):
 def make_function_call(s, loc, toks):
     return [FunctionCall(*toks)]
 
+def make_expression(s, loc, toks):
+    toks = list(toks[0])
+    return [BinaryOperation(toks)]
+
 def make_name(s, loc, toks):
     return [Name(*toks)]
+
+def make_numeral(s, loc, toks):
+    return [Numeral(*toks)]
 
 def make_type(s, loc, toks):
     return [known_types[toks[0]]]
@@ -40,6 +47,7 @@ INT = Keyword("int")
 BOOL = Keyword("bool")
 
 identifier = NotAny(VOID | INT | BOOL) + Word(alphas, alphanums + '_')
+numeral = Word(nums, alphanums + '_').setParseAction(make_numeral)
 
 program = Forward().setParseAction(make_program)
 declaration_list = Forward().setParseAction(make_list)
@@ -52,6 +60,7 @@ statement_list = Forward().setParseAction(make_list)
 statement = Forward().setParseAction(make_statement)
 expression = Forward()
 function_call = Forward().setParseAction(make_function_call)
+atom = Forward()
 name = Forward().setParseAction(make_name)
 arg_list = Forward().setParseAction(make_list)
 type_name = Forward().setParseAction(make_type)
@@ -60,14 +69,21 @@ declaration = function_decl | var_decl
 program << declaration_list
 declaration_list << ZeroOrMore(declaration)
 var_decl << (type_name + identifier + Suppress(';'))
-function_decl << (type_name + identifier + Suppress('(') + arg_decl_list + Suppress(')') + block)
+function_decl << (type_name + identifier + Suppress('(') - arg_decl_list + Suppress(')') - block)
 arg_decl_list << Optional(delimitedList(arg_decl))
 arg_decl << (type_name + identifier)
-block << (Suppress('{') + statement_list + Suppress('}'))
-statement_list << ZeroOrMore(statement);
+block << (Suppress('{') - statement_list + Suppress('}'))
+statement_list << ZeroOrMore(statement)
 statement << (var_decl | (expression + Suppress(';')))
-expression << (function_call | name)
-function_call << (name + Suppress('(') + arg_list + Suppress(')'))
+expression << operatorPrecedence(atom, [
+    (oneOf('* /'), 2, opAssoc.LEFT, make_expression),
+    (oneOf('+ -'), 2, opAssoc.LEFT, make_expression),
+    (oneOf('='), 2, opAssoc.RIGHT, make_expression),
+])
+function_call << (name + Suppress('(') - arg_list + Suppress(')'))
+atom << (function_call | name | numeral)
 name << identifier
 arg_list << Optional(delimitedList(expression))
 type_name << (VOID | INT | BOOL)
+
+program.ignore(cppStyleComment)

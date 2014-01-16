@@ -50,6 +50,13 @@ class Statement(SyntaxItem):
     def get_parts(self):
         return [self.expression]
 
+class BinaryOperation(SyntaxItem):
+    def __init__(self, parts):
+        self.parts = parts
+    
+    def get_parts(self):
+        return self.parts
+
 class FunctionCall(SyntaxItem):
     def __init__(self, name, args):
         self.name, self.args = name, args
@@ -63,6 +70,13 @@ class Name(SyntaxItem):
     
     def get_parts(self):
         return [self.name]
+
+class Numeral(SyntaxItem):
+    def __init__(self, value):
+        self.value = int(value)
+    
+    def get_parts(self):
+        return [self.value]
 
 class Type(SyntaxItem):
     def __init__(self, name):
