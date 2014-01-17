@@ -81,8 +81,10 @@ class Linearise(Visitor):
             self.add_line(Label(node.name))
         elif isinstance(node, Exit):
             self.add_line(Label(node.name))
+        elif isinstance(node, Operation):
+            self.add_line(Instruction(node.expression))
         else:
-            self.add_line(node)
+            raise NotImplementedError("""Node %s could not be linearised""" % repr(node))
         self.done_nodes.add(node)
     
     def emit_label(self, node):

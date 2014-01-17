@@ -31,7 +31,7 @@ class LineariseTests(unittest.TestCase):
         function.cfg = cfg
         program = Program([function])
         linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f'), stmt, Label('f$exit')])
+        self.assertEquals(linearise.lines, [Label('f'), Instruction(42), Label('f$exit')])
 
 
 class DelineariseTests(unittest.TestCase):
