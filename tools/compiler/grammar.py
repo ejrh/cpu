@@ -46,8 +46,8 @@ VOID = Keyword("void")
 INT = Keyword("int")
 BOOL = Keyword("bool")
 
-identifier = NotAny(VOID | INT | BOOL) + Word(alphas, alphanums + '_')
-numeral = Word(nums, alphanums + '_').setParseAction(make_numeral)
+identifier = NotAny(VOID | INT | BOOL) + Word(alphas + '_', alphanums + '_')
+numeral = Word(nums).setParseAction(make_numeral)
 
 program = Forward().setParseAction(make_program)
 declaration_list = Forward().setParseAction(make_list)
