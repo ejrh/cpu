@@ -11,15 +11,13 @@ class Compiler(object):
     
     def compile(self, data):
         self.ast = program_grammar.parseString(data, parseAll=True)[0]
-        print self.ast
-        sys.exit(1)
         self.varcheck = VarCheck(self.ast, self.errors)
         self.flatten = Flatten(self.ast, self.errors)
         self.lin = Linearise(self.ast, self.errors)
         return self.lin.lines
 
 def compile(filename):
-    f =open(filename, 'rt')
+    f = open(filename, 'rt')
     data = f.read()
     f.close()
     
