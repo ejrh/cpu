@@ -41,7 +41,12 @@ class SymbolTable(object):
 class VarCheck(Visitor):
     def __init__(self, ast, errors):
         self.errors = errors
-        self.visit(ast, table=None)
+        
+        builtin_scope = SymbolTable()
+        for n, b in known_builtins.items():
+            builtin_scope.add(n, b, errors)
+
+        self.visit(ast, table=builtin_scope)
         
     def visit_Program(self, program, table):
         self.make_scope(program, table)

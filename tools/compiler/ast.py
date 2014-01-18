@@ -29,6 +29,13 @@ class FunctionDecl(SyntaxItem):
     def get_parts(self):
         return self.type, self.name, self.args, self.body
 
+class Builtin(SyntaxItem):
+    def __init__(self, type, name, args):
+        self.type, self.name, self.args = type, name, args
+    
+    def get_parts(self):
+        return self.type, self.name, self.args
+
 class ArgDecl(SyntaxItem):
     def __init__(self, type, name):
         self.type, self.name = type, name
@@ -50,28 +57,31 @@ class Statement(SyntaxItem):
     def get_parts(self):
         return [self.expression]
 
-class BinaryOperation(SyntaxItem):
+class Expression(SyntaxItem):
+    pass
+
+class BinaryOperation(Expression):
     def __init__(self, parts):
         self.parts = parts
     
     def get_parts(self):
         return self.parts
 
-class FunctionCall(SyntaxItem):
+class FunctionCall(Expression):
     def __init__(self, name, args):
         self.name, self.args = name, args
     
     def get_parts(self):
         return self.name, self.args
 
-class Name(SyntaxItem):
+class Name(Expression):
     def __init__(self, name):
         self.name = name
     
     def get_parts(self):
         return [self.name]
 
-class Numeral(SyntaxItem):
+class Numeral(Expression):
     def __init__(self, value):
         self.value = int(value)
     
@@ -90,3 +100,9 @@ int_type = Type('int')
 bool_type = Type('bool')
 
 known_types = { 'void': void_type, 'int': int_type, 'bool': bool_type }
+
+out_builtin = Builtin(void_type, '__out__', [ArgDecl(int_type, 'value'), ArgDecl(int_type, 'port')])
+
+known_builtins = {
+    '__out__': out_builtin
+}

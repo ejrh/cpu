@@ -69,6 +69,18 @@ class CFG(object):
         self.nodes.add(node)
         return node
     
+    def insert_before(self, target, new_node, new_edge=None):
+        self.add(new_node)
+        
+        if new_edge is None:
+            new_edge = Edge()
+        
+        for old_predecessor, old_edge in target.in_edges.items():
+            self.disconnect(old_predecessor, target)
+            self.connect(old_predecessor, old_edge, new_node)
+        
+        self.connect(new_node, new_edge, target)
+    
     def connect(self, *nodes_and_edges):
         """Connect a sequence of nodes and edges in the CFG."""
         
@@ -95,6 +107,8 @@ class CFG(object):
             if not isinstance(edge, Edge):
                 value_error = True
                 break
+            self.add(from_node)
+            self.add(to_node)
             tuples.append((from_node, edge, to_node))
             
         if value_error:
@@ -103,6 +117,10 @@ class CFG(object):
         for from_node, edge, to_node in tuples:
             from_node.out_edges[to_node] = edge
             to_node.in_edges[from_node] = edge
+
+    def disconnect(self, from_node, to_node):
+        del from_node.out_edges[to_node]
+        del to_node.in_edges[from_node]
 
     def has_path(self, *nodes):
         first, rest = nodes[0], nodes[1:]

@@ -72,7 +72,10 @@ class VarCheckSymbolTableTests(VarCheckTests):
         program = Program([])
         self.assertSuccess(program)
         self.assertEquals(program.symbol_table.get_names(), set())
-        self.assertIsNone(program.symbol_table.parent)
+        parent_table = program.symbol_table.parent
+        for n in known_builtins.keys():
+            self.assertTrue(n in parent_table.symbols)
+        self.assertIsNone(parent_table.parent)
 
     def testVariableDecl(self):
         program = Program([VariableDecl(int_type, 'x')])
@@ -88,7 +91,6 @@ class VarCheckSymbolTableTests(VarCheckTests):
         program = Program([FunctionDecl(int_type, 'f', [ArgDecl(int_type, 'x')], Block([]))])
         self.assertSuccess(program)
         self.assertEquals(program.symbol_table.get_names(), set(['f']))
-        self.assertIsNone(program.symbol_table.parent)
         
         st = program.declarations[0].symbol_table
         self.assertEquals(st.get_names(), set(['x']))
@@ -101,7 +103,7 @@ class VarCheckSymbolTableTests(VarCheckTests):
         
         st = block.symbol_table
         self.assertEquals(st.get_names(), set(['x']))
-        self.assertEquals(st.get_all_names(), set(['f', 'x']))
+        self.assertEquals(st.get_all_names() - set(known_builtins.keys()), set(['f', 'x']))
         self.assertEquals(st.parent.parent, program.symbol_table)
 
 class VarCheckVariableTests(VarCheckTests):
