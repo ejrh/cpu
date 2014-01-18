@@ -69,12 +69,40 @@ class CFG(object):
         self.nodes.add(node)
         return node
     
-    def connect(self, from_node, to_node, edge=None):
-        if edge is None:
-            edge = Edge()
-        from_node.out_edges[to_node] = edge
-        to_node.in_edges[from_node] = edge
-        return edge
+    def connect(self, *nodes_and_edges):
+        """Connect a sequence of nodes and edges in the CFG."""
+        
+        value_error = False
+        i = 0
+        tuples = []
+        while i < len(nodes_and_edges) - 1:
+            from_node = nodes_and_edges[i]
+            if not isinstance(from_node, Node):
+                value_error = True
+                break
+            
+            to_node = nodes_and_edges[i+1]
+            if isinstance(to_node, Edge):
+                edge = to_node
+                to_node = nodes_and_edges[i+2]
+                i += 2
+            else:
+                edge = Edge()
+                i += 1
+            if not isinstance(to_node, Node):
+                value_error = True
+                break
+            if not isinstance(edge, Edge):
+                value_error = True
+                break
+            tuples.append((from_node, edge, to_node))
+            
+        if value_error:
+            raise ValueError('Expected a list of nodes, with an optional edge between each pair, was: ' + repr(nodes_and_edges))
+        
+        for from_node, edge, to_node in tuples:
+            from_node.out_edges[to_node] = edge
+            to_node.in_edges[from_node] = edge
 
     def has_path(self, *nodes):
         first, rest = nodes[0], nodes[1:]

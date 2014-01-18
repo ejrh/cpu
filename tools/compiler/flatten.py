@@ -24,3 +24,5 @@ class Flatten(Visitor):
         cfg.connect(entry, stmt_node)
         return stmt_node
 
+    def visit_VariableDecl(self, stmt, cfg, entry, exit):
+        return entry
