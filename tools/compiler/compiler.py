@@ -5,6 +5,7 @@ from varcheck import VarCheck
 from flatten import Flatten
 from reduce import Reduce
 from linearise import Linearise
+from render import Render
 
 class Compiler(object):
     def __init__(self):
@@ -16,7 +17,8 @@ class Compiler(object):
         self.flatten = Flatten(self.ast, self.errors)
         self.reduce = Reduce(self.ast, self.errors)
         self.lin = Linearise(self.ast, self.errors)
-        return self.lin.lines
+        self.render = Render(self.lin.lines, self.errors)
+        return self.render.lines
 
 def compile(filename):
     f = open(filename, 'rt')
