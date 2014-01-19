@@ -6,12 +6,13 @@ class Line(Tree):
     pass
 
 class Label(Line):
-    def __init__(self, name):
+    def __init__(self, name, public=False):
         super(Label, self).__init__()
         self.name = name
+        self.public = public
     
     def get_parts(self):
-        return [self.name]
+        return [self.name, self.public]
 
 class Jump(Line):
     def __init__(self, target):
@@ -78,9 +79,9 @@ class Linearise(Visitor):
     
     def process_node(self, node):
         if isinstance(node, Entry):
-            self.add_line(Label(node.name))
+            self.add_line(Label(node.name, public=True))
         elif isinstance(node, Exit):
-            self.add_line(Label(node.name))
+            self.add_line(Label(node.name, public=True))
         elif isinstance(node, Operation):
             self.add_line(Instruction(node.expression))
         else:

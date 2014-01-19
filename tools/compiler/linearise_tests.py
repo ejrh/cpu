@@ -20,7 +20,7 @@ class LineariseTests(unittest.TestCase):
         function.cfg = cfg
         program = Program([function])
         linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f'), Label('f$exit')])
+        self.assertEquals(linearise.lines, [Label('f', public=True), Label('f$exit', public=True)])
     
     def testOneStatement(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
@@ -31,7 +31,7 @@ class LineariseTests(unittest.TestCase):
         function.cfg = cfg
         program = Program([function])
         linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f'), Instruction(42), Label('f$exit')])
+        self.assertEquals(linearise.lines, [Label('f', public=True), Instruction(42), Label('f$exit', public=True)])
 
 
 class DelineariseTests(unittest.TestCase):
