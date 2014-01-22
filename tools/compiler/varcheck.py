@@ -64,11 +64,42 @@ class VarCheck(Visitor):
     def visit_Block(self, block, table):
         self.make_scope(block, table)
 
+    def visit_Numeral(self, num, table):
+        num.type = int_type
+
     def visit_Name(self, name, table):
         decl = table.lookup(name.name)
         if decl is None:
             self.errors.error(name.get_location(), """Undeclared name '%s'""" % name.name)
+            name.declaration = None
+            name.type = None
+            return
+        
         name.declaration = decl
+        name.type = decl.type
+
+    def visit_FunctionCall(self, fc, table):
+        self.visit_parts(fc, table=table)
+        
+        decl = fc.name.declaration
+        if not isinstance(decl, FunctionDecl) and not isinstance(decl, Builtin):
+            self.errors.error(fc.get_location(), """Name '%s' does not refer to a function""" % fc.name.name)
+            fc.declaration = None
+            fc.type = None
+            return
+        
+        fc.declaration = decl
+        fc.type = fc.name.type
+        
+        if len(fc.args) != len(decl.args):
+            self.errors.error(fc.get_location(), """Function '%s' expects %d arguments (got %d)""" % (decl.name, len(decl.args), len(fc.args)))
+            return
+        
+        for i in range(len(fc.args)):
+            call_arg = fc.args[i]
+            arg_decl = decl.args[i]
+            if call_arg.type != arg_decl.type:
+                self.errors.error(call_arg.get_location(), """Function '%s' expected a %s argument in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
 
     def make_scope(self, target, table):
         st = SymbolTable(table)

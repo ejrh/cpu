@@ -157,5 +157,96 @@ class VarCheckVariableTests(VarCheckTests):
         
         self.assertEquals(n.declaration, None)
 
+class VarCheckSymbolTableTests(VarCheckTests):
+
+    def testEmpty(self):
+        program = Program([])
+        self.assertSuccess(program)
+        self.assertEquals(program.symbol_table.get_names(), set())
+        parent_table = program.symbol_table.parent
+        for n in known_builtins.keys():
+            self.assertTrue(n in parent_table.symbols)
+        self.assertIsNone(parent_table.parent)
+
+    def testVariableDecl(self):
+        program = Program([VariableDecl(int_type, 'x')])
+        self.assertSuccess(program)
+        self.assertEquals(program.symbol_table.get_names(), set(['x']))
+
+    def testFunctionDecl(self):
+        program = Program([FunctionDecl(int_type, 'f', [], Block([]))])
+        self.assertSuccess(program)
+        self.assertEquals(program.symbol_table.get_names(), set(['f']))
+        
+    def testFunctionArgDecl(self):
+        program = Program([FunctionDecl(int_type, 'f', [ArgDecl(int_type, 'x')], Block([]))])
+        self.assertSuccess(program)
+        self.assertEquals(program.symbol_table.get_names(), set(['f']))
+        
+        st = program.declarations[0].symbol_table
+        self.assertEquals(st.get_names(), set(['x']))
+        self.assertEquals(st.parent, program.symbol_table)
+        
+    def testFunctionBlock(self):
+        block = Block([VariableDecl(int_type, 'x')])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        st = block.symbol_table
+        self.assertEquals(st.get_names(), set(['x']))
+        self.assertEquals(st.get_all_names() - set(known_builtins.keys()), set(['f', 'x']))
+        self.assertEquals(st.parent.parent, program.symbol_table)
+
+class VarCheckTypeTests(VarCheckTests):
+
+    def testNumeralType(self):
+        n = Numeral(7)
+        program = Program([
+            FunctionDecl(int_type, 'f', [], Block([Statement(n)]))
+        ])
+        self.assertSuccess(program)
+        self.assertEquals(n.type, int_type)
+
+    def testNameType(self):
+        n = Name('x')
+        program = Program([
+            VariableDecl(int_type, 'x'),
+            FunctionDecl(int_type, 'f', [], Block([Statement(n)]))
+        ])
+        self.assertSuccess(program)
+        self.assertEquals(n.type, int_type)
+
+    def testFunctionCallType(self):
+        fc = FunctionCall(Name('g'), [])
+        program = Program([
+            FunctionDecl(int_type, 'g', [], Block([])),
+            FunctionDecl(void_type, 'f', [], Block([Statement(fc)]))
+        ])
+        self.assertSuccess(program)
+        self.assertEquals(fc.type, int_type)
+
+    def testFunctionArguments(self):
+        fc = FunctionCall(Name('g'), [Numeral(42)])
+        program = Program([
+            FunctionDecl(int_type, 'g', [ArgDecl(bool_type, 'x')], Block([])),
+            FunctionDecl(void_type, 'f', [], Block([Statement(fc)]))
+        ])
+        self.assertSuccess(program, expected_errors=1)
+
+    def testBuiltinCallType(self):
+        fc = FunctionCall(Name('__out__'), [Numeral(4), Numeral(5)])
+        program = Program([
+            FunctionDecl(void_type, 'f', [], Block([Statement(fc)]))
+        ])
+        self.assertSuccess(program)
+        self.assertEquals(fc.type, void_type)
+
+    def testBuiltinArguments(self):
+        fc = FunctionCall(Name('__out__'), [Numeral(5)])
+        program = Program([
+            FunctionDecl(void_type, 'f', [], Block([Statement(fc)]))
+        ])
+        self.assertSuccess(program, expected_errors=1)
+
 if __name__ == '__main__':
     unittest.main()
