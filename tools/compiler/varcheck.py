@@ -83,7 +83,8 @@ class VarCheck(Visitor):
         
         decl = fc.name.declaration
         if not isinstance(decl, FunctionDecl) and not isinstance(decl, Builtin):
-            self.errors.error(fc.get_location(), """Name '%s' does not refer to a function""" % fc.name.name)
+            if decl is not None:
+                self.errors.error(fc.get_location(), """Name '%s' does not refer to a function""" % fc.name.name)
             fc.declaration = None
             fc.type = None
             return
@@ -99,7 +100,7 @@ class VarCheck(Visitor):
             call_arg = fc.args[i]
             arg_decl = decl.args[i]
             if call_arg.type != arg_decl.type:
-                self.errors.error(call_arg.get_location(), """Function '%s' expected a %s argument in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
+                self.errors.error(call_arg.get_location(), """Function '%s' expects a %s argument in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
 
     def make_scope(self, target, table):
         st = SymbolTable(table)
