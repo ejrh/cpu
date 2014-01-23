@@ -52,9 +52,24 @@ class BlockTests(GrammarTests):
         expected = Block([VariableDecl(int_type, 'x')])
         self.assertSuccess(input, expected)
         
+    def testSingleVariable(self):
+        input = """{ x; }"""
+        expected = Block([Statement(Name('x'))])
+        self.assertSuccess(input, expected)
+        
     def testFunctionCallWithOneArgument(self):
         input = """{ f(x); }"""
         expected = Block([Statement(FunctionCall(Name('f'), [Name('x')]))])
+        self.assertSuccess(input, expected)
+        
+    def testIfStatement(self):
+        input = """{ if(c) { } }"""
+        expected = Block([IfStatement(Name('c'), Block([]))])
+        self.assertSuccess(input, expected)
+        
+    def testWhileStatement(self):
+        input = """{ while (c) { } }"""
+        expected = Block([WhileStatement(Name('c'), Block([]))])
         self.assertSuccess(input, expected)
 
 if __name__ == '__main__':

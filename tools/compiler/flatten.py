@@ -1,5 +1,5 @@
 from ast import *
-from cfg import CFG, Operation
+from cfg import CFG, Operation, Pass, TrueEdge, FalseEdge
 from visitor import Visitor
 
 class Flatten(Visitor):
@@ -23,6 +23,36 @@ class Flatten(Visitor):
         stmt_node = cfg.add(Operation(stmt.expression))
         cfg.connect(entry, stmt_node)
         return stmt_node
+
+    def visit_IfStatement(self, stmt, cfg, entry, exit):
+        cond_node = cfg.add(Operation(stmt.expression))
+        cfg.connect(entry, cond_node)
+        
+        no_node = cfg.add(Pass())
+        cfg.connect(cond_node, FalseEdge(), no_node)
+        
+        yes_node  = cfg.add(Pass())
+        cfg.connect(cond_node, TrueEdge(), yes_node)
+        
+        prev_node = yes_node
+        prev_node = self.visit(stmt.block, cfg=cfg, entry=prev_node, exit=exit)
+        cfg.connect(prev_node, no_node)
+        return no_node
+
+    def visit_WhileStatement(self, stmt, cfg, entry, exit):
+        cond_node = cfg.add(Operation(stmt.expression))
+        cfg.connect(entry, cond_node)
+        
+        no_node = cfg.add(Pass())
+        cfg.connect(cond_node, FalseEdge(), no_node)
+        
+        yes_node  = cfg.add(Pass())
+        cfg.connect(cond_node, TrueEdge(), yes_node)
+        
+        prev_node = yes_node
+        prev_node = self.visit(stmt.block, cfg=cfg, entry=prev_node, exit=exit)
+        cfg.connect(prev_node, cond_node)
+        return no_node
 
     def visit_VariableDecl(self, stmt, cfg, entry, exit):
         return entry

@@ -57,6 +57,22 @@ class Statement(SyntaxItem):
     def get_parts(self):
         return [self.expression]
 
+class IfStatement(SyntaxItem):
+    def __init__(self, expression, block):
+        self.expression = expression
+        self.block = block
+    
+    def get_parts(self):
+        return [self.expression, self.block]
+
+class WhileStatement(SyntaxItem):
+    def __init__(self, expression, block):
+        self.expression = expression
+        self.block = block
+    
+    def get_parts(self):
+        return [self.expression, self.block]
+
 class Expression(SyntaxItem):
     pass
 

@@ -5,3 +5,6 @@ class Tree(object):
     
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.get_parts() == other.get_parts()
+    
+    def __ne__(self, other):
+        return not (self == other)

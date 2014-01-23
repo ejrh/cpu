@@ -1,7 +1,21 @@
 from tree import Tree
 
-class Edge(object):
-    pass
+class Edge(Tree):
+    def get_parts(self):
+        return []
+    
+    def graph_repr(self):
+        return '-'
+
+class TrueEdge(Edge):
+    
+    def graph_repr(self):
+        return 'T'
+
+class FalseEdge(Edge):
+    
+    def graph_repr(self):
+        return 'F'
 
 next_id = 0
 
@@ -25,7 +39,7 @@ class Node(Tree):
     
     def graph_repr(self):
         class_name = self.__class__.__name__
-        return repr(self) + '<' + str(self.id) + "; " + ','.join(str(x.id) for x in self.out_edges) + '>'
+        return "<%d>" % self.id + repr(self) + '<' + ','.join(e.graph_repr() + str(x.id) for x,e in self.out_edges.items()) + '>'
 
 class Pass(Node):
     pass
@@ -66,7 +80,8 @@ class CFG(object):
         self.exit = self.add(Exit(name + '$exit'))
     
     def add(self, node):
-        self.nodes.add(node)
+        if node not in self.nodes:
+            self.nodes.add(node)
         return node
     
     def insert_before(self, target, new_node, new_edge=None):
@@ -81,9 +96,7 @@ class CFG(object):
         
         self.connect(new_node, new_edge, target)
     
-    def connect(self, *nodes_and_edges):
-        """Connect a sequence of nodes and edges in the CFG."""
-        
+    def fill_node_edge_list(self, nodes_and_edges):
         value_error = False
         i = 0
         tuples = []
@@ -107,14 +120,21 @@ class CFG(object):
             if not isinstance(edge, Edge):
                 value_error = True
                 break
-            self.add(from_node)
-            self.add(to_node)
             tuples.append((from_node, edge, to_node))
             
         if value_error:
             raise ValueError('Expected a list of nodes, with an optional edge between each pair, was: ' + repr(nodes_and_edges))
         
+        return tuples
+    
+    def connect(self, *nodes_and_edges):
+        """Connect a sequence of nodes and edges in the CFG."""
+        
+        tuples = self.fill_node_edge_list(nodes_and_edges)
+        
         for from_node, edge, to_node in tuples:
+            self.add(from_node)
+            self.add(to_node)
             from_node.out_edges[to_node] = edge
             to_node.in_edges[from_node] = edge
 
@@ -122,21 +142,26 @@ class CFG(object):
         del from_node.out_edges[to_node]
         del to_node.in_edges[from_node]
 
-    def has_path(self, *nodes):
-        first, rest = nodes[0], nodes[1:]
+    def has_path(self, *nodes_and_edges):
+        tuples = self.fill_node_edge_list(nodes_and_edges)
         
-        n = self.find_node(first)
-        if n is None:
-            return False
+        first, rest = tuples[0], tuples[1:]
         
-        if len(rest) == 0:
+        n = self.find_node(first[0])
+        return self.has_path_from(n, tuples)
+    
+    def has_path_from(self, node, node_tuples):
+        if node_tuples == []:
             return True
         
-        for next in first.out_edges.keys():
-            if next == rest[0]:
-                new_rest = [next] + list(rest[1:])
-                if self.has_path(*new_rest):
-                    return True
+        first, rest = node_tuples[0], node_tuples[1:]
+        
+        if node != first[0]:
+            return False
+        
+        for next,edge in node.out_edges.items():
+            if edge == first[1] and next == first[2] and self.has_path_from(next, rest):
+                return True
         
         return False
     
@@ -149,4 +174,4 @@ class CFG(object):
         return None
     
     def __repr__(self):
-        return 'CFG<' + ','.join(x.graph_repr() for x in self.nodes) + '>'
+        return 'CFG<' + ', '.join(x.graph_repr() for x in self.nodes) + '>'

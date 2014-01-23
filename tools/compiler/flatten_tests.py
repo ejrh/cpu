@@ -1,9 +1,10 @@
 from ast import *
+from cfg import *
 from flatten import Flatten
 from errors import Errors
 import unittest
 
-class VarCheckTests(unittest.TestCase):
+class FlattenTests(unittest.TestCase):
 
     def assertSuccess(self, input):
         errors = Errors()
@@ -43,6 +44,20 @@ class VarCheckTests(unittest.TestCase):
         stmt_node = func.cfg.entry.out_edges.keys()[0]
         self.assertHasPath(func.cfg, func.cfg.entry, stmt_node, func.cfg.exit)
     
+    def testIfStatement(self):
+        func = FunctionDecl(int_type, 'f', [], Block([IfStatement(Name('x'), Block([Statement(Name('y'))]))]))
+        self.assertSuccess(func)
+        stmt_node = func.cfg.entry.out_edges.keys()[0]
+        self.assertHasPath(func.cfg, func.cfg.entry, Operation(Name('x')), TrueEdge(), Pass(), Operation(Name('y')), Pass(), func.cfg.exit)
+        self.assertHasPath(func.cfg, func.cfg.entry, Operation(Name('x')), FalseEdge(), Pass(), func.cfg.exit)
+    
+    def testWhileStatement(self):
+        func = FunctionDecl(int_type, 'f', [], Block([WhileStatement(Name('x'), Block([Statement(Name('y'))]))]))
+        self.assertSuccess(func)
+        stmt_node = func.cfg.entry.out_edges.keys()[0]
+        self.assertHasPath(func.cfg, func.cfg.entry, Operation(Name('x')), TrueEdge(), Pass(), Operation(Name('y')), Operation(Name('x')), FalseEdge(), Pass(), func.cfg.exit)
+        self.assertHasPath(func.cfg, func.cfg.entry, Operation(Name('x')), FalseEdge(), Pass(), func.cfg.exit)
+
 
 if __name__ == '__main__':
     unittest.main()

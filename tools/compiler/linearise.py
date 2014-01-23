@@ -61,7 +61,7 @@ class Linearise(Visitor):
             if node in self.done_nodes:
                 continue
             
-            if len(node.in_edges) > 1 or not cfg.has_path(last_node, node) and not isinstance(node, Entry):
+            if (len(node.in_edges) > 1 or last_node is None or not cfg.has_path(last_node, node)) and not isinstance(node, Entry):
                 self.emit_label(node)
             
             self.process_node(node)
