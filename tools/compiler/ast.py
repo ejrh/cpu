@@ -92,6 +92,9 @@ class FunctionCall(Expression):
 
 class Name(Expression):
     def __init__(self, name):
+        if isinstance(name, VariableDecl):
+            self.declaration = name
+            name = name.name
         self.name = name
     
     def get_parts(self):
