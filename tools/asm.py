@@ -48,7 +48,7 @@ instr_defs = {
 
 comment_pattern = re.compile(r'\s*;.*')
 arg_separator_pattern = re.compile(r'(?:\s|,)+')
-line_pattern = re.compile(r'^\s* ((?P<label> [A-Za-z_][A-Za-z_0-9]*)\s*::?)? \s* ((?P<instr> [A-Za-z_][A-Za-z_0-9]*) (?P<args> ( (\s|,)+ ([$]r\d+|\d+|[A-Za-z_][A-Za-z_0-9]*) )*))?\s*$', re.VERBOSE)
+line_pattern = re.compile(r'^\s* ((?P<label> [A-Za-z_][A-Za-z_$0-9]*)\s*::?)? \s* ((?P<instr> [A-Za-z_][A-Za-z_$0-9]*) (?P<args> ( (\s|,)+ ([$]r\d+|\d+|[A-Za-z_][A-Za-z_$0-9]*) )*))?\s*$', re.VERBOSE)
 
 class Assembler(object):
     def __init__(self, options):
