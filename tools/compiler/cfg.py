@@ -73,6 +73,22 @@ class Operation(Node):
     def get_parts(self):
         return [self.expression]
 
+class Test(Node):
+    def __init__(self, cond):
+        super(Test, self).__init__()
+        self.condition = cond
+    
+    def get_parts(self):
+        return [self.condition]
+
+class Return(Node):
+    def __init__(self, expr):
+        super(Return, self).__init__()
+        self.expression = expr
+    
+    def get_parts(self):
+        return [self.expression]
+
 class CFG(object):
     def __init__(self, name):
         self.nodes = set()

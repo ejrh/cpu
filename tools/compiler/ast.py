@@ -73,6 +73,13 @@ class WhileStatement(SyntaxItem):
     def get_parts(self):
         return [self.expression, self.block]
 
+class ReturnStatement(SyntaxItem):
+    def __init__(self, expression):
+        self.expression = expression
+    
+    def get_parts(self):
+        return [self.expression]
+
 class Expression(SyntaxItem):
     pass
 

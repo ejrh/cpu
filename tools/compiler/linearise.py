@@ -84,6 +84,8 @@ class Linearise(Visitor):
             self.add_line(Label(node.name, public=True))
         elif isinstance(node, Operation):
             self.add_line(Instruction(node.expression))
+        elif isinstance(node, Test):
+            self.add_line(Branch(node.expression))
         else:
             raise NotImplementedError("""Node %s could not be linearised""" % repr(node))
         self.done_nodes.add(node)
