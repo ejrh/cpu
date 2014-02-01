@@ -31,9 +31,9 @@ class Reduce(Visitor):
         while len(stack) != 0:
             node = stack.pop()
             
-            if isinstance(node, Operation):
+            if isinstance(node, (Operation, Test, Return)):
                 changed = self.process_node(node, function=function, cfg=cfg)
-            elif isinstance(node, (Entry, Exit)):
+            elif isinstance(node, (Entry, Exit, Pass)):
                 changed = False
             else:
                 raise NotImplementedError(node)
@@ -72,7 +72,8 @@ class Reduce(Visitor):
                 cfg.insert_before(node, new_assign_op)
                 expr.parts[2] = temp_name
                 return True
-                
+        elif isinstance(expr, Name):
+            pass    
         else:
             raise NotImplementedError(expr)
         

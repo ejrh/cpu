@@ -76,10 +76,10 @@ class Operation(Node):
 class Test(Node):
     def __init__(self, cond):
         super(Test, self).__init__()
-        self.condition = cond
+        self.expression = cond
     
     def get_parts(self):
-        return [self.condition]
+        return [self.expression]
 
 class Return(Node):
     def __init__(self, expr):
