@@ -39,6 +39,7 @@ class Reduce(Visitor):
                 raise NotImplementedError(node)
             
             if changed:
+                stack.append(node)
                 for new_node in node.out_edges.keys():
                     stack.append(new_node)
                 for new_node in node.in_edges.keys():
