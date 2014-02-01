@@ -91,7 +91,7 @@ while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')')
 expression << operatorPrecedence(atom, [
     (oneOf('* /'), 2, opAssoc.LEFT, make_expression),
     (oneOf('+ -'), 2, opAssoc.LEFT, make_expression),
-    (oneOf('< > != =='), 2, opAssoc.LEFT, make_expression),
+    (oneOf('< > <= >= != =='), 2, opAssoc.LEFT, make_expression),
     (oneOf('='), 2, opAssoc.RIGHT, make_expression),
 ])
 function_call << (name + Suppress('(') - arg_list + Suppress(')'))

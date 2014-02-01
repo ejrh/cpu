@@ -25,17 +25,24 @@ class Reduce(Visitor):
     def process_cfg(self, cfg, function):
         stack = []
         
-        stack.append(cfg.entry)
+        stack.extend(cfg.nodes)
         last_node = None
         
         while len(stack) != 0:
             node = stack.pop()
             
             if isinstance(node, Operation):
-                self.process_node(node, function=function, cfg=cfg)
+                changed = self.process_node(node, function=function, cfg=cfg)
+            elif isinstance(node, (Entry, Exit)):
+                changed = False
+            else:
+                raise NotImplementedError(node)
             
-            for new_node in node.out_edges.keys():
-                stack.append(new_node)
+            if changed:
+                for new_node in node.out_edges.keys():
+                    stack.append(new_node)
+                for new_node in node.in_edges.keys():
+                    stack.append(new_node)
     
     def process_node(self, node, function, cfg):
         expr = node.expression
@@ -45,18 +52,46 @@ class Reduce(Visitor):
                 new_arg = self.visit(arg, node=node, function=function, cfg=cfg)
                 if new_arg is not None:
                     expr.args[i] = new_arg
+                    return True
+        elif isinstance(expr, BinaryOperation):
+            if len(expr.parts) > 3:
+                new_assign_op, temp_name = self.assign_to_temporary(function, BinaryOperation(expr.parts[:3]))
+                cfg.insert_before(node, new_assign_op)
+                expr.parts = [temp_name] + expr.parts[3:]
+                return True
+            
+            if not isinstance(expr.parts[0], Name):
+                new_assign_op, temp_name = self.assign_to_temporary(function, expr.parts[0])
+                cfg.insert_before(node, new_assign_op)
+                expr.parts[0] = temp_name
+                return True
+            
+            if expr.parts[1] != '=' and not isinstance(expr.parts[2], Name):
+                new_assign_op, temp_name = self.assign_to_temporary(function, expr.parts[2])
+                cfg.insert_before(node, new_assign_op)
+                expr.parts[2] = temp_name
+                return True
+                
+        else:
+            raise NotImplementedError(expr)
+        
+        return False
     
     def visit_Numeral(self, expr, node, function, cfg):
-        temp_decl = self.create_temporary(function, int_type)
+        new_assign_op, temp_name = self.assign_to_temporary(function, expr)
+        cfg.insert_before(node, new_assign_op)
+        
+        return temp_name
+
+    def assign_to_temporary(self, function, expr):
+        temp_decl = self.create_temporary(function, expr.type)
         
         new_name_expr = Name(temp_decl.name)
         new_name_expr.declaration = temp_decl
         
         new_assignment_op = Operation(BinaryOperation([new_name_expr, '=', expr]))
-        cfg.insert_before(node, new_assignment_op)
-        
-        return new_name_expr
-
+        return new_assignment_op, new_name_expr
+    
     def create_temporary(self, function, var_type):
         id = get_next_temporary_id()
         decl = VariableDecl(var_type, id)

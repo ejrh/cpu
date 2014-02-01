@@ -19,9 +19,23 @@ class Render(Visitor):
         line = 'jmp ' + jump.target
         self.add_line(line)
 
+    def visit_Instruction(self, instr):
+        self.visit_parts(instr)
+
     def visit_BinaryOperation(self, op):
         if op.parts[1] == '=' and isinstance(op.parts[2], Numeral):
             line = 'mov %d, %s' % (op.parts[2].value, op.parts[0].name)
+        elif op.parts[1] == '=' and isinstance(op.parts[2], BinaryOperation):
+            dest = op.parts[0]
+            arg1 = op.parts[2].parts[0]
+            arg2 = op.parts[2].parts[2]
+            opr = op.parts[1]
+            if opr == '<':
+                line = 'slt %s, %s, %s' % (arg1.name, arg2.name, dest.name)
+            elif opr == '+':
+                line = 'add %s, %s, %s' % (arg1.name, arg2.name, dest.name)
+            else:
+                raise NotImplementedError(repr(op))
         else:
             raise NotImplementedError(repr(op))
         self.add_line(line)

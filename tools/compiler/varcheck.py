@@ -78,6 +78,35 @@ class VarCheck(Visitor):
         name.declaration = decl
         name.type = decl.type
 
+    def visit_BinaryOperation(self, op, table):
+        self.visit_parts(op, table=table)
+        
+        first_op = op.parts[1]
+        if first_op in ['+', '-', '*', '/']:
+            input_type = int_type
+            output_type = int_type
+        elif first_op in ['<', '>', '<=', '>=']:
+            input_type = int_type
+            output_type = bool_type
+        elif first_op in ['==', '!=']:
+            input_type = op.parts[0].type
+            output_type = bool_type
+        elif first_op in ['=']:
+            input_type = op.parts[0].type
+            output_type = input_type
+        else:
+            raise NotImplementedError(op.parts[1])
+        
+        op_name = first_op
+        for arg in op.parts:
+            if isinstance(arg, Expression):
+                if arg.type != input_type:
+                    self.errors.error(arg.get_location(), """Operator %s expects arguments of type %s (got %s)""" % (op_name, input_type.name, arg.type.name))
+            else:
+                op_name = arg
+        
+        op.type = output_type
+
     def visit_FunctionCall(self, fc, table):
         self.visit_parts(fc, table=table)
         
