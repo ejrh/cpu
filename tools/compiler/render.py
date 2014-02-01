@@ -42,10 +42,18 @@ class Render(Visitor):
 
     def visit_FunctionCall(self, fc):
         if fc.name.declaration == out_builtin:
-            line = 'out %s, %s' % (fc.args[0].name, fc.args[1].name)
+            line = 'out %s, %s' % (fc.args[0].name, self.render(fc.args[1]))
         else:
             raise NotImplementedError(repr(op))
         self.add_line(line)
 
     def add_line(self, line):
         self.lines.append(line)
+
+    def render(self, expr):
+        if isinstance(expr, Numeral):
+            return str(expr.value)
+        elif isinstance(expr, Name):
+            return expr.name
+        else:
+            raise NotImplementedError(repr(op))
