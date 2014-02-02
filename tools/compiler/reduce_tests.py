@@ -15,7 +15,11 @@ class ReduceTests(unittest.TestCase):
     def testOut(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
         cfg = CFG('f')
-        stmt = Operation(FunctionCall(Name('__out__'), [Numeral(5), Numeral(1)]))
+        n5 = Numeral(5)
+        n5.type = int_type
+        n1 = Numeral(1)
+        n1.type = int_type
+        stmt = Operation(FunctionCall(Name('__out__'), [n5, n1]))
         cfg.connect(cfg.entry, stmt, cfg.exit)
         function.cfg = cfg
         function.symbol_table = SymbolTable()
