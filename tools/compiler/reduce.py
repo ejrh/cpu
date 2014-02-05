@@ -56,19 +56,19 @@ class Reduce(Visitor):
                     return True
         elif isinstance(expr, BinaryOperation):
             if len(expr.parts) > 3:
-                new_assign_op, temp_name = self.assign_to_temporary(function, BinaryOperation(expr.parts[:3]))
+                new_assign_op, temp_name = self.assign_to_temporary(cfg, BinaryOperation(expr.parts[:3]))
                 cfg.insert_before(node, new_assign_op)
                 expr.parts = [temp_name] + expr.parts[3:]
                 return True
             
             if not isinstance(expr.parts[0], Name):
-                new_assign_op, temp_name = self.assign_to_temporary(function, expr.parts[0])
+                new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[0])
                 cfg.insert_before(node, new_assign_op)
                 expr.parts[0] = temp_name
                 return True
             
             if expr.parts[1] != '=' and not isinstance(expr.parts[2], Name):
-                new_assign_op, temp_name = self.assign_to_temporary(function, expr.parts[2])
+                new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[2])
                 cfg.insert_before(node, new_assign_op)
                 expr.parts[2] = temp_name
                 return True
@@ -80,13 +80,13 @@ class Reduce(Visitor):
         return False
     
     def visit_Numeral(self, expr, node, function, cfg):
-        new_assign_op, temp_name = self.assign_to_temporary(function, expr)
+        new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
         cfg.insert_before(node, new_assign_op)
         
         return temp_name
 
-    def assign_to_temporary(self, function, expr):
-        temp_decl = self.create_temporary(function, expr.type)
+    def assign_to_temporary(self, cfg, expr):
+        temp_decl = self.create_temporary(cfg, expr.type)
         
         new_name_expr = Name(temp_decl.name)
         new_name_expr.declaration = temp_decl
@@ -94,8 +94,8 @@ class Reduce(Visitor):
         new_assignment_op = Operation(BinaryOperation([new_name_expr, '=', expr]))
         return new_assignment_op, new_name_expr
     
-    def create_temporary(self, function, var_type):
+    def create_temporary(self, cfg, var_type):
         id = get_next_temporary_id()
         decl = VariableDecl(var_type, id)
-        function.symbol_table.add(id, decl, self.errors)
+        cfg.symbol_table.add(id, decl, self.errors)
         return decl

@@ -23,6 +23,7 @@ class ReduceTests(unittest.TestCase):
         cfg.connect(cfg.entry, stmt, cfg.exit)
         function.cfg = cfg
         function.symbol_table = SymbolTable()
+        cfg.symbol_table = SymbolTable(function.symbol_table)
         program = Program([function])
         self.assertSuccess(program)
         self.assertTrue(function.cfg.has_path(function.cfg.entry,

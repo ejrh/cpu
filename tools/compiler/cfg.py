@@ -100,17 +100,30 @@ class CFG(object):
             self.nodes.add(node)
         return node
     
+    def replace_before(self, target, new_node, new_edge=None):
+        self.add(new_node)
+        
+        for old_predecessor, old_edge in target.in_edges.items():
+            self.disconnect(old_predecessor, target)
+            self.connect(old_predecessor, old_edge, new_node)
+    
     def insert_before(self, target, new_node, new_edge=None):
+        self.replace_before(target, new_node)
+        
+        if new_edge is None:
+            new_edge = Edge()
+        
+        self.connect(new_node, new_edge, target)
+    
+    def replace_after(self, target, new_node, new_edge=None):
         self.add(new_node)
         
         if new_edge is None:
             new_edge = Edge()
         
-        for old_predecessor, old_edge in target.in_edges.items():
-            self.disconnect(old_predecessor, target)
-            self.connect(old_predecessor, old_edge, new_node)
-        
-        self.connect(new_node, new_edge, target)
+        for old_successor, old_edge in target.out_edges.items():
+            self.disconnect(target, old_successor)
+            self.connect(new_node, old_edge, old_successor)
     
     def fill_node_edge_list(self, nodes_and_edges):
         value_error = False
@@ -189,5 +202,23 @@ class CFG(object):
                 return n
         return None
     
+    def embed(self, other):
+        # First make a copy of each node, and build up an isomorphism between the original and the new
+        isomorphism = {}
+        for other_node in other.nodes:
+            new_node = other_node.clone()
+            self.add(new_node)
+            isomorphism[other_node] = new_node
+        
+        # Then for each node, create a copy of its edges between the relevant new nodes
+        for other_node in other.nodes:
+            new_node = isomorphism[other_node]
+            for other_dest, other_edge in other_node.out_edges.items():
+                new_dest = isomorphism[other_dest]
+                new_edge = other_edge.clone()
+                self.connect(new_node, new_edge, new_dest)
+        
+        return isomorphism
+    
     def __repr__(self):
-        return 'CFG<' + ', '.join(x.graph_repr() for x in self.nodes) + '>'
+        return 'CFG{' + ', '.join(x.graph_repr() for x in self.nodes) + '}'

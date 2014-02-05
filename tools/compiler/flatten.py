@@ -1,4 +1,5 @@
 from ast import *
+from varcheck import SymbolTable
 from cfg import CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
 from visitor import Visitor
 
@@ -10,11 +11,20 @@ class Flatten(Visitor):
     def visit_FunctionDecl(self, func):
         cfg = CFG(func.name)
         func.cfg = cfg
+        
+        if hasattr(func, 'symbol_table'):
+            cfg.symbol_table = SymbolTable(func.symbol_table.parent)
+            cfg.symbol_table.embed(func.symbol_table)
+        else:
+            cfg.symbol_table = SymbolTable()
+        
         prev_node = self.visit(func.body, cfg=cfg, entry=cfg.entry, exit=cfg.exit)
         if prev_node is not None:
             cfg.connect(prev_node, cfg.exit)
     
     def visit_Block(self, block, cfg, entry, exit):
+        if hasattr(block, 'symbol_table'):
+            cfg.symbol_table.embed(block.symbol_table)
         prev_node = entry
         for part in block.statements:
             prev_node = self.visit(part, cfg=cfg, entry=prev_node, exit=exit)

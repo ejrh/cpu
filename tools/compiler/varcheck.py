@@ -1,6 +1,14 @@
 from ast import *
 from visitor import Visitor
 
+def unique_name(base, existing):
+    name = base
+    i = 0
+    while name in existing:
+        i += 1
+        name = '%s$%d' % (base, i)
+    return name
+
 class SymbolTable(object):
     def __init__(self, parent=None):
         self.parent = parent
@@ -37,7 +45,13 @@ class SymbolTable(object):
         if self.parent is not None:
             return self.parent.lookup(name)
         return None
-        
+    
+    def embed(self, other):
+        for n,v in other.symbols.items():
+            n = unique_name(n, self.symbols.keys())
+            self.symbols[n] = v
+
+
 class VarCheck(Visitor):
     def __init__(self, ast, errors):
         self.errors = errors

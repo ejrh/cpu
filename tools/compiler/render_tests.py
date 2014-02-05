@@ -8,7 +8,7 @@ class RenderTests(unittest.TestCase):
 
     def assertSuccess(self, input_lines):
         errors = Errors()
-        render = Render(input_lines, errors)
+        render = Render(input_lines, errors, indent=False)
         self.assertEquals(errors.num_errors, 0)
         self.assertEquals(errors.num_warnings, 0)
         return render

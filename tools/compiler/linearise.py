@@ -51,44 +51,85 @@ class Linearise(Visitor):
 
     def process_cfg(self, cfg):
         self.done_nodes = set()
-        stack = []
+        self.queued_nodes = set()
+        self.queue = []
         
-        stack.append(cfg.entry)
+        self.enqueue(cfg.entry)
         last_node = None
         
-        while len(stack) != 0:
-            node = stack.pop()
+        while len(self.queue) != 0:
+            node = self.pop()
             if node in self.done_nodes:
                 continue
             
-            if (len(node.in_edges) > 1 or last_node is None or not cfg.has_path(last_node, node)) and not isinstance(node, Entry):
-                self.emit_label(node)
-            
-            self.process_node(node)
-            
-            successors = dict(node.out_edges)
-            for key in successors:
-                if key in self.done_nodes:
-                    successors.remove(key)
-            
-            if len(successors) > 0:
-                stack.append(successors.keys()[0])
-                last_node = node
-            else:
-                last_node = None
+            while node is not None:
+                if isinstance(node, Exit) and len(self.queue) != 0 and self.queue != [node]:
+                    self.add_line(Jump(node.name))
+                    self.enqueue(node)
+                    last_node = None
+                    break
+                
+                if (len(node.in_edges) > 1 or last_node is None or not cfg.has_path(last_node, node)) and not isinstance(node, (Entry, Exit)):
+                    self.emit_label(node)
+                
+                successors = self.process_node(node)
+                
+                for key in dict(successors):
+                    if key in self.done_nodes:
+                        self.add_line(Jump(key.id))
+                        del successors[key]
+                
+                if len(successors) > 0:
+                    last_node = node
+                    succ_nodes = successors.keys()
+                    node = succ_nodes[0]
+                    for s in succ_nodes[1:]:
+                        self.enqueue(s)
+                else:
+                    last_node = None
+                    node = None
+        
+        if cfg.exit not in self.done_nodes:
+            self.process_node(cfg.exit)
     
     def process_node(self, node):
+        successors = dict(node.out_edges)
+        
         if isinstance(node, Entry):
             self.add_line(Label(node.name, public=True))
+        elif isinstance(node, (Pass, Return)):
+            pass
         elif isinstance(node, Exit):
             self.add_line(Label(node.name, public=True))
         elif isinstance(node, Operation):
             self.add_line(Instruction(node.expression))
         elif isinstance(node, Test):
-            self.add_line(Branch(node.expression))
+            for n2,e in successors.items():
+                if isinstance(e, TrueEdge):
+                    self.add_line(Branch(node.expression, n2.id))
+                    self.enqueue(n2)
+                    del successors[n2]
+                else:
+                    if n2 in self.done_nodes:
+                        self.add_line(Jump(n2.id))
+                        del successors[n2]
         else:
             raise NotImplementedError("""Node %s could not be linearised""" % repr(node))
+        
         self.done_nodes.add(node)
+        
+        return successors
+    
+    def pop(self):
+        node = self.queue.pop()
+        self.queued_nodes.remove(node)
+        return node
+    
+    def enqueue(self, node):
+        if node in self.queued_nodes:
+            return
+        self.queued_nodes.add(node)
+        self.queue.insert(0, node)
     
     def emit_label(self, node):
         self.add_line(Label(node.id))

@@ -8,3 +8,10 @@ class Tree(object):
     
     def __ne__(self, other):
         return not (self == other)
+
+    def clone(self):
+        try:
+            cls = self.__class__
+            return cls(*self.get_parts())
+        except TypeError, ex:
+            raise TypeError('Cannot clone %s using arguments %s' % (repr(cls), repr(self.get_parts)))

@@ -2,6 +2,7 @@ from ast import *
 from cfg import *
 from flatten import Flatten
 from errors import Errors
+from varcheck import SymbolTable
 import unittest
 
 class FlattenTests(unittest.TestCase):
@@ -57,6 +58,16 @@ class FlattenTests(unittest.TestCase):
         stmt_node = func.cfg.entry.out_edges.keys()[0]
         self.assertHasPath(func.cfg, func.cfg.entry, Test(Name('x')), TrueEdge(), Pass(), Operation(Name('y')), Test(Name('x')), FalseEdge(), Pass(), func.cfg.exit)
         self.assertHasPath(func.cfg, func.cfg.entry, Test(Name('x')), FalseEdge(), Pass(), func.cfg.exit)
+    
+    def testSymbolTableWithVar(self):
+        decl = VariableDecl(int_type, 'x')
+        blk = Block([decl])
+        func = FunctionDecl(int_type, 'f', [], blk)
+        blk.symbol_table = SymbolTable()
+        blk.symbol_table.add('x', decl, None)
+        self.assertSuccess(func)
+        st = func.cfg.symbol_table
+        self.assertEqual(st.get_names(), set(['x']));
 
 
 if __name__ == '__main__':
