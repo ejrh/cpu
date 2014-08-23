@@ -29,7 +29,8 @@ class Render(Visitor):
 
     def visit_BinaryOperation(self, op):
         if op.parts[1] == '=' and isinstance(op.parts[2], Numeral):
-            line = 'mov %d, %s' % (op.parts[2].value, op.parts[0].name)
+            dest = self.render(op.parts[0])
+            line = 'mov %d, %s' % (op.parts[2].value, dest)
         elif op.parts[1] == '=' and isinstance(op.parts[2], BinaryOperation):
             dest = self.render(op.parts[0])
             arg1 = self.render(op.parts[2].parts[0])
@@ -49,7 +50,7 @@ class Render(Visitor):
 
     def visit_FunctionCall(self, fc):
         if fc.name.declaration == out_builtin:
-            line = 'out %s, %s' % (fc.args[0].name, self.render(fc.args[1]))
+            line = 'out %s, %s' % (self.render(fc.args[0]), self.render(fc.args[1]))
         else:
             #raise NotImplementedError(fc)
             line = '%s' % fc
@@ -64,6 +65,10 @@ class Render(Visitor):
         if isinstance(expr, Numeral):
             return str(expr.value)
         elif isinstance(expr, Name):
-            return expr.name
+            decl = expr.declaration
+            if isinstance(decl, Register):
+                return decl.name
+            else:
+                return decl.register.name
         else:
-            raise NotImplementedError(repr(op))
+            raise NotImplementedError(repr(expr))

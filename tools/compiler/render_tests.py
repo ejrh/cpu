@@ -29,12 +29,18 @@ class RenderTests(unittest.TestCase):
         self.assertEquals(render.lines, ['f::', 'jmp f'])
     
     def testNumeralAssignment(self):
-        lines = [Instruction(BinaryOperation([Name('$r1'), '=', Numeral(7)]))]
+        n1 = Name('$r1')
+        n1.declaration = Register('$r1')
+        lines = [Instruction(BinaryOperation([n1, '=', Numeral(7)]))]
         render = self.assertSuccess(lines)
         self.assertEquals(render.lines, ['mov 7, $r1'])
     
     def testOut(self):
-        fc = FunctionCall(Name('__out__'), [Name('$r1'), Name('$r2')])
+        n1 = Name('$r1')
+        n1.declaration = Register('$r1')
+        n2 = Name('$r2')
+        n2.declaration = Register('$r2')
+        fc = FunctionCall(Name('__out__'), [n1, n2])
         fc.name.declaration = out_builtin
         lines = [Instruction(fc)]
         render = self.assertSuccess(lines)

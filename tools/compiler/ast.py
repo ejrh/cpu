@@ -22,6 +22,13 @@ class VariableDecl(SyntaxItem):
     def get_parts(self):
         return self.type, self.name
 
+class Register(SyntaxItem):
+    def __init__(self, name):
+        self.name = name
+    
+    def get_parts(self):
+        return [self.name]
+
 class FunctionDecl(SyntaxItem):
     def __init__(self, type, name, args, body):
         self.type, self.name, self.args, self.body = type, name, args, body

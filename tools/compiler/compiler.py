@@ -7,6 +7,7 @@ from varcheck import VarCheck
 from flatten import Flatten
 from reduce import Reduce
 from inline import Inline
+from regalloc import RegisterAllocation
 from linearise import Linearise
 from render import Render
 
@@ -23,8 +24,10 @@ class Compiler(object):
         self.flatten = Flatten(self.ast, self.errors)
         self.reduce = Reduce(self.ast, self.errors)
         self.inline = Inline(self.ast, self.errors)
-        print self.ast.symbol_table.lookup('main').cfg
-        sys.exit()
+        main_cfg = self.ast.symbol_table.lookup('main').cfg
+        print main_cfg
+        self.regalloc = RegisterAllocation(main_cfg)
+        
         self.lin = Linearise(self.ast, self.errors)
         self.render = Render(self.lin.lines, self.errors)
         print time.time() - start_time
@@ -37,7 +40,6 @@ def compile(filename):
     
     comp = Compiler()
     output = comp.compile(data)
-    print comp.ast
     print '\n'.join(output)
 
 if __name__ == '__main__':
