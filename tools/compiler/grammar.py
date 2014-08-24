@@ -1,4 +1,5 @@
 from pyparsing import *
+ParserElement.enablePackrat()
 
 from ast import *
 
