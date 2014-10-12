@@ -27,8 +27,8 @@ class ReduceTests(unittest.TestCase):
         program = Program([function])
         self.assertSuccess(program)
         self.assertTrue(function.cfg.has_path(function.cfg.entry,
-            Operation(BinaryOperation([Name('$t0'), '=', Numeral(5)])),
-            Operation(BinaryOperation([Name('$t1'), '=', Numeral(1)])),
+            Operation(AssignStatement(Name('$t0'), Numeral(5))),
+            Operation(AssignStatement(Name('$t1'), Numeral(1))),
             Operation(FunctionCall(Name('__out__'), [Name('$t0'), Name('$t1')])),
             function.cfg.exit))
 

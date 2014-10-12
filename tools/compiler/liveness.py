@@ -72,12 +72,12 @@ class NodeAnalyser(Visitor):
         self.refs = None
     
     def visit_BinaryOperation(self, op):
-        if op.parts[1] == '=':
-            self.defs.add(op.parts[0].declaration)
-            self.visit(op.parts[2])
-        else:
-            self.visit_parts(op)
+        self.visit_parts(op)
     
+    def visit_AssignStatement(self, assign):
+        self.defs.add(assign.target.declaration)
+        self.visit(assign.expression)
+
     def visit_Name(self, name):
         if self.refs is not None:
             self.refs.add(name.declaration)

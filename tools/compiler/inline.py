@@ -54,7 +54,7 @@ class Inline(Visitor):
             arg = func_call.args[i]
             orig_var = func_call.declaration.args[i]
             target_var = var_isomorphism[orig_var]
-            pre_assign = Operation(BinaryOperation([target_var, '=', arg]))
+            pre_assign = Operation(AssignStatement(target_var, arg))
             cfg.insert_before(node, pre_assign)
   
         first_node = isomorphism[other_cfg.entry].out_edges.keys()[0]

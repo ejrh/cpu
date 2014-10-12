@@ -22,6 +22,9 @@ def make_expr_statement(s, loc, toks):
     stmt = toks[0]
     return [Statement(stmt)]
 
+def make_assign_statement(s, loc, toks):
+    return [AssignStatement(*toks)]
+
 def make_if_statement(s, loc, toks):
     return [IfStatement(*toks)]
 
@@ -71,6 +74,7 @@ block = Forward().setParseAction(make_block)
 statement_list = Forward().setParseAction(make_list)
 statement = Forward()
 expr_statement = Forward().setParseAction(make_expr_statement)
+assign_statement = Forward().setParseAction(make_assign_statement)
 if_statement = Forward().setParseAction(make_if_statement)
 while_statement = Forward().setParseAction(make_while_statement)
 return_statement = Forward().setParseAction(make_return_statement)
@@ -90,8 +94,9 @@ arg_decl_list << Optional(delimitedList(arg_decl))
 arg_decl << (type_name + identifier)
 block << (Suppress('{') - statement_list + Suppress('}'))
 statement_list << ZeroOrMore(statement)
-statement << (var_decl | expr_statement | if_statement | while_statement | return_statement)
+statement << (var_decl | expr_statement | assign_statement | if_statement | while_statement | return_statement)
 expr_statement << (expression + Suppress(';'))
+assign_statement << (name + Suppress('=') + expression + Suppress(';'))
 if_statement << (Suppress(IF) - Suppress('(') + expression + Suppress(')') + block)
 while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')') + block)
 return_statement << (Suppress(RETURN) - expression + Suppress(';'))
@@ -99,7 +104,6 @@ expression << operatorPrecedence(atom, [
     (oneOf('* /'), 2, opAssoc.LEFT, make_expression),
     (oneOf('+ -'), 2, opAssoc.LEFT, make_expression),
     (oneOf('< > <= >= != =='), 2, opAssoc.LEFT, make_expression),
-    (oneOf('='), 2, opAssoc.RIGHT, make_expression),
 ])
 function_call << (name + Suppress('(') - arg_list + Suppress(')'))
 atom << (function_call | name | numeral)

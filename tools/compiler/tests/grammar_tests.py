@@ -62,6 +62,11 @@ class BlockTests(GrammarTests):
         expected = Block([Statement(FunctionCall(Name('f'), [Name('x')]))])
         self.assertSuccess(input, expected)
         
+    def testConstantAssignment(self):
+        input = """{ int x; x = 5; }"""
+        expected = Block([VariableDecl(int_type, 'x'), AssignStatement(Name('x'), Numeral(5))])
+        self.assertSuccess(input, expected)
+        
     def testIfStatement(self):
         input = """{ if(c) { } }"""
         expected = Block([IfStatement(Name('c'), Block([]))])

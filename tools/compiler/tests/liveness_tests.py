@@ -16,7 +16,7 @@ class LivenessAnalysisTests(unittest.TestCase):
     def testSimpleAssignment(self):
         x = VariableDecl(int_type, 'x')
         y = VariableDecl(int_type, 'y')
-        stmt = Operation(BinaryOperation([Name(x), '=', Name(y)]))
+        stmt = Operation(AssignStatement(Name(x), Name(y)))
         cfg = CFG('f')
         cfg.connect(cfg.entry, stmt, cfg.exit)
         liveness = LivenessAnalysis(cfg)

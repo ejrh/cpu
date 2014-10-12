@@ -27,15 +27,15 @@ class Render(Visitor):
     def visit_Instruction(self, instr):
         self.visit_parts(instr)
 
-    def visit_BinaryOperation(self, op):
-        if op.parts[1] == '=' and isinstance(op.parts[2], Numeral):
-            dest = self.render(op.parts[0])
-            line = 'mov %d, %s' % (op.parts[2].value, dest)
-        elif op.parts[1] == '=' and isinstance(op.parts[2], BinaryOperation):
-            dest = self.render(op.parts[0])
-            arg1 = self.render(op.parts[2].parts[0])
-            arg2 = self.render(op.parts[2].parts[2])
-            opr = op.parts[2].parts[1]
+    def visit_AssignStatement(self, assign):
+        if  isinstance(assign.expression, Numeral):
+            dest = self.render(assign.target)
+            line = 'mov %d, %s' % (assign.expression.value, dest)
+        elif isinstance(assign.expression, BinaryOperation):
+            dest = self.render(assign.target)
+            arg1 = self.render(assign.expression.parts[0])
+            arg2 = self.render(assign.expression.parts[2])
+            opr = assign.expression.parts[1]
             if opr == '<':
                 line = 'slt %s, %s, %s' % (arg1, arg2, dest)
             elif opr == '+':
@@ -45,7 +45,7 @@ class Render(Visitor):
                 #raise NotImplementedError(repr(op))
         else:
             #raise NotImplementedError(repr(op))
-            line = '%s' % op
+            line = '%s' % assign
         self.add_line(line, indent=1)
 
     def visit_FunctionCall(self, fc):

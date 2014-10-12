@@ -31,7 +31,7 @@ class RenderTests(unittest.TestCase):
     def testNumeralAssignment(self):
         n1 = Name('$r1')
         n1.declaration = Register('$r1')
-        lines = [Instruction(BinaryOperation([n1, '=', Numeral(7)]))]
+        lines = [Instruction(AssignStatement(n1, Numeral(7)))]
         render = self.assertSuccess(lines)
         self.assertEquals(render.lines, ['mov 7, $r1'])
     

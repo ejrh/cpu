@@ -105,9 +105,6 @@ class VarCheck(Visitor):
         elif first_op in ['==', '!=']:
             input_type = op.parts[0].type
             output_type = bool_type
-        elif first_op in ['=']:
-            input_type = op.parts[0].type
-            output_type = input_type
         else:
             raise NotImplementedError(op.parts[1])
         
@@ -120,6 +117,12 @@ class VarCheck(Visitor):
                 op_name = arg
         
         op.type = output_type
+
+    def visit_AssignStatement(self, assign, table):
+        expr_type = assign.expression.type
+        target_type = assign.target.type
+        if expr_type != target_type:
+            self.errors.error(assign.get_location(), """Cannot assign value of type %s to target of type %s""" % (input_type.name, target_type.name))
 
     def visit_FunctionCall(self, fc, table):
         self.visit_parts(fc, table=table)

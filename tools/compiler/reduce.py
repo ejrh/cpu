@@ -46,6 +46,7 @@ class Reduce(Visitor):
                     stack.append(new_node)
     
     def process_node(self, node, function, cfg):
+        print node
         expr = node.expression
         if isinstance(expr, FunctionCall):
             for i in range(len(expr.args)):
@@ -54,26 +55,15 @@ class Reduce(Visitor):
                 if new_arg is not None:
                     expr.args[i] = new_arg
                     return True
+        elif isinstance(expr, AssignStatement):
+            if isinstance(expr.expression, BinaryOperation):
+                if self.reduce_binary(expr.expression, node, cfg):
+                    return True
         elif isinstance(expr, BinaryOperation):
-            if len(expr.parts) > 3:
-                new_assign_op, temp_name = self.assign_to_temporary(cfg, BinaryOperation(expr.parts[:3]))
-                cfg.insert_before(node, new_assign_op)
-                expr.parts = [temp_name] + expr.parts[3:]
-                return True
-            
-            if not isinstance(expr.parts[0], Name):
-                new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[0])
-                cfg.insert_before(node, new_assign_op)
-                expr.parts[0] = temp_name
-                return True
-            
-            if expr.parts[1] != '=' and not isinstance(expr.parts[2], Name):
-                new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[2])
-                cfg.insert_before(node, new_assign_op)
-                expr.parts[2] = temp_name
+            if self.reduce_binary(expr, node, cfg):
                 return True
         elif isinstance(expr, Name):
-            pass    
+            pass
         else:
             raise NotImplementedError(expr)
         
@@ -85,13 +75,40 @@ class Reduce(Visitor):
         
         return temp_name
 
+    def visit_BinaryOperation(self, expr, node, function, cfg):
+        new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
+        cfg.insert_before(node, new_assign_op)
+        
+        return temp_name
+  
+    def reduce_binary(self, expr, node, cfg):
+        if len(expr.parts) > 3:
+            new_assign_op, temp_name = self.assign_to_temporary(cfg, BinaryOperation(expr.parts[:3]))
+            cfg.insert_before(node, new_assign_op)
+            expr.parts = [temp_name] + expr.parts[3:]
+            return True
+        
+        if not isinstance(expr.parts[0], Name):
+            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[0])
+            cfg.insert_before(node, new_assign_op)
+            expr.parts[0] = temp_name
+            return True
+        
+        if not isinstance(expr.parts[2], Name):
+            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[2])
+            cfg.insert_before(node, new_assign_op)
+            expr.parts[2] = temp_name
+            return True
+        
+        return False
+
     def assign_to_temporary(self, cfg, expr):
         temp_decl = self.create_temporary(cfg, expr.type)
         
         new_name_expr = Name(temp_decl.name)
         new_name_expr.declaration = temp_decl
         
-        new_assignment_op = Operation(BinaryOperation([new_name_expr, '=', expr]))
+        new_assignment_op = Operation(AssignStatement(new_name_expr, expr))
         return new_assignment_op, new_name_expr
     
     def create_temporary(self, cfg, var_type):

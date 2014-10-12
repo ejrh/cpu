@@ -64,6 +64,14 @@ class Statement(SyntaxItem):
     def get_parts(self):
         return [self.expression]
 
+class AssignStatement(SyntaxItem):
+    def __init__(self, target, expression):
+        self.target = target
+        self.expression = expression
+    
+    def get_parts(self):
+        return self.target, self.expression
+
 class IfStatement(SyntaxItem):
     def __init__(self, expression, block):
         self.expression = expression
