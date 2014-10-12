@@ -82,7 +82,9 @@ class Reduce(Visitor):
   
     def reduce_binary(self, expr, node, cfg):
         if len(expr.parts) > 3:
-            new_assign_op, temp_name = self.assign_to_temporary(cfg, BinaryOperation(expr.parts[:3]))
+            subexpr = BinaryOperation(expr.parts[:3])
+            subexpr.type = expr.type
+            new_assign_op, temp_name = self.assign_to_temporary(cfg, subexpr)
             cfg.insert_before(node, new_assign_op)
             expr.parts = [temp_name] + expr.parts[3:]
             return True
