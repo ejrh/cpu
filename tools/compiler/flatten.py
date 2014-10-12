@@ -35,6 +35,11 @@ class Flatten(Visitor):
         cfg.connect(entry, stmt_node)
         return stmt_node
 
+    def visit_AssignStatement(self, assign, cfg, entry, exit):
+        stmt_node = cfg.add(Operation(assign))
+        cfg.connect(entry, stmt_node)
+        return stmt_node
+
     def visit_IfStatement(self, stmt, cfg, entry, exit):
         cond_node = cfg.add(Test(stmt.expression))
         cfg.connect(entry, cond_node)

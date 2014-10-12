@@ -46,7 +46,6 @@ class Reduce(Visitor):
                     stack.append(new_node)
     
     def process_node(self, node, function, cfg):
-        print node
         expr = node.expression
         if isinstance(expr, FunctionCall):
             for i in range(len(expr.args)):

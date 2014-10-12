@@ -119,6 +119,8 @@ class VarCheck(Visitor):
         op.type = output_type
 
     def visit_AssignStatement(self, assign, table):
+        self.visit_parts(assign, table=table)
+        
         expr_type = assign.expression.type
         target_type = assign.target.type
         if expr_type != target_type:
