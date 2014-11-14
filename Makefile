@@ -1,4 +1,4 @@
-IV = iverilog
+IV = iverilog -Irtl
 
 CPU_FILES = main.v machine.v cpu.v instr_fetch.v instr_decode.v instr_memory.v ports.v reg_stack.v control.v alu.v instr_pointer.v ssd_driver.v bcd.v
 
