@@ -16,21 +16,30 @@ module machine(
     //assign slowclk = mclk;
     
     //Slow speed
-    parameter SLOWDOWN = 20;
+    /*parameter SLOWDOWN = 0;
     reg [SLOWDOWN:0] slowcount = 0;
     always @(posedge mclk) begin
         slowcount <= slowcount + (1 << (sw[3:1]*2));
     end
-    assign slowclk = slowcount[SLOWDOWN];
+    assign slowclk = slowcount[SLOWDOWN];*/
+    assign slowclk = mclk;
     
 
     wire [WORD_SIZE-1:0] portaddr, portval;
     wire portget, portset;
     wire [WORD_SIZE-1:0] portout;
 
+    wire [WORD_SIZE-1:0] memaddr, memval;
+    wire memget,  memset;
+    wire [WORD_SIZE-1:0] memout;
+    
     wire [2:0] state;
     wire [3:0] opcode;
-    cpu cpu(slowclk, portaddr, portval, portget, portset, portout, state, opcode);
+    cpu cpu(slowclk,
+        memaddr, memval, memget, memset, memout, 
+        portaddr, portval, portget, portset, portout, state, opcode);
+    
+    data_memory data_mem(slowclk, memaddr, memval, memget, memset, memout);
 
     reg [15:0] show_val;
     wire show_sel;

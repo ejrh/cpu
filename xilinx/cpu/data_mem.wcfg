@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="D:/edmund/source/cpu/xilinx/cpu/main_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="main" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="10" />
+   <wvobject fp_name="/main/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/control/state" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">state[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/instr_pointer/out" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">out[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/decoder/opcode" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">opcode[3:0]</obj_property>
+      <obj_property name="ObjectShortName">opcode[3:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/decoder/reg1" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">reg1[3:0]</obj_property>
+      <obj_property name="ObjectShortName">reg1[3:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/decoder/reg2" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">reg2[3:0]</obj_property>
+      <obj_property name="ObjectShortName">reg2[3:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/cpu/decoder/reg3" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">reg3[3:0]</obj_property>
+      <obj_property name="ObjectShortName">reg3[3:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="group47" type="group">
+      <obj_property name="label">Registers</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/main/machine/cpu/stack/data[1]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[1,15:0]</obj_property>
+         <obj_property name="ObjectShortName">data[1,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/cpu/stack/data[2]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[2,15:0]</obj_property>
+         <obj_property name="ObjectShortName">data[2,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/cpu/stack/data[3]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[3,15:0]</obj_property>
+         <obj_property name="ObjectShortName">data[3,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group153" type="group">
+      <obj_property name="label">Memory</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/main/machine/data_mem/mod1/RAMB16_S18_inst/mem[0]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[0,15:0]</obj_property>
+         <obj_property name="ObjectShortName">mem[0,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/mod1/RAMB16_S18_inst/mem[1]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[1,15:0]</obj_property>
+         <obj_property name="ObjectShortName">mem[1,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/mod1/RAMB16_S18_inst/mem[2]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[2,15:0]</obj_property>
+         <obj_property name="ObjectShortName">mem[2,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/mod1/RAMB16_S18_inst/mem[3]" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">[3,15:0]</obj_property>
+         <obj_property name="ObjectShortName">mem[3,15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group175" type="group">
+      <obj_property name="label">Memory control</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/main/machine/data_mem/memaddr" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">memaddr[15:0]</obj_property>
+         <obj_property name="ObjectShortName">memaddr[15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/memval" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">memval[15:0]</obj_property>
+         <obj_property name="ObjectShortName">memval[15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/memget" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">memget</obj_property>
+         <obj_property name="ObjectShortName">memget</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/memset" type="logic" db_ref_id="1">
+         <obj_property name="ElementShortName">memset</obj_property>
+         <obj_property name="ObjectShortName">memset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/main/machine/data_mem/memout" type="array" db_ref_id="1">
+         <obj_property name="ElementShortName">memout[15:0]</obj_property>
+         <obj_property name="ObjectShortName">memout[15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

@@ -1,4 +1,5 @@
 module cpu(clk,
+        memaddr, memval, memget, memset, memout, 
         portaddr, portval, portget, portset, portout, state, opcode);
 
     `include "parameters.v"
@@ -27,7 +28,7 @@ module cpu(clk,
     reg_stack stack(getnum1, getnum2, storenum, storeval, clk, do_regload, do_regstore, do_reset, regval1, regval2);
     
     wire get_sel;
-    assign get_sel = (opcode == OP_STORE | opcode == OP_OUT
+    assign get_sel = (opcode == OP_STORE | opcode == OP_OUT | opcode == OP_LOAD | opcode == OP_IN
             | opcode == OP_BR | opcode == OP_LOADLO | opcode == OP_LOADHI);
     assign getnum1 = get_sel ? reg1 : reg2;
     assign getnum2 = get_sel ? reg2 : reg3;
@@ -37,10 +38,6 @@ module cpu(clk,
     wire [WORD_SIZE-1 : 0] aluout;
     alu alu(aluop, aluin1, aluin2, clk, do_aluop, aluout);
 
-    assign storeval = (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
-            : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
-            : aluout;
-    
     assign aluin1 = regval1;
     assign aluin2 = regval2;
 
@@ -52,6 +49,21 @@ module cpu(clk,
     assign portval = regval1;
     assign portget = do_memload & (opcode == OP_IN);
     assign portset = do_memstore & (opcode == OP_OUT);
+    
+    output wire [WORD_SIZE-1:0] memaddr, memval;
+    output wire memget, memset;
+    input wire [WORD_SIZE-1:0] memout;
+    
+    assign memaddr = regval2 + smallval;
+    assign memval = regval1;
+    assign memget = do_memload & (opcode == OP_LOAD);
+    assign memset = do_memstore & (opcode == OP_STORE);
+    
+    assign storeval = (opcode == OP_IN) ? portout
+            : (opcode == OP_LOAD) ? memout
+            : (opcode == OP_LOADLO) ? ((regval1 & 16'hFF00) | bigval)
+            : (opcode == OP_LOADHI) ? ((regval1 & 16'h00FF) | (bigval << 8))
+            : aluout;
     
     output wire [2:0] state;
     control control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, do_reset, state);
