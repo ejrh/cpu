@@ -1,2 +1,10 @@
 *.vvp
 *.pyc
+
+# Hide all the junk under xilinx
+xilinx/cpu/*
+
+# But show these
+!**/*.ucf
+!**/*.xise
+!**/*.wcfg
