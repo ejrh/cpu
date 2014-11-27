@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="D:/edmund/source/cpu/xilinx/cpu/main_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="main" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="20" />
+   <wvobject fp_name="/main/machine/usb/clk" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/usb_write" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">usb_write</obj_property>
+      <obj_property name="ObjectShortName">usb_write</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/usb_astb" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">usb_astb</obj_property>
+      <obj_property name="ObjectShortName">usb_astb</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/usb_dstb" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">usb_dstb</obj_property>
+      <obj_property name="ObjectShortName">usb_dstb</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/usb_wait" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">usb_wait</obj_property>
+      <obj_property name="ObjectShortName">usb_wait</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/usb_db" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">usb_db[7:0]</obj_property>
+      <obj_property name="ObjectShortName">usb_db[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/state" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">state[1:0]</obj_property>
+      <obj_property name="ObjectShortName">state[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/address" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">address[7:0]</obj_property>
+      <obj_property name="ObjectShortName">address[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/pos" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pos[7:0]</obj_property>
+      <obj_property name="ObjectShortName">pos[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/data[0]" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">[0,7:0]</obj_property>
+      <obj_property name="ObjectShortName">data[0,7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/data[1]" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">[1,7:0]</obj_property>
+      <obj_property name="ObjectShortName">data[1,7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/data[2]" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">[2,7:0]</obj_property>
+      <obj_property name="ObjectShortName">data[2,7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/data[3]" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">[3,7:0]</obj_property>
+      <obj_property name="ObjectShortName">data[3,7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/data[4]" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">[4,7:0]</obj_property>
+      <obj_property name="ObjectShortName">data[4,7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/state" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">state</obj_property>
+      <obj_property name="ObjectShortName">state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/type" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">type[1:0]</obj_property>
+      <obj_property name="ObjectShortName">type[1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/sending" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">sending</obj_property>
+      <obj_property name="ObjectShortName">sending</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/bytes_written" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">bytes_written[15:0]</obj_property>
+      <obj_property name="ObjectShortName">bytes_written[15:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/write_events" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">write_events[9:0]</obj_property>
+      <obj_property name="ObjectShortName">write_events[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/main/machine/usb/dstb_events" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">dstb_events[9:0]</obj_property>
+      <obj_property name="ObjectShortName">dstb_events[9:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+</wave_config>

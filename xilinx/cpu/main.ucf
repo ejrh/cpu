@@ -42,3 +42,17 @@ NET "sw<0>" LOC = "P11";  # Bank = 2, Signal name = SW0
 NET "mclk" TNM_NET = mclk;
 TIMESPEC TS_mclk = PERIOD "mclk" 20 ns HIGH 50%;
 NET "mclk" PERIOD = 20 ;
+
+# USB Ports
+NET "usb_write" LOC = "C2";
+NET "usb_astb" LOC = "F2";
+NET "usb_dstb" LOC = "F1";
+NET "usb_db<0>" LOC = "N2";
+NET "usb_db<1>" LOC = "M2";
+NET "usb_db<2>" LOC = "M1";
+NET "usb_db<3>" LOC = "L1";
+NET "usb_db<4>" LOC = "L2";
+NET "usb_db<5>" LOC = "H2";
+NET "usb_db<6>" LOC = "H1";
+NET "usb_db<7>" LOC = "H3";
+NET "usb_wait" LOC = "D2";

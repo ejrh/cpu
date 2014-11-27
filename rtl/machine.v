@@ -5,7 +5,12 @@ module machine(
     output wire [7:0] led,
     output wire [3:0] an,
     output wire dp,
-    output wire [6:0] seg
+    output wire [6:0] seg,
+    input wire usb_write,
+    input wire usb_astb,
+    input wire usb_dstb,
+    inout wire [7:0] usb_db,
+    output wire usb_wait
     );
 
     `include "parameters.vh"
@@ -59,5 +64,8 @@ module machine(
     assign led[7:4] = opcode;
     assign led[3:1] = state;
     assign led[0] = show_sel;
+
+    usb_driver usb(mclk,
+        usb_write, usb_astb, usb_dstb, usb_db, usb_wait);
 
 endmodule

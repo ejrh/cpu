@@ -1,6 +1,6 @@
 module test;
 
-    `include "parameters.v"
+    `include "parameters.vh"
   
     wire [0:2] op;
     wire [0:WORD_SIZE-1] in1, in2;

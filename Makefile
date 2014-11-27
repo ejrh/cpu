@@ -15,3 +15,7 @@ instr_fetch_tb:
 
 bcd_tb:
 	$(IV) -o bcd_tb.vvp testbench/bcd_tb.v rtl/bcd.v
+
+usb_driver_tb:
+	$(IV) -o usb_driver_tb.vvp testbench/usb_driver_tb.v rtl/usb_driver.v
+

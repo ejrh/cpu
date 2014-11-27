@@ -1,6 +1,6 @@
 module test;
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     reg [WORD_SIZE-1:0] pointer;
 
