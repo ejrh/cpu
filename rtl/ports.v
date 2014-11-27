@@ -1,6 +1,6 @@
 module ports(portaddr, portval, clk, get_enable, set_enable, portout);
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     input wire [WORD_SIZE-1:0] portaddr, portval;
     input wire clk, get_enable, set_enable;

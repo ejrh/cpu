@@ -2,7 +2,7 @@ module instr_memory(out, pointer);
 
     /* Instruction memory */
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     output wire [WORD_SIZE-1:0] out;
     input wire [WORD_SIZE-1:0] pointer;

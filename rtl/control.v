@@ -2,7 +2,7 @@ module control(opcode, isaluop, clk, do_fetch, do_regload, do_aluop, do_memload,
 
     /* Control module. */
   
-    `include "parameters.v"
+    `include "parameters.vh"
   
     input wire [NIB_SIZE-1:0] opcode;
     input wire isaluop;

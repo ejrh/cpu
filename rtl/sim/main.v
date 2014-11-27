@@ -4,8 +4,6 @@ module main;
      * Main module for CPU.  Contains the CPU module and connects it to other simulated hardware devices.
      */
     
-    `include "parameters.v"
-    
     reg clk = 0;
     always #5 clk = !clk;
     

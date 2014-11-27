@@ -13,7 +13,7 @@ module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, reset_
      * Set reset_enable to reset all registers to zero.
      */
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     input wire [NIB_SIZE-1:0] num1, num2, setnum;
     input wire [WORD_SIZE-1:0] setval;

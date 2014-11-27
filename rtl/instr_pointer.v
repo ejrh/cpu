@@ -5,7 +5,7 @@ module instr_pointer(out, adj, clk, update_enable, reset_enable);
      * This module contains the instruction pointer.
      */
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     output reg [WORD_SIZE-1:0] out = 0;
     input wire signed [WORD_SIZE-1:0] adj;

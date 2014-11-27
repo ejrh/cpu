@@ -6,7 +6,7 @@ module instr_fetch(instr, pointer, clk, fetch_enable);
      * from program memory.
      */
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     wire [WORD_SIZE-1:0] out;
     output reg [WORD_SIZE-1:0] instr;

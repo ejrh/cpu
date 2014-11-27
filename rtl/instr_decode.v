@@ -6,7 +6,7 @@ module instr_decode(instr, opcode, isaluop, aluop, reg1, reg2, reg3, bigval, sma
      * and does not need a clock.
      */
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     input wire [WORD_SIZE-1:0] instr;
     output wire [NIB_SIZE-1:0] opcode, reg1, reg2, reg3;

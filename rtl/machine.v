@@ -8,7 +8,7 @@ module machine(
     output wire [6:0] seg
     );
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     wire slowclk;
     

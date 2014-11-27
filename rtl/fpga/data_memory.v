@@ -7,7 +7,7 @@ module data_memory(
     memout
     );
 
-    `include "parameters.v"
+    `include "../parameters.vh"
     
     input wire clk;
     input wire [WORD_SIZE-1:0] memaddr;

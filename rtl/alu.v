@@ -1,6 +1,6 @@
 module alu(op, in1, in2, clk, alu_enable, out);
 
-    `include "parameters.v"
+    `include "parameters.vh"
 
     input wire [2:0] op;
     input wire [WORD_SIZE-1:0] in1, in2;

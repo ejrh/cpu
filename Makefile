@@ -1,11 +1,11 @@
 IV = iverilog -Irtl
 
-CPU_FILES = main.v machine.v cpu.v instr_fetch.v instr_decode.v instr_memory.v ports.v reg_stack.v control.v alu.v instr_pointer.v ssd_driver.v bcd.v
+CPU_FILES = $(wildcard rtl/*.v) $(wildcard rtl/sim/*.v)
 
 all: cpu
 
 cpu:
-	$(IV) -o cpu.vvp $(addprefix rtl/,$(CPU_FILES))
+	$(IV) -o cpu.vvp $(CPU_FILES)
 
 alu_tb:
 	$(IV) -o alu_tb.vvp testbench/alu_tb.v rtl/alu.v

@@ -2,7 +2,7 @@ module cpu(clk,
         memaddr, memval, memget, memset, memout, 
         portaddr, portval, portget, portset, portout, state, opcode);
 
-    `include "parameters.v"
+    `include "parameters.vh"
     
     input wire clk;
     wire do_fetch, do_regload, do_aluop, do_memload, do_memstore, do_regstore, do_next, do_reset;
