@@ -19,6 +19,9 @@ module usb_driver(
     reg [7:0] data [0:99];
     reg [7:0] pos = 0;
     
+    reg astb_buf;
+    reg dstb_buf;
+    
     parameter STATE_IDLE = 0;
     parameter STATE_WAITING = 1;
     
@@ -31,10 +34,15 @@ module usb_driver(
     reg [1:0] type;
     
     always @(posedge clk) begin
+        astb_buf <= usb_astb;
+        dstb_buf <= usb_dstb;
+    end
+    
+    always @(posedge clk) begin
         case (state)
             STATE_IDLE: begin
-                if (!usb_astb || !usb_dstb) begin
-                    type <= (!usb_astb) ? (!usb_write ? WRITE_ADDR : READ_ADDR) : (!usb_write ? WRITE_DATA : READ_DATA);
+                if (!astb_buf || !dstb_buf) begin
+                    type <= (!astb_buf) ? (!usb_write ? WRITE_ADDR : READ_ADDR) : (!usb_write ? WRITE_DATA : READ_DATA);
                     sending <= usb_write;
                     state <= STATE_WAITING;
                 end else if (usb_wait) begin
@@ -43,7 +51,7 @@ module usb_driver(
             end
             
             STATE_WAITING: begin
-                if (usb_astb && usb_dstb) begin
+                if (astb_buf && dstb_buf) begin
                     if (type == WRITE_ADDR) begin
                         address <= usb_db;
                     end else if (type == WRITE_DATA) begin
