@@ -219,7 +219,7 @@ class Assembler(object):
         return '\n'.join(self.program_lines)
     
 def main():
-    usage = """usage: %prog PATH [-c] INPUT"""
+    usage = """usage: %prog PATH [-c|-b] INPUT [-o OUTPUT]"""
     desc = """Assemble a program for the CPU"""
     parser = OptionParser(usage=usage, description=desc)
     parser.add_option("-c", "--comments",
@@ -228,6 +228,9 @@ def main():
     parser.add_option("-b", "--binary",
                       action="store_true", dest="binary", default=False,
                       help="output binary code")
+    parser.add_option("-o", "--output",
+                      action="store", metavar="OUTPUT", dest="output", default=None,
+                      help="output file")
 
     options, args = parser.parse_args()
     if len(args) == 0:
@@ -236,7 +239,13 @@ def main():
     asm = Assembler(options)
     for filename in args:
         asm.read_file(filename)
-    print asm.write_str()
+    output_data = asm.write_str()
+    if options.output:
+        f = open(options.output, 'wb')
+        f.write(output_data)
+        f.close()
+    else:
+        print output_data
 
 
 if __name__ == '__main__':
