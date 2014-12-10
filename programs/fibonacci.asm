@@ -11,3 +11,4 @@ start: out $r2, 1
     mov $r5, $r2
     jmp start
 stop: out $r0, 0
+    jmp fibonacci

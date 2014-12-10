@@ -1,4 +1,4 @@
-module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, reset_enable, out1, out2);
+module reg_stack(clk, num1, num2, setnum, setval, get_enable, set_enable, reset_enable, out1, out2);
 
     /* Register stack
      *
@@ -23,7 +23,7 @@ module reg_stack(num1, num2, setnum, setval, clk, get_enable, set_enable, reset_
 
     reg [WORD_SIZE-1:0] data [0:REG_STACK_SIZE-1];
 
-    reg [NIB_SIZE:0] i;
+    integer i;
 
     always @(posedge clk) begin
         if (reset_enable) begin

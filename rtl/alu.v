@@ -1,4 +1,4 @@
-module alu(op, in1, in2, clk, alu_enable, out);
+module alu(clk, op, in1, in2, alu_enable, out);
 
     `include "parameters.vh"
 
@@ -10,21 +10,21 @@ module alu(op, in1, in2, clk, alu_enable, out);
     always @(posedge clk) begin
         if (alu_enable) begin
             case (op)
-                ALU_ADD:
+                `ALU_ADD:
                     out <= in1 + in2;
-                ALU_SUB:
+                `ALU_SUB:
                     out <= in1 - in2;
-                ALU_MUL:
+                `ALU_MUL:
                     out <= in1 * in2;
-                ALU_SLT:
+                `ALU_SLT:
                     out <= in1 < in2;
-                ALU_AND:
+                `ALU_AND:
                     out <= in1 & in2;
-                ALU_OR:
+                `ALU_OR:
                     out <= in1 | in2;
-                ALU_XOR:
+                `ALU_XOR:
                     out <= in1 ^ in2;
-                ALU_SHIFT:
+                `ALU_SHIFT:
                     out <= in1 << in2;
             endcase
         end

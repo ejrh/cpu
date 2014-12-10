@@ -9,7 +9,7 @@ module test;
     end
 
     wire [WORD_SIZE-1 : 0] instr;
-    instr_fetch fetcher(instr, pointer, clk);
+    instr_fetch fetcher(clk, instr, pointer);
     
     wire [NIB_SIZE-1:0] opcode, reg1, reg2, reg3;
     wire isaluop;

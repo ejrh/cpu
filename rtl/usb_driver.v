@@ -1,14 +1,35 @@
 module usb_driver(
-    input wire clk,
+    clk,
+
+    bus_addr,
+    bus_read,
+    bus_write,
+    bus_data,
     
-    input wire usb_write,
-    input wire usb_astb,
-    input wire usb_dstb,
-    inout wire [7:0] usb_db,
-    output reg usb_wait
+    // Digilent EPP USB ports
+    usb_write,
+    usb_astb,
+    usb_dstb,
+    usb_db,
+    usb_wait
     
-    // TODO communicate with rest of machine
+    // Machine bus
     );
+
+    input wire clk;
+    
+    // Digilent EPP USB ports
+    input wire usb_write;
+    input wire usb_astb;
+    input wire usb_dstb;
+    inout wire [7:0] usb_db;
+    output reg usb_wait;
+    
+    // Machine bus
+    output [7:0] bus_addr;
+    output reg bus_read = 0;
+    output reg bus_write = 0;
+    output [7:0] bus_data;
     
     reg sending = 0;
     reg [7:0] send_data;
@@ -19,8 +40,14 @@ module usb_driver(
     reg [7:0] data [0:99];
     reg [7:0] pos = 0;
     
-    reg astb_buf;
+    reg astb_buf;    
     reg dstb_buf;
+    
+    assign bus_addr = address;
+    reg [7:0] bus_send_data = 0;
+    
+    //assign bus_data = bus_write ? bus_send_data : 8'bZZZZZZZZ;
+    assign bus_data = bus_send_data;
     
     parameter STATE_IDLE = 0;
     parameter STATE_WAITING = 1;
@@ -39,6 +66,7 @@ module usb_driver(
     end
     
     always @(posedge clk) begin
+        
         case (state)
             STATE_IDLE: begin
                 if (!astb_buf || !dstb_buf) begin
@@ -48,6 +76,8 @@ module usb_driver(
                 end else if (usb_wait) begin
                     usb_wait <= 0;
                 end
+                bus_read <= 0;
+                bus_write <= 0;
             end
             
             STATE_WAITING: begin
@@ -61,6 +91,9 @@ module usb_driver(
                         end else if (address == 1) begin
                             pos <= 0;
                         end
+                        
+                        bus_send_data <= usb_db;
+                        bus_write <= 1;
                     end
                     state <= STATE_IDLE;
                 end else if (!usb_wait) begin
@@ -72,6 +105,8 @@ module usb_driver(
                             send_data <= data[pos];
                             pos <= (pos == 99) ? 0 : (pos + 1);
                         end
+                        
+                        bus_read <= 1;
                     end
                 end
             end

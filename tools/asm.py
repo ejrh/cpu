@@ -203,15 +203,31 @@ class Assembler(object):
     
     def write_str(self):
         self.generate_program()
+        if self.options.binary:
+            bytes = []
+            for ln in self.program_lines:
+                p = ln.find('//')
+                if p > -1:
+                    ln = ln[:p]
+                ln = ln.strip()
+                for i in range(0,len(ln),4):
+                    s = ln[i:i+4]
+                    w = int(s, 16)
+                    bytes.append(w % 256)
+                    bytes.append(w / 256)
+            return ''.join(chr(x) for x in bytes)
         return '\n'.join(self.program_lines)
     
 def main():
     usage = """usage: %prog PATH [-c] INPUT"""
     desc = """Assemble a program for the CPU"""
     parser = OptionParser(usage=usage, description=desc)
-    parser.add_option("-c", "--comments", metavar="COMMENTS",
+    parser.add_option("-c", "--comments",
                       action="store_true", dest="comments", default=False,
                       help="enable annotation comments")
+    parser.add_option("-b", "--binary",
+                      action="store_true", dest="binary", default=False,
+                      help="output binary code")
 
     options, args = parser.parse_args()
     if len(args) == 0:

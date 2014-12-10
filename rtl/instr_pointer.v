@@ -1,4 +1,4 @@
-module instr_pointer(out, adj, clk, update_enable, reset_enable);
+module instr_pointer(clk, out, adj, update_enable, reset_enable);
 
     /* Instruction pointer
      *
@@ -7,8 +7,8 @@ module instr_pointer(out, adj, clk, update_enable, reset_enable);
 
     `include "parameters.vh"
 
-    output reg [WORD_SIZE-1:0] out = 0;
-    input wire signed [WORD_SIZE-1:0] adj;
+    output reg [INS_ADDR_SIZE-1:0] out = 0;
+    input wire signed [INS_ADDR_SIZE-1:0] adj;
     input wire clk, update_enable, reset_enable;
 
     always @(posedge clk) begin

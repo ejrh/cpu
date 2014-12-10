@@ -1,4 +1,7 @@
-module instr_fetch(instr, pointer, clk, fetch_enable);
+module instr_fetch(clk,
+    ins_mem, ins_pointer, ins_read_enable,
+    instr, pointer, fetch_enable
+    );
 
     /* Instruction fetcher
      *
@@ -8,17 +11,23 @@ module instr_fetch(instr, pointer, clk, fetch_enable);
 
     `include "parameters.vh"
 
-    wire [WORD_SIZE-1:0] out;
-    output reg [WORD_SIZE-1:0] instr;
-    input wire [WORD_SIZE-1:0] pointer;
-    input wire clk, fetch_enable;
+    input wire clk;
+    
+    input wire [WORD_SIZE-1:0] ins_mem;
+    output wire [INS_ADDR_SIZE-1:0] ins_pointer;
+    output wire ins_read_enable;
 
-    instr_memory memory(out, pointer);
-
+    output wire [WORD_SIZE-1:0] instr;
+    input wire [INS_ADDR_SIZE-1:0] pointer;
+    input wire fetch_enable;
+    
+    assign ins_pointer = pointer;
+    assign ins_read_enable = fetch_enable;
+    assign instr = ins_mem;
+    
     always @(posedge clk) begin
         if (fetch_enable) begin
-            $display("ip = %d, instr = %h", pointer, out);
-            instr <= out;
+            $display("ip = %d, instr = %h", pointer, ins_mem);
         end
     end
 
