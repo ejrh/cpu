@@ -34,10 +34,10 @@ NET "sw<3>" LOC = "B4";  # Bank = 3, Signal name = SW3
 NET "sw<2>" LOC = "K3";  # Bank = 3, Signal name = SW2
 NET "sw<1>" LOC = "L3";  # Bank = 3, Signal name = SW1
 NET "sw<0>" LOC = "P11";  # Bank = 2, Signal name = SW0
-#NET "btn<3>" LOC = "A7";  # Bank = 1, Signal name = BTN3
-#NET "btn<2>" LOC = "M4";  # Bank = 0, Signal name = BTN2
-#NET "btn<1>" LOC = "C11"; # Bank = 2, Signal name = BTN1
-#NET "btn<0>" LOC = "G12"; # Bank = 0, Signal name = BTN0
+NET "btn<3>" LOC = "A7";  # Bank = 1, Signal name = BTN3
+NET "btn<2>" LOC = "M4";  # Bank = 0, Signal name = BTN2
+NET "btn<1>" LOC = "C11"; # Bank = 2, Signal name = BTN1
+NET "btn<0>" LOC = "G12"; # Bank = 0, Signal name = BTN0
 #Created by Constraints Editor (xc3s250e-cp132-4) - 2013/01/16
 NET "mclk" TNM_NET = mclk;
 TIMESPEC TS_mclk = PERIOD "mclk" 20 ns HIGH 50%;

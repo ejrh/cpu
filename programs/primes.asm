@@ -5,8 +5,9 @@ primes::
     mov 0, $r4                    ; Start of primes array
     mov 0, $r5                    ; End of primes array (exclusive)
     mov 2, $r2                    ; First prime
+    mov 16, $r10
 
-found_prime: out $r2, 1           ; Print
+found_prime: out $r2, $r10, 2     ; Print
     store $r2, $r5, 0             ; Append to array
     add $r1, $r5, $r5
     

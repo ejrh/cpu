@@ -3,7 +3,8 @@ fibonacci::
     mov 10000, $r3
     mov 0, $r1
     mov 1, $r2
-start: out $r2, 1
+    mov 16, $r6
+start: out $r2, $r6, 2
     slt $r3, $r2, $r4
     br $r4, stop
     add $r1, $r2, $r5
