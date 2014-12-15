@@ -73,10 +73,10 @@ module ssd_driver(
             6'h0D: char_seg = 7'b0100001; // d
             6'h0E: char_seg = 7'b0000110; // E
             6'h0F: char_seg = 7'b0001110; // F
-            6'h10: char_seg = 7'b0111000; // G
+            6'h10: char_seg = 7'b1000010; // G
             6'h11: char_seg = 7'b0001011; // h
-            6'h12: char_seg = 7'b0010000; // i
-            6'h13: char_seg = 7'b1110001; // J
+            6'h12: char_seg = 7'b1101111; // i
+            6'h13: char_seg = 7'b1100001; // J
             6'h14: char_seg = 7'b0001101; // K
             6'h15: char_seg = 7'b1000111; // L
             6'h16: char_seg = 7'b1001000; // M
@@ -86,15 +86,15 @@ module ssd_driver(
             6'h1A: char_seg = 7'b1000100; // Q
             6'h1B: char_seg = 7'b0101111; // r
             6'h1C: char_seg = 7'b1010010; // S
-            6'h1D: char_seg = 7'b1001110; // T
+            6'h1D: char_seg = 7'b0000111; // T
             6'h1E: char_seg = 7'b1100011; // u
-            6'h1F: char_seg = 7'b1110011; // v
+            6'h1F: char_seg = 7'b1100111; // v
 /*
             6'h20: char_seg = 7'b1000001; // W
-            6'h21: char_seg = 7'b0110110; // X
-            6'h22: char_seg = 7'b0111011; // Y
-            6'h23: char_seg = 7'b1101100; // Z
-            6'h24: char_seg = 7'b1111110; // -
+            6'h21: char_seg = 7'b1001001; // X
+            6'h22: char_seg = 7'b0010001; // Y
+            6'h23: char_seg = 7'b1100100; // Z
+            6'h24: char_seg = 7'b0111111; // -
             6'h25: char_seg = 7'b1111111; // .
             6'h26: char_seg = 7'b1110111; // _
             6'h27: char_seg = 7'b1111111; // SPACE
