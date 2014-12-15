@@ -89,7 +89,7 @@ Machine architecture
 --------------------
 
 The CPU is encapsulated in a basic machine, which provides it with access to data memory,
-instruction memory, the seven-segment display, and the control port.
+instruction memory, the seven-segment display and other simple IO, and the control port.
 
 *Control port*
 
@@ -100,14 +100,27 @@ read or written (using the Digilent Adept tool, for instance).  Currently impeme
     2   Set instruction upload address (in multiple of 8 bytes).
     3   Upload instruction byte (autoincrementing the address).
 
+    
+*IO Ports*
+
+These are accessible from within the CPU, using the IN and OUT instructions.
+
+    16  Set LED state (lowest 4 bits)
+    17  Set SSD value (display in HEX)
+    18  Set SSD value (display in decimal)
+    19  Set SSD value (display characters)
+    20  Set SSD value (control all 32 segments individually)
+    21	Read switch state (lowest 8 bits)
+    22  Read button state (lowest 4 bits)
+
+A simple 6-bit [character set](ROADMAP.md) has been defined with characters appropriate for display on the SSD.
+
 
 Features and limitations
 ------------------------
 
 Ports can be used for input/output to arbitrary hardware.  In simulation or
-interpretation, writing to port 0 will halt the machine.  A port will be used
-to write to the seven segment display, and ports will be connected to other
-inputs/outputs on the machine.
+interpretation, writing to port 0 will halt the machine.
 
 Control flow consists of JMP and BR instructions, to relative offsets.
 There is no access
@@ -122,8 +135,8 @@ Currently, 1024 16-bit words of memory are available.
 Instruction memory is initially empty.  The host computer must upload a program and
 reset the CPU, using the control port.  The simplest steps are:
 
-Upload program binary to port 3.
-Set port 0 to 1.
+1.  Upload program binary to port 3.
+2.  Set port 0 to 1.
 
 Supporting tools
 ----------------
