@@ -113,7 +113,7 @@ These are accessible from within the CPU, using the IN and OUT instructions.
     21	Read switch state (lowest 8 bits)
     22  Read button state (lowest 4 bits)
 
-A simple 6-bit [character set](ROADMAP.md) has been defined with characters appropriate for display on the SSD.
+A simple 6-bit [character set](CHARSET.md) has been defined with characters appropriate for display on the SSD.
 
 
 Features and limitations
