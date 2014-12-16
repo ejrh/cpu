@@ -114,7 +114,7 @@ class FunctionCall(Expression):
 
 class Name(Expression):
     def __init__(self, name):
-        if isinstance(name, VariableDecl):
+        if isinstance(name, VariableDecl) or isinstance(name, ArgDecl):
             self.declaration = name
             name = name.name
         self.name = name

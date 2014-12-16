@@ -1,5 +1,5 @@
 from cfg import *
-from ast import SyntaxItem, Name, BinaryOperation, Builtin
+from ast import SyntaxItem, Name, BinaryOperation, Builtin, AssignStatement
 from visitor import Visitor
 
 next_inlined_id = 0
@@ -54,7 +54,7 @@ class Inline(Visitor):
             arg = func_call.args[i]
             orig_var = func_call.declaration.args[i]
             target_var = var_isomorphism[orig_var]
-            pre_assign = Operation(AssignStatement(target_var, arg))
+            pre_assign = Operation(AssignStatement(Name(target_var), arg))
             cfg.insert_before(node, pre_assign)
   
         first_node = isomorphism[other_cfg.entry].out_edges.keys()[0]
