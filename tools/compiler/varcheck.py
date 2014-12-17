@@ -1,3 +1,4 @@
+from tree import Tree
 from ast import *
 from visitor import Visitor
 
@@ -9,7 +10,7 @@ def unique_name(base, existing):
         name = '%s$%d' % (base, i)
     return name
 
-class SymbolTable(object):
+class SymbolTable(Tree):
     def __init__(self, parent=None):
         self.parent = parent
         self.symbols = {}
@@ -50,6 +51,9 @@ class SymbolTable(object):
         for n,v in other.symbols.items():
             n = unique_name(n, self.symbols.keys())
             self.symbols[n] = v
+    
+    def get_parts(self):
+      return [self.symbols]
 
 
 class VarCheck(Visitor):
