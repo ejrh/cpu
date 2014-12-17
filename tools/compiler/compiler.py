@@ -24,9 +24,11 @@ class Compiler(object):
         self.flatten = Flatten(self.ast, self.errors)
         self.reduce = Reduce(self.ast, self.errors)
         self.inline = Inline(self.ast, self.errors)
-        main_cfg = self.ast.symbol_table.lookup('main').cfg
-        print main_cfg
-        self.regalloc = RegisterAllocation(main_cfg)
+        for f in self.ast.symbol_table.symbols.values():
+            print 'regalloc', f
+            cfg = f.cfg
+            print 'cfg', cfg
+            self.regalloc = RegisterAllocation(cfg)
         
         self.lin = Linearise(self.ast, self.errors)
         self.render = Render(self.lin.lines, self.errors)

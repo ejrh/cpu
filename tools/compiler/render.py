@@ -20,7 +20,8 @@ class Render(Visitor):
         self.add_line(line)
 
     def visit_Branch(self, branch):
-        line = 'br %s, %s' % (branch.expression, branch.target)
+        arg = self.render(branch.expression)
+        line = 'br %s, %s' % (arg, branch.target)
         self.add_line(line, indent=1)
 
     def visit_Jump(self, jump):
@@ -43,6 +44,8 @@ class Render(Visitor):
                 line = 'slt %s, %s, %s' % (arg1, arg2, dest)
             elif opr == '+':
                 line = 'add %s, %s, %s' % (arg1, arg2, dest)
+            elif opr == '-':
+                line = 'sub %s, %s, %s' % (arg1, arg2, dest)
             else:
                 line = '%s %s, %s, %s' % (opr, arg1, arg2, dest)
                 #raise NotImplementedError(repr(op))

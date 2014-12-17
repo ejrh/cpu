@@ -101,6 +101,21 @@ class Reduce(Visitor):
             expr.parts[2] = temp_name
             return True
         
+        if isinstance(node, Test):
+            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
+            if expr.parts[1] == '==':
+                expr.parts[1] = '-'
+                for succ,edge in node.out_edges.items():
+                    if isinstance(edge, TrueEdge):
+                        node.out_edges[succ] = FalseEdge()
+                    elif isinstance(edge, FalseEdge):
+                        node.out_edges[succ] = TrueEdge()
+            elif expr.parts[1] == '!=':
+                expr.parts[1] = '-'
+            cfg.insert_before(node, new_assign_op)
+            node.expression = temp_name
+            return True
+        
         return False
 
     def assign_to_temporary(self, cfg, expr):
