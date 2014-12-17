@@ -31,6 +31,9 @@ def make_if_statement(s, loc, toks):
 def make_while_statement(s, loc, toks):
     return [WhileStatement(*toks)]
 
+def make_break_statement(s, loc, toks):
+    return [BreakStatement()]
+
 def make_return_statement(s, loc, toks):
     return [ReturnStatement(*toks)]
 
@@ -59,9 +62,10 @@ BOOL = Keyword("bool")
 
 IF = Keyword("if")
 WHILE = Keyword("while")
+BREAK = Keyword("break")
 RETURN = Keyword("return")
 
-identifier = NotAny(VOID | INT | BOOL | IF | WHILE | RETURN) + Word(alphas + '_', alphanums + '_')
+identifier = NotAny(VOID | INT | BOOL | IF | WHILE | BREAK | RETURN) + Word(alphas + '_', alphanums + '_')
 numeral = Word(nums).setParseAction(make_numeral)
 
 program = Forward().setParseAction(make_program)
@@ -77,6 +81,7 @@ expr_statement = Forward().setParseAction(make_expr_statement)
 assign_statement = Forward().setParseAction(make_assign_statement)
 if_statement = Forward().setParseAction(make_if_statement)
 while_statement = Forward().setParseAction(make_while_statement)
+break_statement = Forward().setParseAction(make_break_statement)
 return_statement = Forward().setParseAction(make_return_statement)
 expression = Forward()
 function_call = Forward().setParseAction(make_function_call)
@@ -94,11 +99,12 @@ arg_decl_list << Optional(delimitedList(arg_decl))
 arg_decl << (type_name + identifier)
 block << (Suppress('{') - statement_list + Suppress('}'))
 statement_list << ZeroOrMore(statement)
-statement << (var_decl | expr_statement | assign_statement | if_statement | while_statement | return_statement)
+statement << (var_decl | expr_statement | assign_statement | if_statement | while_statement | break_statement | return_statement)
 expr_statement << (expression + Suppress(';'))
 assign_statement << (name + Suppress('=') + expression + Suppress(';'))
 if_statement << (Suppress(IF) - Suppress('(') + expression + Suppress(')') + block)
 while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')') + block)
+break_statement << (Suppress(BREAK) - Suppress(';'))
 return_statement << (Suppress(RETURN) - expression + Suppress(';'))
 expression << operatorPrecedence(atom, [
     (oneOf('* /'), 2, opAssoc.LEFT, make_expression),

@@ -77,5 +77,10 @@ class BlockTests(GrammarTests):
         expected = Block([WhileStatement(Name('c'), Block([]))])
         self.assertSuccess(input, expected)
 
+    def testBreakStatement(self):
+        input = """{ while (c) { break; } }"""
+        expected = Block([WhileStatement(Name('c'), Block([BreakStatement()]))])
+        self.assertSuccess(input, expected)
+        
 if __name__ == '__main__':
     unittest.main()
