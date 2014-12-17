@@ -70,6 +70,7 @@ class Inline(Visitor):
         for name,decl in from_cfg.symbol_table.symbols.items():
             new_decl = decl.clone()
             new_name = get_next_inlined_id(name)
+            new_decl.name = new_name
             to_cfg.symbol_table.symbols[new_name] = new_decl
             isomorphism[decl] = new_decl
         
