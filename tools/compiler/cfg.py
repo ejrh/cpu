@@ -226,10 +226,11 @@ class CFG(object):
                 self.delete_node(pass_node)
       
     def delete_node(self, node):
-        for predecessor, edge in node.in_edges.items():
-            self.disconnect(predecessor, node)
-            for successor in node.out_edges.keys():
-                self.disconnect(node, successor)
+        for successor, succ_edge in node.out_edges.items():
+            self.disconnect(node, successor)
+            for predecessor, pred_edge in node.in_edges.items():
+                edge = pred_edge
+                self.disconnect(predecessor, node)
                 self.connect(predecessor, edge, successor)
     
     def __repr__(self):
