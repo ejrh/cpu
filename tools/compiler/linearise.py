@@ -6,9 +6,10 @@ class Line(Tree):
     pass
 
 class Label(Line):
-    def __init__(self, name, public=False):
+    def __init__(self, node, public=False):
         super(Label, self).__init__()
-        self.name = name
+        self.node = node
+        self.name = label_name(node)
         self.public = public
     
     def get_parts(self):
@@ -17,7 +18,7 @@ class Label(Line):
 class Jump(Line):
     def __init__(self, target):
         super(Jump, self).__init__()
-        self.target = target
+        self.target = label_name(target)
     
     def get_parts(self):
         return [self.target]
@@ -26,7 +27,7 @@ class Branch(Line):
     def __init__(self, expression, target):
         super(Branch, self).__init__()
         self.expression = expression
-        self.target = target
+        self.target = label_name(target)
     
     def get_parts(self):
         return [self.expression, self.target]
@@ -38,6 +39,15 @@ class Instruction(Line):
     
     def get_parts(self):
         return [self.expression]
+
+
+def label_name(node):
+    if isinstance(node, str):
+        return node
+    try:
+        return node.name
+    except AttributeError:
+        return 'L%d' % node.id
 
 class Linearise(Visitor):
     def __init__(self, program, errors):
@@ -76,7 +86,7 @@ class Linearise(Visitor):
                 
                 for key in dict(successors):
                     if key in self.done_nodes:
-                        self.add_line(Jump(key.id))
+                        self.add_line(Jump(key))
                         del successors[key]
                 
                 if len(successors) > 0:
@@ -94,24 +104,24 @@ class Linearise(Visitor):
     
     def process_node(self, node):
         successors = dict(node.out_edges)
-        
+
         if isinstance(node, Entry):
-            self.add_line(Label(node.name, public=True))
+            self.add_line(Label(node, public=True))
         elif isinstance(node, (Pass, Return)):
             pass
         elif isinstance(node, Exit):
-            self.add_line(Label(node.name, public=True))
+            self.add_line(Label(node, public=True))
         elif isinstance(node, Operation):
             self.add_line(Instruction(node.expression))
         elif isinstance(node, Test):
             for n2,e in successors.items():
                 if isinstance(e, TrueEdge):
-                    self.add_line(Branch(node.expression, n2.id))
+                    self.add_line(Branch(node.expression, n2))
                     self.enqueue(n2)
                     del successors[n2]
                 else:
                     if n2 in self.done_nodes:
-                        self.add_line(Jump(n2.id))
+                        self.add_line(Jump(n2))
                         del successors[n2]
         else:
             raise NotImplementedError("""Node %s could not be linearised""" % repr(node))
@@ -126,13 +136,13 @@ class Linearise(Visitor):
         return node
     
     def enqueue(self, node):
-        if node in self.queued_nodes:
+        if node in self.queued_nodes or node in self.done_nodes:
             return
         self.queued_nodes.add(node)
         self.queue.insert(0, node)
     
     def emit_label(self, node):
-        self.add_line(Label(node.id))
+        self.add_line(Label(node))
 
     def add_line(self, line):
         self.lines.append(line)
