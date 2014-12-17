@@ -44,10 +44,18 @@ class Instruction(Line):
 def label_name(node):
     if isinstance(node, str):
         return node
+    elif isinstance(node, int):
+        return 'L%d' % node
     try:
         return node.name
     except AttributeError:
+        pass
+    try:
         return 'L%d' % node.id
+    except AttributeError:
+        pass
+    return 'L%s' % node
+
 
 class Linearise(Visitor):
     def __init__(self, program, errors):
