@@ -1,5 +1,6 @@
 from ast import *
 from visitor import Visitor
+from linearise import Entry
 
 
 class Render(Visitor):
@@ -14,6 +15,8 @@ class Render(Visitor):
         line = '%s:' % label.name
         if label.public:
             line = line + ':'
+        if isinstance(label.node, Entry) and len(self.lines) > 0:
+            self.add_line('')
         self.add_line(line)
 
     def visit_Branch(self, branch):
