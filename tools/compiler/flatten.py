@@ -21,6 +21,8 @@ class Flatten(Visitor):
         prev_node = self.visit(func.body, cfg=cfg, entry=cfg.entry, exit=cfg.exit)
         if prev_node is not None:
             cfg.connect(prev_node, cfg.exit)
+        
+        cfg.remove_pass_nodes()
     
     def visit_Block(self, block, cfg, entry, exit):
         if hasattr(block, 'symbol_table'):

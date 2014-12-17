@@ -219,6 +219,18 @@ class CFG(object):
                 self.connect(new_node, new_edge, new_dest)
         
         return isomorphism
+      
+    def remove_pass_nodes(self):
+        for pass_node in self.nodes:
+            if isinstance(pass_node, Pass):
+                self.delete_node(pass_node)
+      
+    def delete_node(self, node):
+        for predecessor, edge in node.in_edges.items():
+            self.disconnect(predecessor, node)
+            for successor in node.out_edges.keys():
+                self.disconnect(node, successor)
+                self.connect(predecessor, edge, successor)
     
     def __repr__(self):
         return 'CFG{' + ', '.join(x.graph_repr() for x in self.nodes) + '}'
