@@ -44,19 +44,32 @@ class Inline(Visitor):
         
         other_cfg = func_call.declaration.cfg
         
+        # Embed a copy of the inlined function's CFG
         isomorphism = cfg.embed(other_cfg)
         
+        # Copy the inlined function's symbol table, and replace subgraph's variables with copies
         var_isomorphism = self.copy_variables(cfg, other_cfg)
         for n in isomorphism.values():
             self.replace_vars(n, var_isomorphism)
         
+        # Assign parameters to inlined function's argument variables
         for i in range(len(func_call.args)):
             arg = func_call.args[i]
             orig_var = func_call.declaration.args[i]
             target_var = var_isomorphism[orig_var]
             pre_assign = Operation(AssignStatement(Name(target_var), arg))
             cfg.insert_before(node, pre_assign)
+        
+        # Assign return value to caller's result variable, at each of the subgraph's return nodes
+        if isinstance(node.expression, AssignStatement):
+            target = node.expression.target
+            for subgraph_node in isomorphism.values():
+                if isinstance(subgraph_node, Return):
+                    ret_assign = Operation(AssignStatement(target, subgraph_node.expression))
+                    cfg.replace_before(subgraph_node, ret_assign)
+                    cfg.replace_after(subgraph_node, ret_assign)
   
+        # Disconnect old entry and exit from inlined subgraph.
         first_node = isomorphism[other_cfg.entry].out_edges.keys()[0]
         cfg.disconnect(isomorphism[other_cfg.entry], first_node)
         cfg.replace_before(node, first_node)
@@ -80,6 +93,6 @@ class Inline(Visitor):
         if isinstance(obj, Name) and obj.declaration in var_isomorphism:
             obj.declaration = var_isomorphism[obj.declaration]
         
-        if isinstance(obj, SyntaxItem):
+        if isinstance(obj, SyntaxItem) or isinstance(obj, Node):
             for p in obj.get_parts():
                 self.replace_vars(p, var_isomorphism)
