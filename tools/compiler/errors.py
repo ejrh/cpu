@@ -1,7 +1,8 @@
 import sys
 
 class Errors(object):
-    def __init__(self):
+    def __init__(self, filename):
+        self.filename = filename
         self.num_errors = 0
         self.num_warnings = 0
     
@@ -16,4 +17,5 @@ class Errors(object):
         self.num_warnings += 1
     
     def create_message(self, loc, msg):
-        return '%s: %s' % (loc, msg)
+        line, col = loc
+        return '%s:%d: %s' % (self.filename, line, msg)

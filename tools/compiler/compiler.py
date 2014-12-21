@@ -12,8 +12,8 @@ from linearise import Linearise
 from render import Render
 
 class Compiler(object):
-    def __init__(self):
-        self.errors = Errors()
+    def __init__(self, filename):
+        self.errors = Errors(filename)
     
     def compile(self, data):
         start_time = time.time()
@@ -40,7 +40,9 @@ def compile(filename):
     data = f.read()
     f.close()
     
-    comp = Compiler()
+    filename = filename.replace('\\', '/')
+    
+    comp = Compiler(filename)
     output = comp.compile(data)
     print '\n'.join(output)
 

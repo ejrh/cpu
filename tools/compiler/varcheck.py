@@ -128,7 +128,7 @@ class VarCheck(Visitor):
         expr_type = assign.expression.type
         target_type = assign.target.type
         if expr_type != target_type:
-            self.errors.error(assign.get_location(), """Cannot assign value of type %s to target of type %s""" % (input_type.name, target_type.name))
+            self.errors.error(assign.expression.get_location(), """Cannot assign value of type %s to target of type %s""" % (expr_type.name, target_type.name))
 
     def visit_FunctionCall(self, fc, table):
         self.visit_parts(fc, table=table)
@@ -152,7 +152,7 @@ class VarCheck(Visitor):
             call_arg = fc.args[i]
             arg_decl = decl.args[i]
             if call_arg.type != arg_decl.type:
-                self.errors.error(call_arg.get_location(), """Function '%s' expects a %s argument in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
+                self.errors.error(call_arg.get_location(), """Function '%s' expects argument of type %s in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
 
     def make_scope(self, target, table):
         st = SymbolTable(table)

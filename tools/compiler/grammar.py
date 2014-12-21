@@ -3,56 +3,80 @@ ParserElement.enablePackrat()
 
 from ast import *
 
+def ast_semantics(f):
+    def f2(s, loc, toks):
+        r = f(s, loc, toks)
+        r.location = (lineno(loc, s), col(loc, s))
+        return [r]
+    return f2
+
+@ast_semantics
 def make_program(s, loc, toks):
-    return [Program(*toks)]
+    return Program(*toks)
 
+@ast_semantics
 def make_var_decl(s, loc, toks):
-    return [VariableDecl(*toks)]
+    return VariableDecl(*toks)
 
+@ast_semantics
 def make_function_decl(s, loc, toks):
-    return [FunctionDecl(*toks)]
+    return FunctionDecl(*toks)
 
+@ast_semantics
 def make_arg_decl(s, loc, toks):
-    return [ArgDecl(*toks)]
+    return ArgDecl(*toks)
 
+@ast_semantics
 def make_block(s, loc, toks):
-    return [Block(*toks)]
+    return Block(*toks)
 
+@ast_semantics
 def make_expr_statement(s, loc, toks):
     stmt = toks[0]
-    return [Statement(stmt)]
+    return Statement(stmt)
 
+@ast_semantics
 def make_assign_statement(s, loc, toks):
-    return [AssignStatement(*toks)]
+    return AssignStatement(*toks)
 
+@ast_semantics
 def make_if_statement(s, loc, toks):
-    return [IfStatement(*toks)]
+    return IfStatement(*toks)
 
+@ast_semantics
 def make_while_statement(s, loc, toks):
-    return [WhileStatement(*toks)]
+    return WhileStatement(*toks)
 
+@ast_semantics
 def make_break_statement(s, loc, toks):
-    return [BreakStatement()]
+    return BreakStatement()
 
+@ast_semantics
 def make_return_statement(s, loc, toks):
-    return [ReturnStatement(*toks)]
+    return ReturnStatement(*toks)
 
+@ast_semantics
 def make_function_call(s, loc, toks):
-    return [FunctionCall(*toks)]
+    return FunctionCall(*toks)
 
+@ast_semantics
 def make_expression(s, loc, toks):
     toks = list(toks[0])
-    return [BinaryOperation(toks)]
+    return BinaryOperation(toks)
 
+@ast_semantics
 def make_name(s, loc, toks):
-    return [Name(*toks)]
+    return Name(*toks)
 
+@ast_semantics
 def make_numeral(s, loc, toks):
-    return [Numeral(*toks)]
+    return Numeral(*toks)
 
+@ast_semantics
 def make_type(s, loc, toks):
-    return [known_types[toks[0]]]
+    return known_types[toks[0]]
 
+#@ast_semantics
 def make_list(s, loc, toks):
     return [list(toks)]
 
