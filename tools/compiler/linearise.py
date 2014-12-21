@@ -82,7 +82,8 @@ class Linearise(Visitor):
             
             while node is not None:
                 if isinstance(node, Exit) and len(self.queue) != 0 and self.queue != [node]:
-                    self.add_line(Jump(node.name))
+                    if last_node is not None and not isinstance(last_node, Jump):
+                        self.add_line(Jump(node.name))
                     self.enqueue(node)
                     last_node = None
                     break
