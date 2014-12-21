@@ -1,7 +1,7 @@
 from ast import Register
 from liveness import LivenessAnalysis
 
-REGISTERS = [Register('$r%s' % i) for i in range(1,15)]
+REGISTERS = [Register('$r%s' % i) for i in range(1,16)]
 
 class RegisterAllocation(object):
     def __init__(self, cfg):
