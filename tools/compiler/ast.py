@@ -113,7 +113,7 @@ class BinaryOperation(Expression):
         self.parts = parts
     
     def get_parts(self):
-        return self.parts
+        return [self.parts]
 
 class FunctionCall(Expression):
     def __init__(self, name, args):
@@ -131,6 +131,11 @@ class Name(Expression):
     
     def get_parts(self):
         return [self.name]
+    
+    def clone(self):
+        new_clone = super(Name, self).clone()
+        new_clone.declaration = self.declaration
+        return new_clone
 
 class Numeral(Expression):
     def __init__(self, value):

@@ -10,8 +10,18 @@ class Tree(object):
         return not (self == other)
 
     def clone(self):
+        cls = self.__class__
+        cloned_parts = [clone(x) for x in self.get_parts()]
         try:
-            cls = self.__class__
-            return cls(*self.get_parts())
+            return cls(*cloned_parts)
         except TypeError, ex:
-            raise TypeError('Cannot clone %s using arguments %s' % (repr(cls), repr(self.get_parts)))
+            raise TypeError('Cannot clone %s using arguments %s' % (repr(cls), repr(cloned_parts)))
+
+
+def clone(item):
+    if isinstance(item, Tree):
+        return item.clone()
+    elif isinstance(item, list):
+        return [clone(x) for x in item]
+    else:
+        return item

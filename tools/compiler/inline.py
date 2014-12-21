@@ -91,8 +91,12 @@ class Inline(Visitor):
 
     def replace_vars(self, obj, var_isomorphism):
         if isinstance(obj, Name) and obj.declaration in var_isomorphism:
+            obj.name = var_isomorphism[obj.declaration].name
             obj.declaration = var_isomorphism[obj.declaration]
         
         if isinstance(obj, SyntaxItem) or isinstance(obj, Node):
             for p in obj.get_parts():
+                self.replace_vars(p, var_isomorphism)
+        elif isinstance(obj, list):
+            for p in obj:
                 self.replace_vars(p, var_isomorphism)
