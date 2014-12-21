@@ -52,6 +52,11 @@ class BlockTests(GrammarTests):
         expected = Block([VariableDecl(int_type, 'x')])
         self.assertSuccess(input, expected)
         
+    def testVariableDeclAssign(self):
+        input = """{ int x = 9; }"""
+        expected = Block([VarDeclAssignStatement(int_type, Name('x'), Numeral(9))])
+        self.assertSuccess(input, expected)
+        
     def testSingleVariable(self):
         input = """{ x; }"""
         expected = Block([Statement(Name('x'))])

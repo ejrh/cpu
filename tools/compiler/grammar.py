@@ -5,9 +5,13 @@ from ast import *
 
 def ast_semantics(f):
     def f2(s, loc, toks):
-        r = f(s, loc, toks)
-        r.location = (lineno(loc, s), col(loc, s))
-        return [r]
+        try:
+            r = f(s, loc, toks)
+            r.location = (lineno(loc, s), col(loc, s))
+            return [r]
+        except Exception, ex:
+            print loc, ex
+            return []
     return f2
 
 @ast_semantics
@@ -37,7 +41,10 @@ def make_expr_statement(s, loc, toks):
 
 @ast_semantics
 def make_assign_statement(s, loc, toks):
-    return AssignStatement(*toks)
+    if isinstance(toks[0], Name):
+        return AssignStatement(*toks)
+    else:
+        return VarDeclAssignStatement(*toks)
 
 @ast_semantics
 def make_if_statement(s, loc, toks):
@@ -95,6 +102,7 @@ numeral = Word(nums).setParseAction(make_numeral)
 program = Forward().setParseAction(make_program)
 declaration_list = Forward().setParseAction(make_list)
 var_decl = Forward().setParseAction(make_var_decl)
+opt_var_assign = Forward()
 function_decl = Forward().setParseAction(make_function_decl)
 arg_decl_list = Forward().setParseAction(make_list)
 arg_decl = Forward().setParseAction(make_arg_decl)
@@ -118,6 +126,7 @@ declaration = function_decl | var_decl
 program << declaration_list
 declaration_list << ZeroOrMore(declaration)
 var_decl << (type_name + identifier + Suppress(';'))
+opt_var_assign << Suppress('=') + expression
 function_decl << (type_name + identifier + Suppress('(') - arg_decl_list + Suppress(')') - block)
 arg_decl_list << Optional(delimitedList(arg_decl))
 arg_decl << (type_name + identifier)
@@ -125,7 +134,7 @@ block << (Suppress('{') - statement_list + Suppress('}'))
 statement_list << ZeroOrMore(statement)
 statement << (var_decl | expr_statement | assign_statement | if_statement | while_statement | break_statement | return_statement)
 expr_statement << (expression + Suppress(';'))
-assign_statement << (name + Suppress('=') + expression + Suppress(';'))
+assign_statement << (Optional(type_name) + name + Suppress('=') + expression + Suppress(';'))
 if_statement << (Suppress(IF) - Suppress('(') + expression + Suppress(')') + block)
 while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')') + block)
 break_statement << (Suppress(BREAK) - Suppress(';'))

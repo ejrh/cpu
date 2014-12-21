@@ -96,8 +96,18 @@ class VarCheckSymbolTableTests(VarCheckTests):
         self.assertEquals(st.get_names(), set(['x']))
         self.assertEquals(st.parent, program.symbol_table)
         
-    def testFunctionBlock(self):
+    def testFunctionBlockVarDecl(self):
         block = Block([VariableDecl(int_type, 'x')])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        st = block.symbol_table
+        self.assertEquals(st.get_names(), set(['x']))
+        self.assertEquals(st.get_all_names() - set(known_builtins.keys()), set(['f', 'x']))
+        self.assertEquals(st.parent.parent, program.symbol_table)
+        
+    def testFunctionBlockVarDeclAssign(self):
+        block = Block([VarDeclAssignStatement(int_type, Name('x'), Numeral(8))])
         program = Program([FunctionDecl(int_type, 'f', [], block)])
         self.assertSuccess(program)
         
@@ -117,10 +127,20 @@ class VarCheckVariableTests(VarCheckTests):
         
         self.assertEquals(n.declaration, d)
     
-    def testLocalVariable(self):
+    def testLocalVarDecl(self):
         d = VariableDecl(int_type, 'x')
         n = Name('x')
         block = Block([d, Statement(n)])
+        program = Program([FunctionDecl(int_type, 'f', [], block)])
+        self.assertSuccess(program)
+        
+        self.assertEquals(n.declaration, d)
+    
+    def testLocalVarDeclAssign(self):
+        d = VariableDecl(int_type, 'x')
+        n = Name('x')
+        vda = VarDeclAssignStatement(int_type, n, Numeral(8))
+        block = Block([vda])
         program = Program([FunctionDecl(int_type, 'f', [], block)])
         self.assertSuccess(program)
         
@@ -211,6 +231,18 @@ class VarCheckTypeTests(VarCheckTests):
         fc = FunctionCall(Name('__out__'), [Numeral(5)])
         program = Program([
             FunctionDecl(void_type, 'f', [], Block([Statement(fc)]))
+        ])
+        self.assertSuccess(program, expected_errors=1)
+
+    def testAssignment(self):
+        program = Program([
+            FunctionDecl(void_type, 'f', [], Block([VariableDecl(bool_type, 'x'), AssignStatement(Name('x'), Numeral(3))]))
+        ])
+        self.assertSuccess(program, expected_errors=1)
+
+    def testVarDeclAssignment(self):
+        program = Program([
+            FunctionDecl(void_type, 'f', [], Block([VarDeclAssignStatement(bool_type, Name('x'), Numeral(3))]))
         ])
         self.assertSuccess(program, expected_errors=1)
 

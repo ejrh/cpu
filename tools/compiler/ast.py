@@ -43,7 +43,7 @@ class Builtin(SyntaxItem):
     def get_parts(self):
         return self.type, self.name, self.args
 
-class ArgDecl(SyntaxItem):
+class ArgDecl(VariableDecl):
     def __init__(self, type, name):
         self.type, self.name = type, name
     
@@ -71,6 +71,15 @@ class AssignStatement(SyntaxItem):
     
     def get_parts(self):
         return self.target, self.expression
+
+class VarDeclAssignStatement(AssignStatement):
+    def __init__(self, type, target, expression):
+        self.type = type
+        self.target = target
+        self.expression = expression
+    
+    def get_parts(self):
+        return self.type, self.target, self.expression
 
 class IfStatement(SyntaxItem):
     def __init__(self, expression, block):

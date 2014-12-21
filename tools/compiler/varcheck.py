@@ -123,6 +123,10 @@ class VarCheck(Visitor):
         op.type = output_type
 
     def visit_AssignStatement(self, assign, function, table):
+        if isinstance(assign, VarDeclAssignStatement):
+            var_decl = VariableDecl(assign.type, assign.target.name)
+            self.add_to_scope(var_decl, table)
+        
         self.visit_parts(assign, function=function, table=table)
         
         expr_type = assign.expression.type
