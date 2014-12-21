@@ -14,8 +14,10 @@ class Visitor(object):
         return visit_method(target, **kwargs)
     
     def visit_list(self, target, **kwargs):
+        rv = None
         for x in target:
-            self.visit(x, **kwargs)
+            rv = self.visit(x, **kwargs)
+        return rv
 
     def visit_parts(self, target, **kwargs):
         try:
@@ -23,5 +25,7 @@ class Visitor(object):
         except AttributeError:
             parts = []
         
+        rv = None
         for part in parts:
-            self.visit(part, **kwargs)
+            rv = self.visit(part, **kwargs)
+        return rv
