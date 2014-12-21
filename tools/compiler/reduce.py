@@ -47,6 +47,9 @@ class Reduce(Visitor):
     
     def process_node(self, node, function, cfg):
         expr = node.expression
+        if expr is None:
+            return False
+        
         if isinstance(expr, FunctionCall):
             for i in range(len(expr.args)):
                 arg = expr.args[i]

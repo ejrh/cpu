@@ -129,7 +129,7 @@ assign_statement << (name + Suppress('=') + expression + Suppress(';'))
 if_statement << (Suppress(IF) - Suppress('(') + expression + Suppress(')') + block)
 while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')') + block)
 break_statement << (Suppress(BREAK) - Suppress(';'))
-return_statement << (Suppress(RETURN) - expression + Suppress(';'))
+return_statement << (Suppress(RETURN) - Optional(expression) + Suppress(';'))
 expression << operatorPrecedence(atom, [
     (oneOf('* /'), 2, opAssoc.LEFT, make_expression),
     (oneOf('+ -'), 2, opAssoc.LEFT, make_expression),

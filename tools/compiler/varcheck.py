@@ -67,25 +67,25 @@ class VarCheck(Visitor):
         self.visit(ast, table=builtin_scope)
         
     def visit_Program(self, program, table):
-        self.make_scope(program, table)
+        self.make_scope(program, None, table)
 
-    def visit_VariableDecl(self, var_decl, table):
+    def visit_VariableDecl(self, var_decl, function, table):
         self.add_to_scope(var_decl, table)
 
-    def visit_FunctionDecl(self, func_decl, table):
+    def visit_FunctionDecl(self, func_decl, function, table):
         self.add_to_scope(func_decl, table)
-        self.make_scope(func_decl, table)
+        self.make_scope(func_decl, func_decl, table)
 
-    def visit_ArgDecl(self, arg_decl, table):
+    def visit_ArgDecl(self, arg_decl, function, table):
         self.add_to_scope(arg_decl, table)
 
-    def visit_Block(self, block, table):
-        self.make_scope(block, table)
+    def visit_Block(self, block, function, table):
+        self.make_scope(block, function, table)
 
-    def visit_Numeral(self, num, table):
+    def visit_Numeral(self, num, function, table):
         num.type = int_type
 
-    def visit_Name(self, name, table):
+    def visit_Name(self, name, function, table):
         decl = table.lookup(name.name)
         if decl is None:
             self.errors.error(name.get_location(), """Undeclared name '%s'""" % name.name)
@@ -96,8 +96,8 @@ class VarCheck(Visitor):
         name.declaration = decl
         name.type = decl.type
 
-    def visit_BinaryOperation(self, op, table):
-        self.visit_parts(op, table=table)
+    def visit_BinaryOperation(self, op, function, table):
+        self.visit_parts(op, function=function, table=table)
         
         first_op = op.parts[1]
         if first_op in ['+', '-', '*', '/']:
@@ -122,16 +122,29 @@ class VarCheck(Visitor):
         
         op.type = output_type
 
-    def visit_AssignStatement(self, assign, table):
-        self.visit_parts(assign, table=table)
+    def visit_AssignStatement(self, assign, function, table):
+        self.visit_parts(assign, function=function, table=table)
         
         expr_type = assign.expression.type
         target_type = assign.target.type
         if expr_type != target_type:
             self.errors.error(assign.expression.get_location(), """Cannot assign value of type %s to target of type %s""" % (expr_type.name, target_type.name))
 
-    def visit_FunctionCall(self, fc, table):
-        self.visit_parts(fc, table=table)
+    def visit_ReturnStatement(self, ret, function, table):
+        self.visit_parts(ret, function=function, table=table)
+        
+        target_type = function.type
+        
+        if ret.expression is not None:
+            expr_type = ret.expression.type
+            if expr_type != target_type:
+                self.errors.error(ret.expression.get_location(), """Cannot return value of type %s in function returning type %s""" % (expr_type.name, target_type.name))
+        else:
+            if target_type != void_type:
+                self.errors.error(ret.get_location(), """Function '%s' must return a value of type %s""" % (function.name, target_type.name))
+
+    def visit_FunctionCall(self, fc, function, table):
+        self.visit_parts(fc, function=function, table=table)
         
         decl = fc.name.declaration
         if not isinstance(decl, FunctionDecl) and not isinstance(decl, Builtin):
@@ -154,10 +167,10 @@ class VarCheck(Visitor):
             if call_arg.type != arg_decl.type:
                 self.errors.error(call_arg.get_location(), """Function '%s' expects argument of type %s in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
 
-    def make_scope(self, target, table):
+    def make_scope(self, target, function, table):
         st = SymbolTable(table)
         target.symbol_table = st
-        self.visit_parts(target, table=st)
+        self.visit_parts(target, function=function, table=st)
 
     def add_to_scope(self, target, table):
         table.add(target.name, target, self.errors)

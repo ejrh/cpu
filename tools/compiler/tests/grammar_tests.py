@@ -81,6 +81,16 @@ class BlockTests(GrammarTests):
         input = """{ while (c) { break; } }"""
         expected = Block([WhileStatement(Name('c'), Block([BreakStatement()]))])
         self.assertSuccess(input, expected)
+
+    def testReturnValueStatement(self):
+        input = """{ return c; }"""
+        expected = Block([ReturnStatement(Name('c'))])
+        self.assertSuccess(input, expected)
+        
+    def testReturnStatement(self):
+        input = """{ return; }"""
+        expected = Block([ReturnStatement()])
+        self.assertSuccess(input, expected)
         
 if __name__ == '__main__':
     unittest.main()

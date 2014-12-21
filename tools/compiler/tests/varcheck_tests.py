@@ -233,6 +233,12 @@ class VarCheckTypeTests(VarCheckTests):
         ])
         self.assertSuccess(program, expected_errors=1)
 
+    def testFunctionReturn(self):
+        program = Program([
+            FunctionDecl(void_type, 'f', [], Block([ReturnStatement(Numeral(7))])),
+        ])
+        self.assertSuccess(program, expected_errors=1)
+
     def testBuiltinCallType(self):
         fc = FunctionCall(Name('__out__'), [Numeral(4), Numeral(5)])
         program = Program([

@@ -96,11 +96,14 @@ class BreakStatement(SyntaxItem):
         return []
 
 class ReturnStatement(SyntaxItem):
-    def __init__(self, expression):
+    def __init__(self, expression=None):
         self.expression = expression
     
     def get_parts(self):
-        return [self.expression]
+        if self.expression is None:
+            return []
+        else:
+            return [self.expression]
 
 class Expression(SyntaxItem):
     pass
