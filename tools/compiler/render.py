@@ -35,6 +35,10 @@ class Render(Visitor):
         if  isinstance(assign.expression, Numeral):
             dest = self.render(assign.target)
             line = 'mov %d, %s' % (assign.expression.value, dest)
+        elif  isinstance(assign.expression, Name):
+            dest = self.render(assign.target)
+            src = self.render(assign.expression)
+            line = 'mov %s, %s' % (src, dest)
         elif isinstance(assign.expression, BinaryOperation):
             dest = self.render(assign.target)
             arg1 = self.render(assign.expression.parts[0])
