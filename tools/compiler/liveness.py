@@ -71,6 +71,9 @@ class NodeAnalyser(Visitor):
         self.defs = None
         self.refs = None
     
+    def visit_FunctionCall(self, op):
+        self.visit(op.args)
+    
     def visit_BinaryOperation(self, op):
         self.visit_parts(op)
     

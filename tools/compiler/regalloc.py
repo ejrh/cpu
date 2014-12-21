@@ -1,4 +1,5 @@
-from ast import Register
+from ast import Register, VariableDecl, ArgDecl, AssignStatement, Name
+from cfg import Operation
 from liveness import LivenessAnalysis
 
 REGISTERS = [Register('$r%s' % i) for i in range(1,16)]
@@ -18,17 +19,30 @@ class RegisterAllocation(object):
 class InterferenceGraph(object):
     def __init__(self, cfg, liveness):
         self.conflicts = {}
+        self.moves = {}
         self.colours = {}
         
         self.populate(cfg, liveness)
     
     def populate(self, cfg, liveness):
         for var in cfg.symbol_table.symbols.values():
-            self.conflicts[var] = set()
+            if isinstance(var, VariableDecl) or isinstance(var, ArgDecl):
+                self.conflicts[var] = set()
         
         for node in cfg.nodes:
             live_vars = liveness.insets[node]
             self.add_conflicts(live_vars)
+        
+        for var in cfg.symbol_table.symbols.values():
+            self.moves[var] = set()
+        
+        for node in cfg.nodes:
+            if isinstance(node, Operation) and isinstance(node.expression, AssignStatement):
+                expr1 = node.expression.expression
+                expr2 = node.expression.target
+                if isinstance(expr1, Name) and isinstance(expr2, Name):
+                    self.moves[expr1.declaration].add(expr2.declaration)
+                    self.moves[expr2.declaration].add(expr1.declaration)
     
     def add_conflicts(self, vars):
         for v1 in vars:
@@ -72,6 +86,12 @@ class InterferenceGraph(object):
     def colour_one(self):
         target = self.stack.pop()
         neighbour_colours = [self.colours[x] for x in self.neighbours(target) if x in self.colours]
+        preferred_colours = [self.colours[x] for x in self.moves[target] if x in self.colours and x not in neighbour_colours]
+        
+        if len(preferred_colours) > 0:
+            self.colours[target] = preferred_colours[0]
+            return True
+        
         for i in range(self.max_colours):
             colour = self.get_next_colour()
             if colour not in neighbour_colours:
