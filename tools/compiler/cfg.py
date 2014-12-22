@@ -1,3 +1,4 @@
+import expect
 from tree import Tree
 
 class Edge(Tree):
@@ -95,11 +96,13 @@ class CFG(object):
         self.entry = self.add(Entry(name))
         self.exit = self.add(Exit(name + '$exit'))
     
+    @expect.input(Node)
     def add(self, node):
         if node not in self.nodes:
             self.nodes.add(node)
         return node
     
+    @expect.input(Node)
     def replace_before(self, target, new_node, new_edge=None):
         self.add(new_node)
         
@@ -107,6 +110,7 @@ class CFG(object):
             self.disconnect(old_predecessor, target)
             self.connect(old_predecessor, old_edge, new_node)
     
+    @expect.input(Node)
     def insert_before(self, target, new_node, new_edge=None):
         self.replace_before(target, new_node)
         
@@ -115,6 +119,7 @@ class CFG(object):
         
         self.connect(new_node, new_edge, target)
     
+    @expect.input(Node)
     def replace_after(self, target, new_node, new_edge=None):
         self.add(new_node)
         
@@ -125,6 +130,8 @@ class CFG(object):
             self.disconnect(target, old_successor)
             self.connect(new_node, old_edge, old_successor)
     
+    @expect.input(tuple)
+    @expect.output(list)
     def fill_node_edge_list(self, nodes_and_edges):
         value_error = False
         i = 0
@@ -156,6 +163,7 @@ class CFG(object):
         
         return tuples
     
+    @expect.input(Node)
     def connect(self, *nodes_and_edges):
         """Connect a sequence of nodes and edges in the CFG."""
         
@@ -167,10 +175,12 @@ class CFG(object):
             from_node.out_edges[to_node] = edge
             to_node.in_edges[from_node] = edge
 
+    @expect.input(Node)
     def disconnect(self, from_node, to_node):
         del from_node.out_edges[to_node]
         del to_node.in_edges[from_node]
 
+    @expect.input(Node)
     def has_path(self, *nodes_and_edges):
         tuples = self.fill_node_edge_list(nodes_and_edges)
         
@@ -179,6 +189,7 @@ class CFG(object):
         n = self.find_node(first[0])
         return self.has_path_from(n, tuples)
     
+    @expect.input(Node, list)
     def has_path_from(self, node, node_tuples):
         if node_tuples == []:
             return True
@@ -194,6 +205,7 @@ class CFG(object):
         
         return False
     
+    @expect.input(Node)
     def find_node(self, node):
         if node in self.nodes:
             return node
@@ -202,6 +214,7 @@ class CFG(object):
                 return n
         return None
     
+    @expect.input('CFG')
     def embed(self, other):
         # First make a copy of each node, and build up an isomorphism between the original and the new
         isomorphism = {}
@@ -225,6 +238,7 @@ class CFG(object):
             if isinstance(pass_node, Pass):
                 self.delete_node(pass_node)
       
+    @expect.input(Node)
     def delete_node(self, node):
         for successor, succ_edge in node.out_edges.items():
             self.disconnect(node, successor)

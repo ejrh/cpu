@@ -1,9 +1,11 @@
+from functools import wraps
 from pyparsing import *
 ParserElement.enablePackrat()
 
 from ast import *
 
 def ast_semantics(f):
+    @wraps(f)
     def f2(s, loc, toks):
         try:
             r = f(s, loc, toks)

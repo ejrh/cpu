@@ -1,3 +1,5 @@
+import expect
+from cfg import Node
 from dfa import DFA
 from visitor import Visitor
 
@@ -19,6 +21,7 @@ class LivenessAnalysis(DFA):
     def get_consequents(self, node):
         return node.in_edges.keys()
 
+    @expect.input(Node)
     def analyse(self, node):
         genset, killset = self.analyse_node(node)
         
@@ -35,6 +38,7 @@ class LivenessAnalysis(DFA):
         na = NodeAnalyser(node)
         return na.node_refs[node],na.node_defs[node]
     
+    @expect.input(Node, set)
     def update_sets(self, node, inset, outset):
         changed = False
         if inset != self.insets[node]:

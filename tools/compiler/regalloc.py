@@ -1,3 +1,4 @@
+import expect
 from ast import Register, VariableDecl, ArgDecl, AssignStatement, Name
 from cfg import Operation
 from liveness import LivenessAnalysis
@@ -44,6 +45,7 @@ class InterferenceGraph(object):
                     self.moves[expr1.declaration].add(expr2.declaration)
                     self.moves[expr2.declaration].add(expr1.declaration)
     
+    @expect.input(set)
     def add_conflicts(self, vars):
         for v1 in vars:
             if v1 not in self.conflicts:

@@ -1,3 +1,4 @@
+import expect
 from ast import *
 from visitor import Visitor
 from linearise import Entry
@@ -74,6 +75,7 @@ class Render(Visitor):
             line = '    ' * indent + line
         self.lines.append(line)
 
+    @expect.input(Expression)
     def render(self, expr):
         if isinstance(expr, Numeral):
             return str(expr.value)

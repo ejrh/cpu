@@ -1,6 +1,7 @@
+import expect
 from ast import *
 from varcheck import SymbolTable
-from cfg import CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
+from cfg import Node, CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
 from visitor import Visitor
 
 class Flatten(Visitor):
@@ -42,6 +43,7 @@ class Flatten(Visitor):
         cfg.connect(entry, stmt_node)
         return stmt_node
 
+    @expect.output(Node)
     def visit_IfStatement(self, stmt, cfg, entry, exit, break_target):
         cond_node = cfg.add(Test(stmt.expression))
         cfg.connect(entry, cond_node)
@@ -58,6 +60,7 @@ class Flatten(Visitor):
             cfg.connect(prev_node, no_node)
         return no_node
 
+    @expect.output(Node)
     def visit_WhileStatement(self, stmt, cfg, entry, exit, break_target):
         cond_node = cfg.add(Test(stmt.expression))
         cfg.connect(entry, cond_node)

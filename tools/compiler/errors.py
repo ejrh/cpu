@@ -1,4 +1,5 @@
 import sys
+import expect
 
 class Errors(object):
     def __init__(self, filename=None):
@@ -8,16 +9,19 @@ class Errors(object):
         self.num_errors = 0
         self.num_warnings = 0
     
+    @expect.input(str)
     def error(self, loc, msg):
         msg = self.create_message(loc, msg)
         print >>sys.stderr, msg
         self.num_errors += 1
     
+    @expect.input(str)
     def warn(self, loc, msg):
         msg = self.create_message(loc, 'Warning: ' + msg)
         print >>sys.stderr, msg
         self.num_warnings += 1
     
+    @expect.input(str)
     def create_message(self, loc, msg):
         if loc == 'unknown':
             line, col = loc, loc

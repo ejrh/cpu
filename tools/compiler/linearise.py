@@ -67,6 +67,7 @@ class Linearise(Visitor):
     def visit_FunctionDecl(self, func):
         self.process_cfg(func.cfg)
 
+    @expect.input(CFG)
     def process_cfg(self, cfg):
         self.done_nodes = set()
         self.queued_nodes = set()
@@ -111,6 +112,7 @@ class Linearise(Visitor):
         if cfg.exit not in self.done_nodes:
             self.process_node(cfg.exit)
     
+    @expect.input(Node)
     def process_node(self, node):
         successors = dict(node.out_edges)
 
@@ -144,6 +146,7 @@ class Linearise(Visitor):
         self.queued_nodes.remove(node)
         return node
     
+    @expect.input(Node)
     def enqueue(self, node):
         if node in self.queued_nodes or node in self.done_nodes:
             return

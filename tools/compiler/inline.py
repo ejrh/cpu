@@ -4,6 +4,7 @@ from visitor import Visitor
 
 next_inlined_id = 0
 
+@expect.input(str)
 def get_next_inlined_id(name):
     global next_inlined_id
     id = next_inlined_id

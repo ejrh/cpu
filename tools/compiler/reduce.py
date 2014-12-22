@@ -22,6 +22,7 @@ class Reduce(Visitor):
     def visit_FunctionDecl(self, func):
         self.process_cfg(func.cfg, func)
 
+    @expect.input(CFG, FunctionDecl)
     def process_cfg(self, cfg, function):
         stack = []
         
@@ -45,6 +46,7 @@ class Reduce(Visitor):
                 for new_node in node.in_edges.keys():
                     stack.append(new_node)
     
+    @expect.input(Node, FunctionDecl, CFG)
     def process_node(self, node, function, cfg):
         expr = node.expression
         if expr is None:
@@ -83,6 +85,7 @@ class Reduce(Visitor):
         
         return temp_name
   
+    @expect.input(Expression, Node, CFG)
     def reduce_binary(self, expr, node, cfg):
         if len(expr.parts) > 3:
             subexpr = BinaryOperation(expr.parts[:3])
@@ -121,6 +124,8 @@ class Reduce(Visitor):
         
         return False
 
+    @expect.input(CFG, Expression)
+    @expect.output((Operation, Expression))
     def assign_to_temporary(self, cfg, expr):
         temp_decl = self.create_temporary(cfg, expr.type)
         
@@ -130,6 +135,8 @@ class Reduce(Visitor):
         new_assignment_op = Operation(AssignStatement(new_name_expr, expr))
         return new_assignment_op, new_name_expr
     
+    @expect.input(CFG, Type)
+    @expect.output(VariableDecl)
     def create_temporary(self, cfg, var_type):
         id = get_next_temporary_id()
         decl = VariableDecl(var_type, id)

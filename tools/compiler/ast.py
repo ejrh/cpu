@@ -8,35 +8,38 @@ class SyntaxItem(Tree):
         except AttributeError:
             return 'unknown'
 
-class Program(SyntaxItem):
+class Declaration(SyntaxItem):
+    pass
+
+class Program(Declaration):
     def __init__(self, declarations):
         self.declarations = declarations
     
     def get_parts(self):
         return self.declarations
 
-class VariableDecl(SyntaxItem):
+class VariableDecl(Declaration):
     def __init__(self, type, name):
         self.type, self.name = type, name
     
     def get_parts(self):
         return self.type, self.name
 
-class Register(SyntaxItem):
+class Register(Declaration):
     def __init__(self, name):
         self.name = name
     
     def get_parts(self):
         return [self.name]
 
-class FunctionDecl(SyntaxItem):
+class FunctionDecl(Declaration):
     def __init__(self, type, name, args, body):
         self.type, self.name, self.args, self.body = type, name, args, body
     
     def get_parts(self):
         return self.type, self.name, self.args, self.body
 
-class Builtin(SyntaxItem):
+class Builtin(Declaration):
     def __init__(self, type, name, args):
         self.type, self.name, self.args = type, name, args
     
@@ -50,7 +53,7 @@ class ArgDecl(VariableDecl):
     def get_parts(self):
         return self.type, self.name
 
-class Block(SyntaxItem):
+class Block(Declaration):
     def __init__(self, statements):
         self.statements = statements
     
@@ -153,7 +156,7 @@ class Numeral(Expression):
     def get_parts(self):
         return [self.value]
 
-class Type(SyntaxItem):
+class Type(Declaration):
     def __init__(self, name):
         self.name = name
     

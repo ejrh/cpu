@@ -1,3 +1,4 @@
+import expect
 from tree import Tree
 from ast import *
 from visitor import Visitor
@@ -27,6 +28,7 @@ class SymbolTable(Tree):
         names.update(self.get_names())
         return names      
     
+    @expect.input(str, Declaration)
     def add(self, name, decl, errors):
         if name in self.symbols:
             prev_decl = self.symbols[name]
@@ -40,6 +42,7 @@ class SymbolTable(Tree):
         
         self.symbols[name] = decl
 
+    @expect.input(str)
     def lookup(self, name):
         if name in self.symbols:
             return self.symbols[name]
@@ -47,6 +50,7 @@ class SymbolTable(Tree):
             return self.parent.lookup(name)
         return None
     
+    @expect.input('SymbolTable')
     def embed(self, other):
         for n,v in other.symbols.items():
             n = unique_name(n, self.symbols.keys())
@@ -171,10 +175,12 @@ class VarCheck(Visitor):
             if call_arg.type != arg_decl.type:
                 self.errors.error(call_arg.get_location(), """Function '%s' expects argument of type %s in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
 
+    @expect.input(Declaration, SymbolTable)
     def make_scope(self, target, function, table):
         st = SymbolTable(table)
         target.symbol_table = st
         self.visit_parts(target, function=function, table=st)
 
+    @expect.input(Declaration, SymbolTable)
     def add_to_scope(self, target, table):
         table.add(target.name, target, self.errors)
