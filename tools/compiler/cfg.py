@@ -40,11 +40,11 @@ class Node(Tree):
     
     def graph_repr(self):
         class_name = self.__class__.__name__
-        return "<%d>" % self.id + repr(self) + '<' + ','.join(e.graph_repr() + str(x.id) for x,e in self.out_edges.items()) + '>'
+        return ("<%d>" % self.id + repr(self)
+                + '<' + ','.join(str(x.id) + e.graph_repr() for x,e in self.in_edges.items()) + '>'
+                + '<' + ','.join(e.graph_repr() + str(x.id) for x,e in self.out_edges.items()) + '>')
 
 class Pass(Node):
-    pass
-    
     def get_parts(self):
         return []
 
@@ -248,4 +248,4 @@ class CFG(object):
                 self.connect(predecessor, edge, successor)
     
     def __repr__(self):
-        return 'CFG{' + ', '.join(x.graph_repr() for x in self.nodes) + '}'
+        return 'CFG{\n' + ',\n'.join(x.graph_repr() for x in sorted(self.nodes, key=lambda x: x.id)) + '\n}'
