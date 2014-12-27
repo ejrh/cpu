@@ -45,6 +45,12 @@ __all__ = ['input', 'output', 'key', 'value', 'strictness', 'UnmetExpectationErr
 
 strictness_level = 1
 
+class Namespace(object):
+    def __init__(self, names=None):
+        if names is not None:
+            for n in names:
+                setattr(self, n, globals()[n])
+
 class UnmetExpectationError(Exception):
     def __init__(self, message):
         super(UnmetExpectationError, self).__init__(self, message)
@@ -140,26 +146,26 @@ def check_condition(kind, cond, strictness_level, items, func_name, args, kwargs
     except Exception, ex:
         raise UnmetExpectationError('%s expectation not met: %s was raised' % (kind, describe_error(ex)))
 
-def make_function_decorator(kind, cond, strictness_level, pre_check=False, post_check=False):
+def make_function_decorator(kind, cond, options, pre_check=False, post_check=False):
     def decorator(f):
-        if strictness_level == 0:
+        if options.strictness == 0:
             return f
         func_name = f.__name__
         
         @wraps(f)
         def f2(*args, **kwargs):
             if pre_check:
-                check_condition(kind, cond, strictness_level, (args, kwargs), func_name, args, kwargs)
+                check_condition(kind, cond, options.strictness, (args, kwargs), func_name, args, kwargs)
             rv = f(*args, **kwargs)
             if post_check:
-                check_condition(kind, cond, strictness_level, [rv], func_name, args, kwargs)
+                check_condition(kind, cond, options.strictness, [rv], func_name, args, kwargs)
             return rv
         return f2
     return decorator
 
-def make_class_decorator(kind, cond, strictness_level, method_maps):
+def make_class_decorator(kind, cond, options, method_maps):
     def decorator(cls):
-        if strictness_level == 0:
+        if options.strictness == 0:
             return cls
         
         methods = {}
@@ -173,7 +179,7 @@ def make_class_decorator(kind, cond, strictness_level, method_maps):
             def make_closure(m, mn, ar):
                 @wraps(m, assigned=['__name__', '__doc__'])
                 def  method2(self, *args, **kwargs):
-                    check_condition(kind, cond, strictness_level, ar(*args, **kwargs), mn, args, kwargs)
+                    check_condition(kind, cond, options.strictness, ar(*args, **kwargs), mn, args, kwargs)
                     rv = m(self, *args, **kwargs)
                     return rv
                 return method2
@@ -183,42 +189,42 @@ def make_class_decorator(kind, cond, strictness_level, method_maps):
         return cls2
     return decorator
 
-
-##### Public utility functions #####
-
-def strictness(level):
-    """Set the strictness level for expectation checking to s, from 0 to 2.
-    0 is no checking, 1 is checking and printing warnings, 2 is throwing an exception when a check fails.
-    Strictness is applied to a function or collection at the time of decoration."""
+def get_options(kwargs):
     global strictness_level
-    strictness_level = level
+    options = Namespace()
+    if 'strictness' in kwargs:
+        options.strictness = kwargs['strictness']
+    else:
+        options.strictness = strictness_level
+    return options
+
 
 ##### Public expectation decorators #####
 
-def input(*conds):
+def input(*conds, **kwargs):
     """Conditions applied to function inputs."""
-    global strictness
+    options = get_options(kwargs)
     cond = make_conditions(*conds)
-    return make_function_decorator('Input', cond, strictness_level, pre_check=True)
+    return make_function_decorator('Input', cond, options, pre_check=True)
 
-def output(*conds):
+def output(*conds, **kwargs):
     """Conditions applied to the result of a function."""
-    global strictness
+    options = get_options(kwargs)
     cond = make_conditions(*conds)
-    return make_function_decorator('Output', cond, strictness_level, post_check=True)
+    return make_function_decorator('Output', cond, options, post_check=True)
 
-def key(*conds):
+def key(*conds, **kwargs):
     """Conditions applied to the the keys in a collection."""
-    global strictness
+    options = get_options(kwargs)
     method_maps = {}
     method_maps[dict] = {'__setitem__': lambda k, v: [k]}
     method_maps[UserDict] = method_maps[dict]
     cond = make_conditions(*conds)
-    return make_class_decorator('Key', cond, strictness_level, method_maps)
+    return make_class_decorator('Key', cond, options, method_maps)
 
-def value(*conds):
+def value(*conds, **kwargs):
     """Conditions applied to the the values in a collection."""
-    global strictness
+    options = get_options(kwargs)
     method_maps = {}
     method_maps[list] = {'__init__': lambda x=[]: x, 'append': lambda x: [x], 'extend': lambda x: x, '__add__': lambda x: x}
     method_maps[UserList] = method_maps[list]
@@ -226,16 +232,23 @@ def value(*conds):
     method_maps[dict] = {'__setitem__': lambda k, v: [v]}
     method_maps[UserDict] = method_maps[dict]
     cond = make_conditions(*conds)
-    return make_class_decorator('Value', cond, strictness_level, method_maps)
+    return make_class_decorator('Value', cond, options, method_maps)
+
+
+##### Public utility functions #####
+
+@input(lambda x: x in (0,1,2), strictness=2)
+def strictness(level):
+    """Set the strictness level for expectation checking to s, from 0 to 2.
+    0 is no checking, 1 is checking and printing warnings, 2 is throwing an exception when a check fails.
+    Strictness is applied to a function or collection at the time of decoration."""
+    global strictness_level
+    strictness_level = level
 
 
 ##### Demo code #####
 
 # Make decorators visible under a fake "expect" namespace, for internal use
-class Namespace(object):
-    def __init__(self, names):
-        for n in names:
-            setattr(self, n, globals()[n])
 expect = Namespace(__all__)
 
 @expect.input(int, lambda x: x >= 0)
