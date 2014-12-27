@@ -15,7 +15,6 @@ def get_next_temporary_id():
 class Reduce(Visitor):
     def __init__(self, program, errors):
         self.errors = errors
-        self.lines = []
         
         self.visit(program)
     

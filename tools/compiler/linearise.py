@@ -1,3 +1,4 @@
+import expect
 from tree import Tree
 from cfg import *
 from visitor import Visitor
@@ -57,10 +58,14 @@ def label_name(node):
     return 'L%s' % node
 
 
+@expect.value(Line)
+class LineList(list):
+    pass
+
 class Linearise(Visitor):
     def __init__(self, program, errors):
         self.errors = errors
-        self.lines = []
+        self.lines = LineList()
         
         self.visit(program)
     

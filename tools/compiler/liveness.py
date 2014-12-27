@@ -1,7 +1,12 @@
 import expect
+from ast import Declaration
 from cfg import Node
 from dfa import DFA
 from visitor import Visitor
+
+@expect.value(Declaration)
+class SymbolSet(set):
+    pass
 
 class LivenessAnalysis(DFA):
     def __init__(self, cfg):
@@ -10,8 +15,8 @@ class LivenessAnalysis(DFA):
         self.insets = {}
         self.outsets = {}
         for n in self.cfg.nodes:
-            self.insets[n] = set()
-            self.outsets[n] = set()
+            self.insets[n] = SymbolSet()
+            self.outsets[n] = SymbolSet()
         
         self.run()
     
@@ -25,7 +30,7 @@ class LivenessAnalysis(DFA):
     def analyse(self, node):
         genset, killset = self.analyse_node(node)
         
-        outset = set()
+        outset = SymbolSet()
         for succ in node.out_edges:
             outset.update(self.insets[succ])
         
@@ -38,7 +43,7 @@ class LivenessAnalysis(DFA):
         na = NodeAnalyser(node)
         return na.node_refs[node],na.node_defs[node]
     
-    @expect.input(Node, set)
+    @expect.input(Node, SymbolSet)
     def update_sets(self, node, inset, outset):
         changed = False
         if inset != self.insets[node]:
@@ -60,12 +65,12 @@ class NodeAnalyser(Visitor):
         self.visit(ast)
     
     def visit_Node(self, node):
-        self.node_defs[node] = set()
-        self.node_refs[node] = set()
+        self.node_defs[node] = SymbolSet()
+        self.node_refs[node] = SymbolSet()
     
     def visit_Operation(self, op):
-        self.defs = set()
-        self.refs = set()
+        self.defs = SymbolSet()
+        self.refs = SymbolSet()
         
         self.visit_parts(op)
         

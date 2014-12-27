@@ -79,6 +79,7 @@ class Inline(Visitor):
             cfg.disconnect(ln, isomorphism[other_cfg.exit])
             cfg.replace_after(node, ln)
 
+    @expect.input(CFG)
     def copy_variables(self, to_cfg, from_cfg):
         isomorphism = {}
         for name,decl in from_cfg.symbol_table.symbols.items():
@@ -90,6 +91,7 @@ class Inline(Visitor):
         
         return isomorphism
 
+    @expect.input(dict)
     def replace_vars(self, obj, var_isomorphism):
         if isinstance(obj, Name) and obj.declaration in var_isomorphism:
             obj.name = var_isomorphism[obj.declaration].name

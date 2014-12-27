@@ -26,15 +26,26 @@ def get_next_id():
     next_id += 1
     return id
 
+@expect.value('Node')
+class NodeSet(set):
+    pass
+
+@expect.key('Node')
+@expect.value('Edge')
+class NodeEdgeMap(dict):
+    pass
+
 class Node(Tree):
     def __init__(self):
-        self.in_edges = {}
-        self.out_edges = {}
+        self.in_edges = NodeEdgeMap()
+        self.out_edges = NodeEdgeMap()
         self.id = get_next_id()
     
+    @expect.input('Node')
     def connects_to(self, other):
         return other in self.out_edges
     
+    @expect.input('Node')
     def connects_from(self, other):
         return other in self.in_edges
     
@@ -92,7 +103,7 @@ class Return(Node):
 
 class CFG(object):
     def __init__(self, name):
-        self.nodes = set()
+        self.nodes = NodeSet()
         self.entry = self.add(Entry(name))
         self.exit = self.add(Exit(name + '$exit'))
     

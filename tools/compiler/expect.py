@@ -91,6 +91,8 @@ def check_type(typ, x):
             return True
         elif type(x).__name__ == typ:
             return True
+        if typ in [t.__name__ for t in x.__class__.mro()]:
+            return True
     elif isinstance(typ, tuple) and isinstance(x, tuple) and len(typ) == len(x):
         for t,v in zip(typ, x):
             if not check_type(t, v):
