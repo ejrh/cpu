@@ -112,9 +112,9 @@ class Reduce(Visitor):
                 expr.parts[1] = '-'
                 for succ,edge in node.out_edges.items():
                     if isinstance(edge, TrueEdge):
-                        node.out_edges[succ] = FalseEdge()
+                        cfg.connect(node, FalseEdge(), succ)
                     elif isinstance(edge, FalseEdge):
-                        node.out_edges[succ] = TrueEdge()
+                        cfg.connect(node, TrueEdge(), succ)
             elif expr.parts[1] == '!=':
                 expr.parts[1] = '-'
             cfg.insert_before(node, new_assign_op)
