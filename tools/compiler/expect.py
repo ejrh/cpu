@@ -152,7 +152,11 @@ def make_function_decorator(kind, cond, options, pre_check=False, post_check=Fal
     def decorator(f):
         if options.strictness == 0:
             return f
-        func_name = f.__name__
+
+        try:
+            func_name = f.__name__
+        except AttributeError:
+            func_name = repr(f)
         
         @wraps(f)
         def f2(*args, **kwargs):
