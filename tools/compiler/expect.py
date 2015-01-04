@@ -321,7 +321,10 @@ if __name__ == '__main__':
     print '** Test strictness **'
     
     expect.strictness(2)
-    @expect.output(lambda x: x)
-    def g():
-        return False
-    g()
+    @expect.output(lambda x: not x)
+    def the_end():
+        return True
+    try:
+        the_end()
+    except UnmetExpectationError, ex:
+        print ex
