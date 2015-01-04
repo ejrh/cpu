@@ -4,6 +4,7 @@ import unittest
 class Options(object):
     def __init__(self):
         self.comments = False
+        self.binary = False
 
 class AsmTests(unittest.TestCase):
     
