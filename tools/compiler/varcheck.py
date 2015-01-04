@@ -1,7 +1,7 @@
-import expect
-from tree import Tree
-from ast import *
-from visitor import Visitor
+from utils import expect
+from utils.tree import Tree
+from utils.visitor import Visitor
+from compiler.ast import *
 
 def unique_name(base, existing):
     name = base

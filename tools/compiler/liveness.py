@@ -1,8 +1,8 @@
-import expect
-from ast import Declaration
-from cfg import Node
-from dfa import DFA
-from visitor import Visitor
+from utils import expect
+from utils.visitor import Visitor
+from compiler.ast import Declaration
+from compiler.cfg import Node
+from compiler.dfa import DFA
 
 @expect.value(Declaration)
 class SymbolSet(set):

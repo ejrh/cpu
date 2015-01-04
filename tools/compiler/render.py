@@ -1,7 +1,7 @@
-import expect
-from ast import *
-from visitor import Visitor
-from linearise import Entry
+from utils import expect
+from utils.visitor import Visitor
+from compiler.ast import *
+from compiler.linearise import Entry
 
 
 class Render(Visitor):

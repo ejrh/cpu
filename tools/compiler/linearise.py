@@ -1,7 +1,7 @@
-import expect
-from tree import Tree
-from cfg import *
-from visitor import Visitor
+from utils import expect
+from utils.tree import Tree
+from utils.visitor import Visitor
+from compiler.cfg import *
 
 class Line(Tree):
     pass

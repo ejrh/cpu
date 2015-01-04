@@ -1,4 +1,4 @@
-from tree import Tree
+from utils.tree import Tree
 
 class SyntaxItem(Tree):
 

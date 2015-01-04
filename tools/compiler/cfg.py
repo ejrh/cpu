@@ -1,5 +1,5 @@
-import expect
-from tree import Tree
+from utils import expect
+from utils.tree import Tree
 
 class Edge(Tree):
     def get_parts(self):

@@ -1,6 +1,7 @@
-from cfg import *
-from ast import SyntaxItem, Name, BinaryOperation, Builtin, AssignStatement
-from visitor import Visitor
+from utils import expect
+from utils.visitor import Visitor
+from compiler.cfg import *
+from compiler.ast import SyntaxItem, Name, BinaryOperation, Builtin, AssignStatement
 
 next_inlined_id = 0
 

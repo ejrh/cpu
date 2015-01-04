@@ -1,7 +1,7 @@
-from ast import *
-from tree import Tree
-from cfg import *
-from visitor import Visitor
+from utils.tree import Tree
+from utils.visitor import Visitor
+from compiler.ast import *
+from compiler.cfg import *
 
 next_temporary_id = 0
 

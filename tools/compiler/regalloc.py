@@ -1,7 +1,7 @@
-import expect
-from ast import Register, VariableDecl, ArgDecl, AssignStatement, Name
-from cfg import Operation
-from liveness import LivenessAnalysis
+from utils import expect
+from compiler.ast import Register, VariableDecl, ArgDecl, AssignStatement, Name
+from compiler.cfg import Operation
+from compiler.liveness import LivenessAnalysis
 
 REGISTERS = [Register('$r%s' % i) for i in range(1,16)]
 

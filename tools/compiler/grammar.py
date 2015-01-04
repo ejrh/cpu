@@ -2,7 +2,7 @@ from functools import wraps
 from pyparsing import *
 ParserElement.enablePackrat()
 
-from ast import *
+from compiler.ast import *
 
 def ast_semantics(f):
     @wraps(f)

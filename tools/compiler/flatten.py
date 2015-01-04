@@ -1,8 +1,8 @@
-import expect
-from ast import *
-from varcheck import SymbolTable
-from cfg import Node, CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
-from visitor import Visitor
+from utils import expect
+from utils.visitor import Visitor
+from compiler.ast import *
+from compiler.varcheck import SymbolTable
+from compiler.cfg import Node, CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
 
 class Flatten(Visitor):
     def __init__(self, ast, errors):

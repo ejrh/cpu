@@ -1,5 +1,5 @@
 import sys
-import expect
+from utils import expect
 
 class Errors(object):
     def __init__(self, filename=None):

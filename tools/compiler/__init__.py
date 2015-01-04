@@ -1,15 +1,15 @@
 import sys
 import time
 
-from grammar import program as program_grammar
-from errors import Errors
-from varcheck import VarCheck
-from flatten import Flatten
-from reduce import Reduce
-from inline import Inline
-from regalloc import RegisterAllocation
-from linearise import Linearise
-from render import Render
+from compiler.grammar import program as program_grammar
+from compiler.errors import Errors
+from compiler.varcheck import VarCheck
+from compiler.flatten import Flatten
+from compiler.reduce import Reduce
+from compiler.inline import Inline
+from compiler.regalloc import RegisterAllocation
+from compiler.linearise import Linearise
+from compiler.render import Render
 
 class Compiler(object):
     def __init__(self, filename):
@@ -34,18 +34,3 @@ class Compiler(object):
         self.render = Render(self.lin.lines, self.errors)
         print time.time() - start_time
         return self.render.lines
-
-def compile(filename):
-    f = open(filename, 'rt')
-    data = f.read()
-    f.close()
-    
-    filename = filename.replace('\\', '/')
-    
-    comp = Compiler(filename)
-    output = comp.compile(data)
-    print '\n'.join(output)
-
-if __name__ == '__main__':
-    filename = sys.argv[1]
-    compile(filename)
