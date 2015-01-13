@@ -82,8 +82,12 @@ def make_numeral(s, loc, toks):
     return Numeral(*toks)
 
 @ast_semantics
-def make_type(s, loc, toks):
-    return known_types[toks[0]]
+def make_type_expr(s, loc, toks):
+    typ = known_types[toks[0]]
+    while toks.pop() == '*':
+        typ = PointerType(typ)
+    print typ
+    return typ
 
 #@ast_semantics
 def make_list(s, loc, toks):
@@ -122,21 +126,22 @@ function_call = Forward().setParseAction(make_function_call)
 atom = Forward()
 name = Forward().setParseAction(make_name)
 arg_list = Forward().setParseAction(make_list)
-type_name = Forward().setParseAction(make_type)
+type_expr = Forward().setParseAction(make_type_expr)
+type_name = Forward()
 
 declaration = function_decl | var_decl
 program << declaration_list
 declaration_list << ZeroOrMore(declaration)
-var_decl << (type_name + identifier + Suppress(';'))
+var_decl << (type_expr + identifier + Suppress(';'))
 opt_var_assign << Suppress('=') + expression
-function_decl << (type_name + identifier + Suppress('(') - arg_decl_list + Suppress(')') - block)
+function_decl << (type_expr + identifier + Suppress('(') - arg_decl_list + Suppress(')') - block)
 arg_decl_list << Optional(delimitedList(arg_decl))
-arg_decl << (type_name + identifier)
+arg_decl << (type_expr + identifier)
 block << (Suppress('{') - statement_list + Suppress('}'))
 statement_list << ZeroOrMore(statement)
 statement << (var_decl | expr_statement | assign_statement | if_statement | while_statement | break_statement | return_statement)
 expr_statement << (expression + Suppress(';'))
-assign_statement << (Optional(type_name) + name + Suppress('=') + expression + Suppress(';'))
+assign_statement << (Optional(type_expr) + name + Suppress('=') + expression + Suppress(';'))
 if_statement << (Suppress(IF) - Suppress('(') + expression + Suppress(')') + block)
 while_statement << (Suppress(WHILE) - Suppress('(') + expression + Suppress(')') + block)
 break_statement << (Suppress(BREAK) - Suppress(';'))
@@ -150,6 +155,7 @@ function_call << (name + Suppress('(') - arg_list + Suppress(')'))
 atom << (function_call | name | numeral)
 name << identifier
 arg_list << Optional(delimitedList(expression))
+type_expr << type_name + ZeroOrMore('*')
 type_name << (VOID | INT | BOOL)
 
 program.ignore(cppStyleComment)

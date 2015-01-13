@@ -163,6 +163,13 @@ class Type(Declaration):
     def get_parts(self):
         return (self.name,)
 
+class PointerType(Type):
+    def __init__(self, to_type):
+        self.to_type = to_type
+    
+    def get_parts(self):
+        return (self.to_type,)
+
 void_type = Type('void')
 int_type = Type('int')
 bool_type = Type('bool')
