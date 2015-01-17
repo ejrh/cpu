@@ -48,7 +48,10 @@ class Inline(Phase, Visitor):
         if isinstance(func_call.declaration, Builtin) or func_call.declaration == func:
             return
         
-        other_cfg = func_call.declaration.cfg
+        try:
+            other_cfg = func_call.declaration.cfg
+        except AttributeError:
+            return
         
         # Embed a copy of the inlined function's CFG
         isomorphism = cfg.embed(other_cfg)
