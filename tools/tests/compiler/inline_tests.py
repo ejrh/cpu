@@ -1,8 +1,8 @@
-from ast import *
-from cfg import Operation
-from flatten import Flatten
-from inline import Inline
-from errors import Errors
+from compiler.ast import *
+from compiler.cfg import Operation
+from compiler.flatten import Flatten
+from compiler.inline import Inline
+from compiler.errors import Errors
 import unittest
 
     

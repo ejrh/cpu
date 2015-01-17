@@ -1,7 +1,7 @@
-from ast import *
-from linearise import Label, Jump, Branch, Instruction
-from render import Render
-from errors import Errors
+from compiler.ast import *
+from compiler.linearise import Label, Jump, Branch, Instruction
+from compiler.render import Render
+from compiler.errors import Errors
 import unittest
 
 class RenderTests(unittest.TestCase):

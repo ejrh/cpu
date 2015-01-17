@@ -1,5 +1,5 @@
-import grammar
-from ast import *
+import compiler.grammar as grammar
+from compiler.ast import *
 import unittest
 
 class GrammarTests(unittest.TestCase):

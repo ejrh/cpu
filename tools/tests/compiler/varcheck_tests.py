@@ -1,6 +1,6 @@
-from ast import *
-from varcheck import SymbolTable, VarCheck
-from errors import Errors
+from compiler.ast import *
+from compiler.varcheck import SymbolTable, VarCheck
+from compiler.errors import Errors
 import unittest
 
 class SymbolTableTests(unittest.TestCase):

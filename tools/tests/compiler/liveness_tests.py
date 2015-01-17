@@ -1,7 +1,7 @@
-from ast import *
-from cfg import *
-from liveness import LivenessAnalysis
-from errors import Errors
+from compiler.ast import *
+from compiler.cfg import *
+from compiler.liveness import LivenessAnalysis
+from compiler.errors import Errors
 import unittest
 
 class LivenessAnalysisTests(unittest.TestCase):

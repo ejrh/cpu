@@ -1,8 +1,8 @@
-from ast import *
-from cfg import *
-from flatten import Flatten
-from errors import Errors
-from varcheck import SymbolTable
+from compiler.ast import *
+from compiler.cfg import *
+from compiler.flatten import Flatten
+from compiler.errors import Errors
+from compiler.varcheck import SymbolTable
 import unittest
 
 class FlattenTests(unittest.TestCase):

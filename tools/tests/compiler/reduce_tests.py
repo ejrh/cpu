@@ -1,8 +1,8 @@
-from ast import *
-from cfg import CFG, Operation, Pass
-from varcheck import SymbolTable
-from reduce import Reduce
-from errors import Errors
+from compiler.ast import *
+from compiler.cfg import CFG, Operation, Pass
+from compiler.varcheck import SymbolTable
+from compiler.reduce import Reduce
+from compiler.errors import Errors
 import unittest
 
 class ReduceTests(unittest.TestCase):

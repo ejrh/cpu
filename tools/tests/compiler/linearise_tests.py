@@ -1,8 +1,8 @@
-from ast import *
-from cfg import CFG, Operation, Test, Pass, TrueEdge, FalseEdge
-import cfg
-from linearise import Linearise, Label, Jump, Branch, Instruction, delinearise
-from errors import Errors
+from compiler.ast import *
+from compiler.cfg import CFG, Operation, Test, Pass, TrueEdge, FalseEdge
+import compiler.cfg as cfg
+from compiler.linearise import Linearise, Label, Jump, Branch, Instruction, delinearise
+from compiler.errors import Errors
 import unittest
 
 class LineariseTests(unittest.TestCase):
