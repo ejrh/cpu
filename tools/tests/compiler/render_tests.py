@@ -8,32 +8,32 @@ class RenderTests(unittest.TestCase):
 
     def assertSuccess(self, input_lines):
         errors = Errors()
-        render = Render(input_lines, errors, indent=False)
+        output = Render(input_lines, indent=False, errors=errors).run()
         self.assertEquals(errors.num_errors, 0)
         self.assertEquals(errors.num_warnings, 0)
-        return render
+        return output
     
     def testEmpty(self):
         lines = []
-        render = self.assertSuccess(lines)
-        self.assertEquals(render.lines, [])
+        output = self.assertSuccess(lines)
+        self.assertEquals(output, [])
     
     def testEmptyFunction(self):
         lines = [Label('f', public=True), Label('f$exit', public=True)]
-        render = self.assertSuccess(lines)
-        self.assertEquals(render.lines, ['f::', 'f$exit::'])
+        output = self.assertSuccess(lines)
+        self.assertEquals(output, ['f::', 'f$exit::'])
     
     def testJump(self):
         lines = [Label('f', public=True), Jump('f')]
-        render = self.assertSuccess(lines)
-        self.assertEquals(render.lines, ['f::', 'jmp f'])
+        output = self.assertSuccess(lines)
+        self.assertEquals(output, ['f::', 'jmp f'])
     
     def testNumeralAssignment(self):
         n1 = Name('$r1')
         n1.declaration = Register('$r1')
         lines = [Instruction(AssignStatement(n1, Numeral(7)))]
-        render = self.assertSuccess(lines)
-        self.assertEquals(render.lines, ['mov 7, $r1'])
+        output = self.assertSuccess(lines)
+        self.assertEquals(output, ['mov 7, $r1'])
     
     def testOut(self):
         n1 = Name('$r1')
@@ -43,8 +43,8 @@ class RenderTests(unittest.TestCase):
         fc = FunctionCall(Name('__out__'), [n1, n2])
         fc.name.declaration = out_builtin
         lines = [Instruction(fc)]
-        render = self.assertSuccess(lines)
-        self.assertEquals(render.lines, ['out $r1, $r2'])
+        output = self.assertSuccess(lines)
+        self.assertEquals(output, ['out $r1, $r2'])
 
 
 if __name__ == '__main__':

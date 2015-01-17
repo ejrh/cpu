@@ -62,7 +62,7 @@ class VarCheckTests(unittest.TestCase):
 
     def assertSuccess(self, input, expected_errors=0, expected_warnings=0):
         errors = Errors()
-        vc = VarCheck(input, errors)
+        VarCheck(input, errors=errors).run()
         self.assertEquals(errors.num_errors, expected_errors)
         self.assertEquals(errors.num_warnings, expected_warnings)
 

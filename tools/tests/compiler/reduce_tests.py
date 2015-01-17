@@ -8,7 +8,7 @@ import unittest
 class ReduceTests(unittest.TestCase):
     def assertSuccess(self, input):
         errors = Errors()
-        red = Reduce(input, errors)
+        Reduce(input, errors=errors).run()
         self.assertEquals(errors.num_errors, 0)
         self.assertEquals(errors.num_warnings, 0)
     

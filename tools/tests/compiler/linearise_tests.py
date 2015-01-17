@@ -12,10 +12,10 @@ class LineariseTests(unittest.TestCase):
     
     def assertSuccess(self, input):
         errors = Errors()
-        linearise = Linearise(input, errors)
+        lines = Linearise(input, errors=errors).run()
         self.assertEquals(errors.num_errors, 0)
         self.assertEquals(errors.num_warnings, 0)
-        return linearise
+        return lines
     
     def testEmpty(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
@@ -23,8 +23,8 @@ class LineariseTests(unittest.TestCase):
         cfg.connect(cfg.entry, cfg.exit)
         function.cfg = cfg
         program = Program([function])
-        linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f', public=True), Label('f$exit', public=True)])
+        lines = self.assertSuccess(program)
+        self.assertEquals(lines, [Label('f', public=True), Label('f$exit', public=True)])
     
     def testOneStatement(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
@@ -34,8 +34,8 @@ class LineariseTests(unittest.TestCase):
         cfg.connect(stmt, cfg.exit)
         function.cfg = cfg
         program = Program([function])
-        linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f', public=True), Instruction(42), Label('f$exit', public=True)])
+        lines = self.assertSuccess(program)
+        self.assertEquals(lines, [Label('f', public=True), Instruction(42), Label('f$exit', public=True)])
     
     def testTest(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
@@ -48,8 +48,8 @@ class LineariseTests(unittest.TestCase):
         cfg.connect(test_node, FalseEdge(), false_node, cfg.exit)
         function.cfg = cfg
         program = Program([function])
-        linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f', public=True), Branch(42, 3), Label(4), Instruction(200), Jump('f$exit'), Label(3), Instruction(100), Label('f$exit', public=True)])
+        lines = self.assertSuccess(program)
+        self.assertEquals(lines, [Label('f', public=True), Branch(42, 3), Label(4), Instruction(200), Jump('f$exit'), Label(3), Instruction(100), Label('f$exit', public=True)])
     
     def testInfiniteLoop(self):
         function = FunctionDecl(void_type, 'f', [], Block([]))
@@ -58,8 +58,8 @@ class LineariseTests(unittest.TestCase):
         cfg.connect(cfg.entry, node, node)
         function.cfg = cfg
         program = Program([function])
-        linearise = self.assertSuccess(program)
-        self.assertEquals(linearise.lines, [Label('f', public=True), Label(2), Instruction(42), Jump(2), Label('f$exit', public=True)])
+        lines = self.assertSuccess(program)
+        self.assertEquals(lines, [Label('f', public=True), Label(2), Instruction(42), Jump(2), Label('f$exit', public=True)])
 
 
 class DelineariseTests(unittest.TestCase):
