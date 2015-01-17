@@ -1,22 +1,26 @@
 from utils import expect
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.ast import *
 from compiler.linearise import Entry
 
 
-class Render(Visitor):
-    def __init__(self, lines, errors, indent=True):
-        self.errors = errors
-        self.lines = []
+class Render(Phase, Visitor):
+    def __init__(self, lines, indent=True, **kwargs):
+        super(Render, self).__init__(**kwargs)
+        self.lines = lines
         self.indent = indent
-        
-        self.visit(lines)
+    
+    def run_phase(self):
+        self.output = []
+        self.visit(self.lines)
+        return self.output
     
     def visit_Label(self, label):
         line = '%s:' % label.name
         if label.public:
             line = line + ':'
-        if isinstance(label.node, Entry) and len(self.lines) > 0:
+        if isinstance(label.node, Entry) and len(self.output) > 0:
             self.add_line('')
         self.add_line(line)
 
@@ -73,7 +77,7 @@ class Render(Visitor):
     def add_line(self, line, indent=0):
         if self.indent:
             line = '    ' * indent + line
-        self.lines.append(line)
+        self.output.append(line)
 
     @expect.input(Expression)
     def render(self, expr):

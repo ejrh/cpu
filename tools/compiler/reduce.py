@@ -1,5 +1,6 @@
 from utils.tree import Tree
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.ast import *
 from compiler.cfg import *
 
@@ -12,12 +13,14 @@ def get_next_temporary_id():
     return '$t%d' % id
 
 
-class Reduce(Visitor):
-    def __init__(self, program, errors):
-        self.errors = errors
-        
-        self.visit(program)
+class Reduce(Phase, Visitor):
+    def __init__(self, ast, **kwargs):
+        super(Reduce, self).__init__(**kwargs)
+        self.ast = ast
     
+    def run_phase(self):
+        self.visit(self.ast)
+      
     def visit_FunctionDecl(self, func):
         self.process_cfg(func.cfg, func)
 

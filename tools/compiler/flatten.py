@@ -1,14 +1,18 @@
 from utils import expect
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.ast import *
 from compiler.varcheck import SymbolTable
 from compiler.cfg import Node, CFG, Operation, Test, Return, Pass, TrueEdge, FalseEdge
 
-class Flatten(Visitor):
-    def __init__(self, ast, errors):
-        self.errors = errors
-        self.visit(ast)
-        
+class Flatten(Phase, Visitor):
+    def __init__(self, ast, **kwargs):
+        super(Flatten, self).__init__(**kwargs)
+        self.ast = ast
+
+    def run_phase(self):
+        self.visit(self.ast)
+    
     def visit_FunctionDecl(self, func):
         cfg = CFG(func.name)
         func.cfg = cfg

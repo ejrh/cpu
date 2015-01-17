@@ -1,7 +1,6 @@
 import sys
-import time
 
-from compiler.grammar import program as program_grammar
+from compiler.parser import Parser
 from compiler.errors import Errors
 from compiler.varcheck import VarCheck
 from compiler.flatten import Flatten
@@ -17,21 +16,15 @@ class Compiler(object):
         self.options = options
     
     def compile(self, data):
-        start_time = time.time()
-        self.ast = program_grammar.parseString(data, parseAll=True)[0]
-        print time.time() - start_time
-        start_time = time.time()
-        self.varcheck = VarCheck(self.ast, self.errors)
-        self.flatten = Flatten(self.ast, self.errors)
-        self.reduce = Reduce(self.ast, self.errors)
-        self.inline = Inline(self.ast, self.errors)
-        for f in self.ast.symbol_table.symbols.values():
-            print 'regalloc', f
+        ast = Parser(data, errors=self.errors).run()
+        VarCheck(ast, errors=self.errors).run()
+        Flatten(ast, errors=self.errors).run()
+        Reduce(ast, errors=self.errors).run()
+        Inline(ast, errors=self.errors).run()
+        for f in ast.symbol_table.symbols.values():
             cfg = f.cfg
-            print 'cfg', cfg
-            self.regalloc = RegisterAllocation(cfg)
+            RegisterAllocation(f.cfg, errors=self.errors).run()
         
-        self.lin = Linearise(self.ast, self.errors)
-        self.render = Render(self.lin.lines, self.errors)
-        print time.time() - start_time
-        return self.render.lines
+        lines = Linearise(ast, errors=self.errors).run()
+        output = Render(lines, errors=self.errors).run()
+        return output

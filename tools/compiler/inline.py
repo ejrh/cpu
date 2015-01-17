@@ -1,5 +1,6 @@
 from utils import expect
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.cfg import *
 from compiler.ast import SyntaxItem, Name, BinaryOperation, Builtin, AssignStatement
 
@@ -13,10 +14,13 @@ def get_next_inlined_id(name):
     return '$i%d$%s' % (id, name)
 
 
-class Inline(Visitor):
-    def __init__(self, ast, errors):
-        self.errors = errors
-        self.visit(ast)
+class Inline(Phase, Visitor):
+    def __init__(self, ast, **kwargs):
+        super(Inline, self).__init__(**kwargs)
+        self.ast = ast
+
+    def run_phase(self):
+        self.visit(self.ast)
         
     def visit_FunctionDecl(self, func):
         self.process_cfg(func.cfg, func)

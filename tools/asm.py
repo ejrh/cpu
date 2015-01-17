@@ -217,7 +217,7 @@ class Assembler(object):
                     bytes.append(w / 256)
             return ''.join(chr(x) for x in bytes)
         return '\n'.join(self.program_lines)
-    
+
 def main():
     usage = """usage: %prog PATH [-c|-b] INPUT [-o OUTPUT]"""
     desc = """Assemble a program for the CPU"""

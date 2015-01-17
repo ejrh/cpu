@@ -1,6 +1,7 @@
 from utils import expect
 from utils.tree import Tree
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.ast import *
 
 def unique_name(base, existing):
@@ -60,16 +61,18 @@ class SymbolTable(Tree):
       return [self.symbols]
 
 
-class VarCheck(Visitor):
-    def __init__(self, ast, errors):
-        self.errors = errors
-        
+class VarCheck(Phase, Visitor):
+    def __init__(self, ast, **kwargs):
+        super(VarCheck, self).__init__(**kwargs)
+        self.ast = ast
+    
+    def run_phase(self):
         builtin_scope = SymbolTable()
         for n, b in known_builtins.items():
-            builtin_scope.add(n, b, errors)
+            builtin_scope.add(n, b, self.errors)
 
-        self.visit(ast, table=builtin_scope)
-        
+        self.visit(self.ast, table=builtin_scope)
+
     def visit_Program(self, program, table):
         self.make_scope(program, None, table)
 

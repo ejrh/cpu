@@ -1,6 +1,7 @@
 from utils import expect
 from utils.tree import Tree
 from utils.visitor import Visitor
+from compiler.phase import Phase
 from compiler.cfg import *
 
 class Line(Tree):
@@ -62,12 +63,15 @@ def label_name(node):
 class LineList(list):
     pass
 
-class Linearise(Visitor):
-    def __init__(self, program, errors):
-        self.errors = errors
-        self.lines = LineList()
+class Linearise(Phase, Visitor):
+    def __init__(self, ast, **kwargs):
+        super(Linearise, self).__init__(**kwargs)
+        self.ast = ast
         
-        self.visit(program)
+    def run_phase(self):
+        self.lines = LineList()
+        self.visit(self.ast)
+        return self.lines
     
     def visit_FunctionDecl(self, func):
         self.process_cfg(func.cfg)

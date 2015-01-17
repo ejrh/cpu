@@ -1,16 +1,19 @@
 from utils import expect
+from compiler.phase import Phase
 from compiler.ast import Register, VariableDecl, ArgDecl, AssignStatement, Name
 from compiler.cfg import Operation
 from compiler.liveness import LivenessAnalysis
 
 REGISTERS = [Register('$r%s' % i) for i in range(1,16)]
 
-class RegisterAllocation(object):
-    def __init__(self, cfg):
+class RegisterAllocation(Phase):
+    def __init__(self, cfg, **kwargs):
+        super(RegisterAllocation, self).__init__(**kwargs)
         self.cfg = cfg
-        
-        self.liveness = LivenessAnalysis(cfg)
-        graph = InterferenceGraph(cfg, self.liveness)
+
+    def run_phase(self):
+        self.liveness = LivenessAnalysis(self.cfg)
+        graph = InterferenceGraph(self.cfg, self.liveness)
         graph.colour(15)
 
         for var in self.cfg.symbol_table.symbols.values():
