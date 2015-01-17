@@ -175,9 +175,3 @@ int_type = Type('int')
 bool_type = Type('bool')
 
 known_types = { 'void': void_type, 'int': int_type, 'bool': bool_type }
-
-out_builtin = Builtin(void_type, '__out__', [ArgDecl(int_type, 'value'), ArgDecl(int_type, 'port')])
-
-known_builtins = {
-    '__out__': out_builtin
-}

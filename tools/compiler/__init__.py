@@ -16,8 +16,10 @@ class Compiler(object):
         self.options = options
     
     def compile(self, data):
+        machine = self.find_machine(self.options)
+      
         ast = Parser(data, errors=self.errors).run()
-        VarCheck(ast, errors=self.errors).run()
+        VarCheck(ast, machine.builtins, errors=self.errors).run()
         Flatten(ast, errors=self.errors).run()
         Reduce(ast, errors=self.errors).run()
         Inline(ast, errors=self.errors).run()
@@ -26,5 +28,11 @@ class Compiler(object):
             RegisterAllocation(f.cfg, errors=self.errors).run()
         
         lines = Linearise(ast, errors=self.errors).run()
-        output = Render(lines, errors=self.errors).run()
+        output = Render(lines, machine, errors=self.errors).run()
         return output
+
+    def find_machine(self, options):
+        if options.target == 'E1':
+            import compiler.e1
+            return compiler.e1.Machine(options)
+        self.errors.error("Unknown target type: '%s'" % options.target)

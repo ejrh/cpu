@@ -1,6 +1,7 @@
 from compiler.ast import *
 from compiler.varcheck import SymbolTable, VarCheck
 from compiler.errors import Errors
+import compiler.e1
 import unittest
 
 class SymbolTableTests(unittest.TestCase):
@@ -60,9 +61,12 @@ class SymbolTableTests(unittest.TestCase):
     
 class VarCheckTests(unittest.TestCase):
 
+    def setUp(self):
+        self.builtins = compiler.e1.Machine().builtins
+    
     def assertSuccess(self, input, expected_errors=0, expected_warnings=0):
         errors = Errors()
-        VarCheck(input, errors=errors).run()
+        VarCheck(input, self.builtins, errors=errors).run()
         self.assertEquals(errors.num_errors, expected_errors)
         self.assertEquals(errors.num_warnings, expected_warnings)
 
@@ -73,7 +77,7 @@ class VarCheckSymbolTableTests(VarCheckTests):
         self.assertSuccess(program)
         self.assertEquals(program.symbol_table.get_names(), set())
         parent_table = program.symbol_table.parent
-        for n in known_builtins.keys():
+        for n in self.builtins.keys():
             self.assertTrue(n in parent_table.symbols)
         self.assertIsNone(parent_table.parent)
 
@@ -103,7 +107,7 @@ class VarCheckSymbolTableTests(VarCheckTests):
         
         st = block.symbol_table
         self.assertEquals(st.get_names(), set(['x']))
-        self.assertEquals(st.get_all_names() - set(known_builtins.keys()), set(['f', 'x']))
+        self.assertEquals(st.get_all_names() - set(self.builtins.keys()), set(['f', 'x']))
         self.assertEquals(st.parent.parent, program.symbol_table)
         
     def testFunctionBlockVarDeclAssign(self):
@@ -113,7 +117,7 @@ class VarCheckSymbolTableTests(VarCheckTests):
         
         st = block.symbol_table
         self.assertEquals(st.get_names(), set(['x']))
-        self.assertEquals(st.get_all_names() - set(known_builtins.keys()), set(['f', 'x']))
+        self.assertEquals(st.get_all_names() - set(self.builtins.keys()), set(['f', 'x']))
         self.assertEquals(st.parent.parent, program.symbol_table)
 
 class VarCheckVariableTests(VarCheckTests):

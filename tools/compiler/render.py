@@ -6,9 +6,10 @@ from compiler.linearise import Entry
 
 
 class Render(Phase, Visitor):
-    def __init__(self, lines, indent=True, **kwargs):
+    def __init__(self, lines, machine, indent=True, **kwargs):
         super(Render, self).__init__(**kwargs)
         self.lines = lines
+        self.machine = machine
         self.indent = indent
     
     def run_phase(self):
@@ -67,8 +68,8 @@ class Render(Phase, Visitor):
         self.add_line(line, indent=1)
 
     def visit_FunctionCall(self, fc):
-        if fc.name.declaration == out_builtin:
-            line = 'out %s, %s' % (self.render(fc.args[0]), self.render(fc.args[1]))
+        if isinstance(fc.name.declaration, Builtin):
+            line = self.machine.render(fc, [self.render(x) for x in fc.args])
         else:
             #raise NotImplementedError(fc)
             line = '%s' % fc

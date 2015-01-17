@@ -2,13 +2,17 @@ from compiler.ast import *
 from compiler.linearise import Label, Jump, Branch, Instruction
 from compiler.render import Render
 from compiler.errors import Errors
+import compiler.e1
 import unittest
 
 class RenderTests(unittest.TestCase):
 
+    def setUp(self):
+        self.machine = compiler.e1.Machine()
+
     def assertSuccess(self, input_lines):
         errors = Errors()
-        output = Render(input_lines, indent=False, errors=errors).run()
+        output = Render(input_lines, self.machine, indent=False, errors=errors).run()
         self.assertEquals(errors.num_errors, 0)
         self.assertEquals(errors.num_warnings, 0)
         return output
@@ -41,7 +45,7 @@ class RenderTests(unittest.TestCase):
         n2 = Name('$r2')
         n2.declaration = Register('$r2')
         fc = FunctionCall(Name('__out__'), [n1, n2])
-        fc.name.declaration = out_builtin
+        fc.name.declaration = compiler.e1.out_builtin
         lines = [Instruction(fc)]
         output = self.assertSuccess(lines)
         self.assertEquals(output, ['out $r1, $r2'])

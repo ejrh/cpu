@@ -62,13 +62,14 @@ class SymbolTable(Tree):
 
 
 class VarCheck(Phase, Visitor):
-    def __init__(self, ast, **kwargs):
+    def __init__(self, ast, builtins, **kwargs):
         super(VarCheck, self).__init__(**kwargs)
         self.ast = ast
+        self.builtins = builtins
     
     def run_phase(self):
         builtin_scope = SymbolTable()
-        for n, b in known_builtins.items():
+        for n, b in self.builtins.items():
             builtin_scope.add(n, b, self.errors)
 
         self.visit(self.ast, table=builtin_scope)
