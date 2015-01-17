@@ -12,8 +12,9 @@ from compiler.linearise import Linearise
 from compiler.render import Render
 
 class Compiler(object):
-    def __init__(self, filename):
+    def __init__(self, filename, options):
         self.errors = Errors(filename)
+        self.options = options
     
     def compile(self, data):
         start_time = time.time()
