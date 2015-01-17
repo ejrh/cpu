@@ -1,17 +1,10 @@
+from utils import expect
 from utils.tree import Tree
 from utils.visitor import Visitor
 from compiler.phase import Phase
 from compiler.ast import *
 from compiler.cfg import *
-
-next_temporary_id = 0
-
-def get_next_temporary_id():
-    global next_temporary_id
-    id = next_temporary_id
-    next_temporary_id += 1
-    return '$t%d' % id
-
+from compiler.cfgedit import *
 
 class Reduce(Phase, Visitor):
     def __init__(self, ast, **kwargs):
@@ -76,13 +69,13 @@ class Reduce(Phase, Visitor):
         return False
     
     def visit_Numeral(self, expr, node, function, cfg):
-        new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
+        new_assign_op, temp_name = assign_to_temporary(cfg, expr)
         cfg.insert_before(node, new_assign_op)
         
         return temp_name
 
     def visit_BinaryOperation(self, expr, node, function, cfg):
-        new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
+        new_assign_op, temp_name = assign_to_temporary(cfg, expr)
         cfg.insert_before(node, new_assign_op)
         
         return temp_name
@@ -92,25 +85,25 @@ class Reduce(Phase, Visitor):
         if len(expr.parts) > 3:
             subexpr = BinaryOperation(expr.parts[:3])
             subexpr.type = expr.type
-            new_assign_op, temp_name = self.assign_to_temporary(cfg, subexpr)
+            new_assign_op, temp_name = assign_to_temporary(cfg, subexpr)
             cfg.insert_before(node, new_assign_op)
             expr.parts = [temp_name] + expr.parts[3:]
             return True
         
         if not isinstance(expr.parts[0], Name):
-            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[0])
+            new_assign_op, temp_name = assign_to_temporary(cfg, expr.parts[0])
             cfg.insert_before(node, new_assign_op)
             expr.parts[0] = temp_name
             return True
         
         if not isinstance(expr.parts[2], Name):
-            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr.parts[2])
+            new_assign_op, temp_name = assign_to_temporary(cfg, expr.parts[2])
             cfg.insert_before(node, new_assign_op)
             expr.parts[2] = temp_name
             return True
         
         if isinstance(node, Test):
-            new_assign_op, temp_name = self.assign_to_temporary(cfg, expr)
+            new_assign_op, temp_name = assign_to_temporary(cfg, expr)
             if expr.parts[1] == '==':
                 expr.parts[1] = '-'
                 for succ,edge in node.out_edges.items():
@@ -125,22 +118,3 @@ class Reduce(Phase, Visitor):
             return True
         
         return False
-
-    @expect.input(CFG, Expression)
-    @expect.output((Operation, Expression))
-    def assign_to_temporary(self, cfg, expr):
-        temp_decl = self.create_temporary(cfg, expr.type)
-        
-        new_name_expr = Name(temp_decl.name)
-        new_name_expr.declaration = temp_decl
-        
-        new_assignment_op = Operation(AssignStatement(new_name_expr, expr))
-        return new_assignment_op, new_name_expr
-    
-    @expect.input(CFG, Type)
-    @expect.output(VariableDecl)
-    def create_temporary(self, cfg, var_type):
-        id = get_next_temporary_id()
-        decl = VariableDecl(var_type, id)
-        cfg.symbol_table.add(id, decl, self.errors)
-        return decl

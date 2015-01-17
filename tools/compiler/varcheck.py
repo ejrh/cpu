@@ -3,6 +3,7 @@ from utils.tree import Tree
 from utils.visitor import Visitor
 from compiler.phase import Phase
 from compiler.ast import *
+from compiler.errors import Errors
 
 def unique_name(base, existing):
     name = base
@@ -30,7 +31,7 @@ class SymbolTable(Tree):
         return names      
     
     @expect.input(str, Declaration)
-    def add(self, name, decl, errors):
+    def add(self, name, decl, errors=Errors()):
         if name in self.symbols:
             prev_decl = self.symbols[name]
             errors.error(decl.get_location(), """'%s' conflicts with previous declaration at '%s'""" % (name, prev_decl.get_location()))
@@ -178,6 +179,9 @@ class VarCheck(Phase, Visitor):
             arg_decl = decl.args[i]
             if call_arg.type != arg_decl.type:
                 self.errors.error(call_arg.get_location(), """Function '%s' expects argument of type %s in position %d (got %s)""" % (decl.name, arg_decl.type.name, i+1, call_arg.type.name))
+
+        for i in range(len(fc.args)):
+            self.visit(fc.args[i], function=function, table=table)
 
     @expect.input(Declaration, SymbolTable)
     def make_scope(self, target, function, table):

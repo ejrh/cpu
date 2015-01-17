@@ -5,6 +5,7 @@ from compiler.errors import Errors
 from compiler.varcheck import VarCheck
 from compiler.flatten import Flatten
 from compiler.reduce import Reduce
+from compiler.tailrec import TailRecursion
 from compiler.inline import Inline
 from compiler.regalloc import RegisterAllocation
 from compiler.linearise import Linearise
@@ -22,6 +23,7 @@ class Compiler(object):
         VarCheck(ast, machine.builtins, errors=self.errors).run()
         Flatten(ast, errors=self.errors).run()
         Reduce(ast, errors=self.errors).run()
+        TailRecursion(ast, errors=self.errors).run()
         Inline(ast, errors=self.errors).run()
         for f in ast.symbol_table.symbols.values():
             cfg = f.cfg
